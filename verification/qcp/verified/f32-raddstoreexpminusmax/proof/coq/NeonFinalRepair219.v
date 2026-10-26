@@ -1,0 +1,9 @@
+From ExpMinusMax Require Import NeonFinalRepairTactics neon_unit_goal.
+Import Snaive_C_Rules64. Local Open Scope sac.
+Module Checked.
+Lemma proof_of_test_neon_partial_solve_wit_147:ExpMinusMax.neon_unit_goal.test_neon_partial_solve_wit_147.
+Proof. unfold ExpMinusMax.neon_unit_goal.test_neon_partial_solve_wit_147,ExpMinusMax.neon_unit_goal.test_neon_partial_solve_wit_147_aux.
+ em_intro;emkf_frame.
+Qed.
+End Checked.
+Print Assumptions Checked.proof_of_test_neon_partial_solve_wit_147.

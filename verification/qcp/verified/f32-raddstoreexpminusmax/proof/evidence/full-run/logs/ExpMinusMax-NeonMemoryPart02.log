@@ -1,0 +1,52 @@
+Chars 0 - 45 [From~Coq~Require~Import~ZArith...] 0.269 secs (0.156u,0.113s)
+Chars 46 - 128 [From~ExpMinusMax~Require~Impor...] 3.563 secs (3.022u,0.54s)
+Chars 129 - 153 [Import~Snaive_C_Rules64.] 0.04 secs (0.037u,0.003s)
+Chars 154 - 179 [#[local]~Open~Scope~Z_scope.] 0. secs (0.u,0.s)
+Chars 180 - 201 [#[local]~Open~Scope~sac.] 0. secs (0.u,0.s)
+Chars 202 - 217 [Module~Checked.] 0. secs (0.u,0.s)
+Chars 218 - 308 [Lemma~proof_of_test_neon_entai...] 0. secs (0.u,0.s)
+Chars 309 - 315 [Proof.] 0. secs (0.u,0.s)
+Chars 317 - 797 [(unfold~ExpMinusMax.neon_unit_...] 0.007 secs (0.007u,0.s)
+Chars 799 - 869 [(unfold~em_same_record4,~em_sa...] 0.317 secs (0.185u,0.131s)
+Chars 871 - 907 [(emk_prepare;~fold~em_neon_exp...] 0.357 secs (0.343u,0.014s)
+Chars 909 - 951 [replace~(Q~+~16~*~G_2)~with~(Q...] 0.009 secs (0.008u,0.s)
+Chars 953 - 1153 [(assert~~~(Hwrite~:~~~~em_writ...] 0.001 secs (0.u,0.s)
+Chars 1155 - 1156 [{] 0. secs (0.u,0.s)
+Chars 1157 - 1238 [(apply~em_arm_prefix_record4;~...] 0.002 secs (0.002u,0.s)
+Chars 1239 - 1240 [}] 0. secs (0.u,0.s)
+Chars 1242 - 1440 [(match~goal~with~~|~|-~context...] 0.005 secs (0.005u,0.s)
+Chars 1442 - 1457 [(rewrite~Hwrite).] 0.002 secs (0.002u,0.s)
+Chars 1459 - 1498 [replace~(4~*~G_2~+~4)~with~(4~...] 0.01 secs (0.01u,0.s)
+Chars 1500 - 1546 [Exists~(em_arm_acc_record~F~P~...] 0.333 secs (0.333u,0.s)
+Chars 1548 - 1583 [(rewrite~emm_acc_record_step~b...] 0.005 secs (0.005u,0.s)
+Chars 1585 - 1595 [emk_frame.] 10.38 secs (10.204u,0.169s)
+Chars 1596 - 1600 [Qed.] 2.477 secs (2.442u,0.03s)
+Chars 1601 - 1613 [End~Checked.] 0. secs (0.u,0.s)
+Axioms:
+sizeof_union_type : String.string -> Z
+sizeof_struct_type : String.string -> Z
+sizeof_enum_type : String.string -> Z
+sizeof_alias_type : String.string -> Z
+ClassicalDedekindReals.sig_not_dec : forall P : Prop, {~ ~ P} + {~ P}
+ClassicalDedekindReals.sig_forall_dec :
+  forall P : nat -> Prop,
+  (forall n : nat, {P n} + {~ P n}) ->
+  {n : nat | ~ P n} + {forall n : nat, P n}
+FunctionalExtensionality.functional_extensionality_dep :
+  forall (A : Type) (B : A -> Type) (f g : forall x : A, B x),
+  (forall x : A, f x = g x) -> f = g
+eval_addr_expr_congr :
+  Morphisms.Proper (Morphisms.respectful rvalue_expr_equiv eq) eval_addr_expr
+eval_addr_expr : rvalue_expr -> addr
+eval_addr :
+  forall (R : rvalue_expr) (t : front_end_type),
+  rvalue_expr_equiv (RE_const (eval_addr_expr R) t) R
+Classical_Prop.classic : forall P : Prop, P \/ ~ P
+RE_addr_of_congr :
+  Morphisms.Proper (Morphisms.respectful lvalue_expr_equiv rvalue_expr_equiv)
+    RE_addr_of
+LE_arrow_field_congr :
+  Morphisms.Proper
+    (Morphisms.respectful rvalue_expr_equiv
+       (Morphisms.respectful eq lvalue_expr_equiv)) LE_arrow_field
+Chars 1614 - 1672 [Print~Assumptions~Checked.proo...] 1.273 secs (1.177u,0.095s)

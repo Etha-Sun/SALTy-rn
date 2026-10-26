@@ -1,0 +1,67 @@
+Chars 0 - 45 [From~Coq~Require~Import~ZArith...] 0.386 secs (0.212u,0.164s)
+Chars 46 - 109 [From~ExpMinusMax~Require~Impor...] 4.348 secs (3.411u,0.756s)
+Chars 110 - 134 [Import~Snaive_C_Rules64.] 0.047 secs (0.047u,0.s)
+Chars 135 - 160 [#[local]~Open~Scope~Z_scope.] 0. secs (0.u,0.s)
+Chars 161 - 182 [#[local]~Open~Scope~sac.] 0. secs (0.u,0.s)
+Chars 183 - 198 [Module~Checked.] 0. secs (0.u,0.s)
+Chars 199 - 288 [Lemma~proof_of_test_rvv_entail...] 0. secs (0.u,0.s)
+Chars 289 - 295 [Proof.] 0. secs (0.u,0.s)
+Chars 297 - 966 [(unfold~ExpMinusMax.rvv_unit_g...] 0.006 secs (0.006u,0.s)
+Chars 969 - 1020 [(assert~(Hvalid~:~em_valid~F~W...] 0. secs (0.u,0.s)
+Chars 1022 - 1072 [(assert~(HN~:~0~<~N)~by~(unfol...] 0.029 secs (0.018u,0.011s)
+Chars 1074 - 1138 [(assert~(Hdec~:~N~=~4~*~Z.quot...] 0.003 secs (0.003u,0.s)
+Chars 1140 - 1448 [(assert~(Hr~:~Z.rem~N~4~=~3)~b...] 0.044 secs (0.044u,0.s)
+Chars 1450 - 1502 [(emkf_alias;~rewrite~Hr~in~*;~...] 0.1 secs (0.072u,0.01s)
+Chars 1504 - 2064 [(pose~proof~~~(em_rvv_expressi...] 0.003 secs (0.002u,0.s)
+Chars 2066 - 2197 [(assert~~~(Hwrite~:~~~~em_rvv_...] 0.001 secs (0.001u,0.s)
+Chars 2199 - 2200 [{] 0. secs (0.u,0.s)
+Chars 2201 - 2257 [replace~(Q~+~16~*~Z.quot~N~4)~...] 0.005 secs (0.005u,0.s)
+Chars 2259 - 2367 [replace~(em_rvv_output_prefix~...] 0.106 secs (0.005u,0.s)
+Chars 2369 - 2405 [(apply~emrm_output_append;~[~l...] 0.003 secs (0.003u,0.s)
+Chars 2406 - 2495 [(unfold~em_rvv_active_float~in...] 0.036 secs (0.036u,0.s)
+Chars 2496 - 2497 [}] 0. secs (0.u,0.s)
+Chars 2499 - 2514 [(rewrite~Hwrite).] 0.001 secs (0.001u,0.s)
+Chars 2516 - 2536 [(unfold~em_same~in~*).] 0. secs (0.u,0.s)
+Chars 2538 - 2603 [(repeat~match~goal~with~~~~~~~...] 0.013 secs (0.013u,0.s)
+Chars 2605 - 2819 [(repeat~~~match~goal~with~~~|~...] 0.053 secs (0.053u,0.s)
+Chars 2821 - 2884 [(assert~(HA~:~em_rvv_acc_prefi...] 0. secs (0.u,0.s)
+Chars 2886 - 2938 [(rewrite~(emrm_sum_tail~F~P~M~...] 0.01 secs (0.01u,0.s)
+Chars 2940 - 2963 [(cbn[em_rvv_tail~Z.eqb]).] 0. secs (0.u,0.s)
+Chars 2965 - 3017 [(unfold~em_rvv_active_float~in...] 0.034 secs (0.029u,0.s)
+Chars 3019 - 3076 [replace~(P~+~16~*~Z.quot~N~4~+...] 0.007 secs (0.007u,0.s)
+Chars 3078 - 3137 [replace~(P~+~16~*~Z.quot~N~4~+...] 0.046 secs (0.046u,0.s)
+Chars 3139 - 3198 [replace~(P~+~16~*~Z.quot~N~4~+...] 0.007 secs (0.007u,0.s)
+Chars 3200 - 3232 [Exists~EMRV23~EMRV22~EMRV21~A_2.] 0.517 secs (0.508u,0.s)
+Chars 3234 - 3254 [sepcon_assoc_change.] 0.842 secs (0.809u,0.012s)
+Chars 3256 - 3334 [(sep_apply~~~(emm_open_sum~F~W...] 1.659 secs (1.617u,0.013s)
+Chars 3336 - 3372 [(unfold~em_rvv_pair_record;~em...] 37.212 secs (35.857u,0.575s)
+Chars 3373 - 3377 [Qed.] 6.367 secs (6.25u,0.11s)
+Chars 3378 - 3390 [End~Checked.] 0. secs (0.u,0.s)
+Axioms:
+sizeof_union_type : String.string -> Z
+sizeof_struct_type : String.string -> Z
+sizeof_enum_type : String.string -> Z
+sizeof_alias_type : String.string -> Z
+ClassicalDedekindReals.sig_not_dec : forall P : Prop, {~ ~ P} + {~ P}
+ClassicalDedekindReals.sig_forall_dec :
+  forall P : nat -> Prop,
+  (forall n : nat, {P n} + {~ P n}) ->
+  {n : nat | ~ P n} + {forall n : nat, P n}
+FunctionalExtensionality.functional_extensionality_dep :
+  forall (A : Type) (B : A -> Type) (f g : forall x : A, B x),
+  (forall x : A, f x = g x) -> f = g
+eval_addr_expr_congr :
+  Morphisms.Proper (Morphisms.respectful rvalue_expr_equiv eq) eval_addr_expr
+eval_addr_expr : rvalue_expr -> addr
+eval_addr :
+  forall (R : rvalue_expr) (t : front_end_type),
+  rvalue_expr_equiv (RE_const (eval_addr_expr R) t) R
+Classical_Prop.classic : forall P : Prop, P \/ ~ P
+RE_addr_of_congr :
+  Morphisms.Proper (Morphisms.respectful lvalue_expr_equiv rvalue_expr_equiv)
+    RE_addr_of
+LE_arrow_field_congr :
+  Morphisms.Proper
+    (Morphisms.respectful rvalue_expr_equiv
+       (Morphisms.respectful eq lvalue_expr_equiv)) LE_arrow_field
+Chars 3391 - 3450 [Print~Assumptions~Checked.proo...] 1.533 secs (1.496u,0.032s)

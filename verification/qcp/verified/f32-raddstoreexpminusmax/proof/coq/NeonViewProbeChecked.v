@@ -1,0 +1,56 @@
+From Coq Require Import ZArith Lia List.
+From ExpMinusMax Require Import Frame VectorNormalization IntrinsicModel BorrowedMemory neon_view_probe_goal.
+Import Snaive_C_Rules64. Local Open Scope Z_scope. Local Open Scope sac.
+Module CheckedNeonViewProbe:ExpMinusMax.neon_view_probe_goal.VC_Correct.
+Lemma proof_of_em_view_probe_return_wit_1:ExpMinusMax.neon_view_probe_goal.em_view_probe_return_wit_1.
+Proof. unfold ExpMinusMax.neon_view_probe_goal.em_view_probe_return_wit_1;em_intro;rewrite ?em_record_eta4,?em_record_eta2.
+ Exists (em_neon_sub(em_neon_dup x_pre)(em_neon_dup x_pre));em_frame.
+Qed.
+Lemma proof_of_em_view_probe_partial_solve_wit_1_pure:ExpMinusMax.neon_view_probe_goal.em_view_probe_partial_solve_wit_1_pure.
+Proof. unfold ExpMinusMax.neon_view_probe_goal.em_view_probe_partial_solve_wit_1_pure;em_intro;rewrite ?em_record_eta4,?em_record_eta2.
+ em_frame.
+Qed.
+Lemma proof_of_em_view_probe_partial_solve_wit_1:ExpMinusMax.neon_view_probe_goal.em_view_probe_partial_solve_wit_1.
+Proof. unfold ExpMinusMax.neon_view_probe_goal.em_view_probe_partial_solve_wit_1,ExpMinusMax.neon_view_probe_goal.em_view_probe_partial_solve_wit_1_aux;em_intro;rewrite ?em_record_eta4,?em_record_eta2.
+ em_frame.
+Qed.
+Lemma proof_of_em_view_probe_partial_solve_wit_2:ExpMinusMax.neon_view_probe_goal.em_view_probe_partial_solve_wit_2.
+Proof. unfold ExpMinusMax.neon_view_probe_goal.em_view_probe_partial_solve_wit_2;em_intro;rewrite ?em_record_eta4,?em_record_eta2.
+ em_frame.
+Qed.
+Lemma proof_of_em_view_probe_partial_solve_wit_3_pure:ExpMinusMax.neon_view_probe_goal.em_view_probe_partial_solve_wit_3_pure.
+Proof. unfold ExpMinusMax.neon_view_probe_goal.em_view_probe_partial_solve_wit_3_pure;em_intro;rewrite ?em_record_eta4,?em_record_eta2.
+ em_frame.
+Qed.
+Lemma proof_of_em_view_probe_partial_solve_wit_3:ExpMinusMax.neon_view_probe_goal.em_view_probe_partial_solve_wit_3.
+Proof. unfold ExpMinusMax.neon_view_probe_goal.em_view_probe_partial_solve_wit_3,ExpMinusMax.neon_view_probe_goal.em_view_probe_partial_solve_wit_3_aux;em_intro;rewrite ?em_record_eta4,?em_record_eta2.
+ em_frame.
+Qed.
+Lemma proof_of_em_view_probe_partial_solve_wit_4:ExpMinusMax.neon_view_probe_goal.em_view_probe_partial_solve_wit_4.
+Proof. unfold ExpMinusMax.neon_view_probe_goal.em_view_probe_partial_solve_wit_4;em_intro;rewrite ?em_record_eta4,?em_record_eta2.
+ em_frame.
+Qed.
+Lemma proof_of_em_view_probe_partial_solve_wit_5:ExpMinusMax.neon_view_probe_goal.em_view_probe_partial_solve_wit_5.
+Proof. unfold ExpMinusMax.neon_view_probe_goal.em_view_probe_partial_solve_wit_5;em_intro;rewrite ?em_record_eta4,?em_record_eta2.
+ em_frame.
+Qed.
+Lemma proof_of_em_view_probe_partial_solve_wit_6:ExpMinusMax.neon_view_probe_goal.em_view_probe_partial_solve_wit_6.
+Proof. unfold ExpMinusMax.neon_view_probe_goal.em_view_probe_partial_solve_wit_6;em_intro;rewrite ?em_record_eta4,?em_record_eta2.
+ em_frame.
+Qed.
+Lemma proof_of_em_view_probe_partial_solve_wit_7:ExpMinusMax.neon_view_probe_goal.em_view_probe_partial_solve_wit_7.
+Proof. unfold ExpMinusMax.neon_view_probe_goal.em_view_probe_partial_solve_wit_7;em_intro;rewrite ?em_record_eta4,?em_record_eta2.
+ em_frame.
+Qed.
+End CheckedNeonViewProbe.
+Module ExactNeonViewProbe:ExpMinusMax.neon_view_probe_goal.VC_Correct:=CheckedNeonViewProbe.
+Print Assumptions ExactNeonViewProbe.proof_of_em_view_probe_return_wit_1.
+Print Assumptions ExactNeonViewProbe.proof_of_em_view_probe_partial_solve_wit_1_pure.
+Print Assumptions ExactNeonViewProbe.proof_of_em_view_probe_partial_solve_wit_1.
+Print Assumptions ExactNeonViewProbe.proof_of_em_view_probe_partial_solve_wit_2.
+Print Assumptions ExactNeonViewProbe.proof_of_em_view_probe_partial_solve_wit_3_pure.
+Print Assumptions ExactNeonViewProbe.proof_of_em_view_probe_partial_solve_wit_3.
+Print Assumptions ExactNeonViewProbe.proof_of_em_view_probe_partial_solve_wit_4.
+Print Assumptions ExactNeonViewProbe.proof_of_em_view_probe_partial_solve_wit_5.
+Print Assumptions ExactNeonViewProbe.proof_of_em_view_probe_partial_solve_wit_6.
+Print Assumptions ExactNeonViewProbe.proof_of_em_view_probe_partial_solve_wit_7.

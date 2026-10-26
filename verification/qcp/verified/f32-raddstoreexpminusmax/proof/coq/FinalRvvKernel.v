@@ -1,0 +1,2 @@
+From ExpMinusMax Require Import rvv_unit_goal RvvKernelChecked RvvKernelAudit00 RvvKernelAudit01 RvvKernelAudit02 RvvKernelAudit03 RvvKernelAudit04 RvvKernelAudit05 RvvKernelAudit06 RvvKernelAudit07 RvvKernelAudit08 RvvKernelAudit09 RvvKernelAudit10 RvvKernelAudit11 RvvKernelAudit12 RvvKernelAudit13 RvvKernelAudit14 RvvKernelAudit15.
+Module Confirmed:ExpMinusMax.rvv_unit_goal.VC_Correct:=RvvKernelChecked.ExactSecond.

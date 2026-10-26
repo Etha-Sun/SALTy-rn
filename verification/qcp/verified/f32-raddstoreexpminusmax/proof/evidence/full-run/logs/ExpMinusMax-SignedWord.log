@@ -1,0 +1,60 @@
+Chars 0 - 35 [From~Coq~Require~Import~ZArith...] 0.277 secs (0.152u,0.124s)
+Chars 36 - 76 [From~compcert.lib~Require~Impo...] 0.069 secs (0.031u,0.038s)
+Chars 77 - 130 [From~ExpMinusMax~Require~Expor...] 3.834 secs (3.205u,0.628s)
+Chars 131 - 156 [#[local]~Open~Scope~Z_scope.] 0. secs (0.u,0.s)
+Chars 157 - 233 [Definition~em_int_from_float~(...] 0. secs (0.u,0.s)
+Chars 234 - 313 [Definition~em_float_from_int~(...] 0. secs (0.u,0.s)
+Chars 314 - 405 [Definition~em_shift_i32~(x~n~:...] 0. secs (0.u,0.s)
+Chars 406 - 513 [Lemma~em_unsigned_signed~:~~~f...] 0. secs (0.u,0.s)
+Chars 514 - 520 [Proof.] 0. secs (0.u,0.s)
+Chars 522 - 576 [(intros~x;~unfold~signed_last_...] 0. secs (0.u,0.s)
+Chars 578 - 614 [(destruct~(zlt~(x~mod~2~^~32)~...] 0.068 secs (0.064u,0.003s)
+Chars 616 - 617 [-] 0. secs (0.u,0.s)
+Chars 618 - 655 [(rewrite~Z.mod_mod~by~lia;~ref...] 0.003 secs (0.003u,0.s)
+Chars 657 - 658 [-] 0. secs (0.u,0.s)
+Chars 659 - 738 [(rewrite~Zminus_mod,~Z.mod_mod...] 0.003 secs (0.003u,0.s)
+Chars 739 - 743 [Qed.] 0.003 secs (0.003u,0.s)
+Chars 744 - 823 [Lemma~em_signed_range~:~~~fora...] 0. secs (0.u,0.s)
+Chars 824 - 830 [Proof.] 0. secs (0.u,0.s)
+Chars 832 - 894 [(intros;~pose~proof~(signed_La...] 0. secs (0.u,0.s)
+Chars 896 - 959 [(change~(-~2147483648~<=~signe...] 0.001 secs (0.001u,0.s)
+Chars 960 - 964 [Qed.] 0.001 secs (0.001u,0.s)
+Chars 965 - 1046 [Lemma~em_reinterpret_roundtrip...] 0. secs (0.u,0.s)
+Chars 1047 - 1053 [Proof.] 0. secs (0.u,0.s)
+Chars 1055 - 1132 [(intros;~unfold~em_float_from_...] 0. secs (0.u,0.s)
+Chars 1134 - 1231 [(rewrite~unsigned_last_nbits_e...] 0.001 secs (0.001u,0.s)
+Chars 1233 - 1260 [(apply~fp32_of_bits_of_fp32).] 0. secs (0.u,0.s)
+Chars 1261 - 1265 [Qed.] 0.001 secs (0.001u,0.s)
+Chars 1266 - 1364 [Lemma~em_shift_power~:~~~foral...] 0. secs (0.u,0.s)
+Chars 1365 - 1371 [Proof.] 0. secs (0.u,0.s)
+Chars 1373 - 1445 [(intros;~unfold~em_float_from_...] 0. secs (0.u,0.s)
+Chars 1447 - 1475 [(rewrite~!em_unsigned_signed).] 0.001 secs (0.001u,0.s)
+Chars 1477 - 1599 [(rewrite~~~(unsigned_last_nbit...] 0.003 secs (0.003u,0.s)
+Chars 1601 - 1613 [reflexivity.] 0. secs (0.u,0.s)
+Chars 1614 - 1618 [Qed.] 0.001 secs (0.001u,0.s)
+Closed under the global context
+Chars 1619 - 1656 [Print~Assumptions~em_unsigned_...] 0.25 secs (0.234u,0.015s)
+Closed under the global context
+Chars 1657 - 1691 [Print~Assumptions~em_signed_ra...] 0.652 secs (0.652u,0.s)
+Axioms:
+ClassicalDedekindReals.sig_not_dec : forall P : Prop, {~ ~ P} + {~ P}
+ClassicalDedekindReals.sig_forall_dec :
+  forall P : nat -> Prop,
+  (forall n : nat, {P n} + {~ P n}) ->
+  {n : nat | ~ P n} + {forall n : nat, P n}
+FunctionalExtensionality.functional_extensionality_dep :
+  forall (A : Type) (B : A -> Type) (f g : forall x : A, B x),
+  (forall x : A, f x = g x) -> f = g
+Classical_Prop.classic : forall P : Prop, P \/ ~ P
+Chars 1692 - 1735 [Print~Assumptions~em_reinterpr...] 0.65 secs (0.626u,0.024s)
+Axioms:
+ClassicalDedekindReals.sig_not_dec : forall P : Prop, {~ ~ P} + {~ P}
+ClassicalDedekindReals.sig_forall_dec :
+  forall P : nat -> Prop,
+  (forall n : nat, {P n} + {~ P n}) ->
+  {n : nat | ~ P n} + {forall n : nat, P n}
+FunctionalExtensionality.functional_extensionality_dep :
+  forall (A : Type) (B : A -> Type) (f g : forall x : A, B x),
+  (forall x : A, f x = g x) -> f = g
+Classical_Prop.classic : forall P : Prop, P \/ ~ P
+Chars 1736 - 1769 [Print~Assumptions~em_shift_power.] 0.948 secs (0.948u,0.s)

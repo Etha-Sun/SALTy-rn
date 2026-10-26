@@ -1,0 +1,6 @@
+From ExpMinusMax Require Import neon_unit_goal NeonNonMemoryChecked NeonMemory.
+Module CheckedNeonKernel:ExpMinusMax.neon_unit_goal.VC_Correct.
+Include NeonNonMemoryChecked.CheckedNeonNonMemory.
+Include NeonMemory.CheckedNeonMemory.
+End CheckedNeonKernel.
+Module ExactSecond:ExpMinusMax.neon_unit_goal.VC_Correct:=CheckedNeonKernel.

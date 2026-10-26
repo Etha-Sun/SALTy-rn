@@ -1,0 +1,43 @@
+Library pseudocode for shared/functions/float/fpprocessnans/FPProcessNaNs
+// FPProcessNaNs()
+// ===============
+(boolean, bits(N)) FPProcessNaNs(FPType type1, FPType type2, bits(N) op1,
+bits(N) op2, FPCR_Type fpcr)
+constant boolean fpexc = TRUE;     // Generate floating-point exceptions
+return FPProcessNaNs(type1, type2, op1, op2, fpcr, fpexc);
+// FPProcessNaNs()
+// ===============
+//
+// The boolean part of the return value says whether a NaN has been found and
+// processed. The bits(N) part is only relevant if it has and supplies the
+// result of the operation.
+//
+// The 'fpcr' argument supplies FPCR control bits and 'altfmaxfmin' controls
+// alternative floating-point behavior for FMAX, FMIN and variants. 'fpexc'
+// controls the generation of floating-point exceptions. Status information
+// is updated directly in the FPSR where appropriate.
+(boolean, bits(N)) FPProcessNaNs(FPType type1, FPType type2, bits(N) op1, bits(N) op2,
+FPCR_Type fpcr, boolean fpexc)
+assert N IN {16,32,64};
+boolean done;
+bits(N) result;
+constant boolean altfp    = IsFeatureImplemented(FEAT_AFP) && !UsingAArch32() && fpcr.AH == '1';
+constant boolean op1_nan  = type1 IN {FPType_SNaN, FPType_QNaN};
+constant boolean op2_nan  = type2 IN {FPType_SNaN, FPType_QNaN};
+constant boolean any_snan = type1 == FPType_SNaN || type2 == FPType_SNaN;
+constant FPType type_nan = if any_snan then FPType_SNaN else FPType_QNaN;
+if altfp && op1_nan && op2_nan then
+// <n> register NaN selected
+done = TRUE;  result = FPProcessNaN(type_nan, op1, fpcr, fpexc);
+elsif type1 == FPType_SNaN then
+done = TRUE;  result = FPProcessNaN(type1, op1, fpcr, fpexc);
+elsif type2 == FPType_SNaN then
+done = TRUE;  result = FPProcessNaN(type2, op2, fpcr, fpexc);
+elsif type1 == FPType_QNaN then
+done = TRUE;  result = FPProcessNaN(type1, op1, fpcr, fpexc);
+elsif type2 == FPType_QNaN then
+done = TRUE;  result = FPProcessNaN(type2, op2, fpcr, fpexc);
+else
+done = FALSE;  result = Zeros(N);  // 'Don't care' result
+return (done, result);
+Shared Pseudocode Functions Page 5892

@@ -2,7 +2,7 @@
   "schema": 1,
   "scope": "C-shim modular partial correctness under each public spec; not ISA correspondence or termination",
   "kernel_count_total": 40,
-  "verified_count": 37,
+  "verified_count": 38,
   "kernels": [
     {
       "kernel": "f32-dwconv-minmax",
@@ -108,6 +108,26 @@
       "ordinary_C_bodies": 26,
       "intrinsic_spec_views": 31,
       "vc_counting": "857 actual C VC_Correct fields and163 mathematical support reports;1020 final Print reports, one complete kernel"
+    },
+    {
+      "kernel": "f32-raddstoreexpminusmax",
+      "directory": "f32-raddstoreexpminusmax",
+      "full_status": "f32-raddstoreexpminusmax/proof/status.json",
+      "status_sha256": "850bafddddbcffaffc7f51a3af3a7ac762e2195769b4e936d0ed6b448a010f30",
+      "spec_sha256": "f293bc766f2c8506d4e35063ff7f3334a7597c5fbdee928bdcfbe6485ee80164",
+      "local_coq_modules": 586,
+      "final_gate_modules": 18,
+      "total_fresh_compiled_modules": 604,
+      "checked_c_units": 4,
+      "unit_vc_fields": 502,
+      "strategy_fields": 0,
+      "parallel_jobs": 32,
+      "initial_live_admission_slots": 4,
+      "variant": "repaired",
+      "verification_basis": "source-reviewed-intrinsic-spec",
+      "human_semantic_review": "pending",
+      "formal_isa_refinement_established": false,
+      "vc_counting": "502 actual C fields/6 ordinary bodies; 604 ordinary sourcefresh modules; 504 final Print reports. One kernel; scope: 修复后的实际 NEON/RVV 主核、全部普通 C helper 与顺序公开 caller，在 spec.c 的 em_valid 和显式所有权条件下给出 C-shim 部分正确性与结果等价。64 位小端、RNE、全部 binary32（NaN/Inf/正负零/subnormal）；观察所写输出与最终 sum 为数值相等或双方均 NaN，不观察 NaN payload。比较既定多项式/位操作算法，未证明数学 exp 近似误差。RVV 固定 VLEN128/SEW32/LMUL4/VLMAX16，覆盖全部合法 VL；运行时 AVL4 重建 NEON 的有序求和树，不使用浮点加法结合律。正的字节 batch 是 4 的倍数，输入含 3 个可读 padding lane；input/max 共用只读图且可内部别名，output/sum 共用一个可变图且允许别名和任意 None/Some 初值，最后写入获胜并保留未写帧；只读图与可变图分离，未使用 params 可为 NULL。原求和顺序反例、原件、修复说明及精确 patch 保留。40 个原生 intrinsic 形式视图的官方来源和精确模型单列，人工语义审阅 pending；普通 helper 仍证明实际 C 函数体。未证明真实 ISA、物理 ABI、编译器精化、浮点异常标志/陷阱或终止性。"
     },
     {
       "kernel": "f32-spmm-minmax",

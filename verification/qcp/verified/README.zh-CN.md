@@ -1,3 +1,10 @@
+<!-- CURRENT_VERIFIED_38_f32_raddstoreexpminusmax -->
+当前完整已验证 **38/40**，目标 **40/40**。新增 f32-raddstoreexpminusmax：4实际C单元/502实际C字段/6普通函数体/604模块源码fresh；504最终假设报告。修复后的实际 NEON/RVV 主核、全部普通 C helper 与顺序公开 caller，在 spec.c 的 em_valid 和显式所有权条件下给出 C-shim 部分正确性与结果等价。64 位小端、RNE、全部 binary32（NaN/Inf/正负零/subnormal）；观察所写输出与最终 sum 为数值相等或双方均 NaN，不观察 NaN payload。比较既定多项式/位操作算法，未证明数学 exp 近似误差。RVV 固定 VLEN128/SEW32/LMUL4/VLMAX16，覆盖全部合法 VL；运行时 AVL4 重建 NEON 的有序求和树，不使用浮点加法结合律。正的字节 batch 是 4 的倍数，输入含 3 个可读 padding lane；input/max 共用只读图且可内部别名，output/sum 共用一个可变图且允许别名和任意 None/Some 初值，最后写入获胜并保留未写帧；只读图与可变图分离，未使用 params 可为 NULL。原求和顺序反例、原件、修复说明及精确 patch 保留。40 个原生 intrinsic 形式视图的官方来源和精确模型单列，人工语义审阅 pending；普通 helper 仍证明实际 C 函数体。未证明真实 ISA、物理 ABI、编译器精化、浮点异常标志/陷阱或终止性。
+
+签发包保持原字节；发布副本按原proof-run做只读issuer审查，额外native/public回归仅在私有副本执行，不是第二次形式证明。人工intrinsic规范审阅pending；未声称ISA、ABI、编译器精化或终止性。证书SHA 850bafddddbcffaffc7f51a3af3a7ac762e2195769b4e936d0ed6b448a010f30。登记日期2026-10-26。
+
+以下保留先前阶段记录。
+
 <!-- CURRENT_VERIFIED37_DWCHW_20261025 -->
 当前完整已验证 **37/40**，目标 **40/40**。新增 f32-dwconv2d-chw：13实际C单元/1167C义务/11策略字段/37普通函数体/1232own+18final=1250源码fresh Coq/1381最终Print；14既有假设、0新增项目公理，36原生intrinsic spec视图人工审核pending。正H/N、padding_top1、全binary32与无序clamp、共享RO/末行写入别名、固定RVV128/e32m2/VLMAX8及全部合法VL边界详见公开spec。written值数值相等或同为NaN，各自未写option frame保持原值。本聊天24+外部8+基线5。
 
@@ -71,3 +78,5 @@ x32-transposec 修复/兼容版完整收录：[审核入口](x32-transposec/READ
 2026-10-25 QS8-QC8W GEMM FP32完整修复版：4实际C/1531义务/16策略/3051同环境fresh模块（续跑谱系明确）/1874假设报告，递归coqchk及32并发准入通过。原NEON保持，RVV恢复ARM NaN优先级；公开容量内正N/K，全binary32参数，固定VLEN128，精确int8输出。intrinsic语义人工复核pending，无形式ISA/ABI或完整终止性定理。 [审核入口](qs8-qc8w-gemm-minmax-fp32/README.zh-CN.md)。
 
 2026-10-25 F32 SpMM完整修复/兼容版：4实际C/788义务/19策略/835同环境fresh模块/956假设报告，递归coqchk及32并发准入通过。完整M/N/稀疏循环、NEON4/2/1与全部合法RVV VL；全binary32，循环打包与显式容量，固定VLEN128/e32m8，数值相等或同为NaN。原件保留，两侧表达式兼容改写，RVV另修复FMA/NaN。intrinsic人工语义审阅pending，无形式ISA/ABI或完整终止性定理。 [审核入口](f32-spmm-minmax/README.zh-CN.md)。
+
+Exp 重放准备：在 `f32-raddstoreexpminusmax` 包目录先运行 `mkdir -p proof/c`，并保持该目录为空。它只是 QCP 的搜索 namespace，不放 C 函数体、策略或占位文件；Git 不保存空目录。此环境准备不改变任何签发文件。

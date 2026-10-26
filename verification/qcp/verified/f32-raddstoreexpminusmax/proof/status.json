@@ -1,0 +1,1362 @@
+{
+  "schema": 2,
+  "kernel": "f32-raddstoreexpminusmax",
+  "passed": true,
+  "scope": "full",
+  "status": "proved",
+  "whole_kernel_verified": true,
+  "whole_kernel_proved": true,
+  "implementation_variant": "repaired",
+  "checked_c_units": 4,
+  "checked_c_vcs": 502,
+  "checked_strategy_fields": 0,
+  "ordinary_modules_including_final": 604,
+  "unique_c_functions_with_bodies": 6,
+  "full_evidence": "full-status.json",
+  "full_evidence_sha256": "27ba5ce4829fc4250267ebbd057fd14dc1cbbf82814bbbaa5b3c8edf6a2f515d",
+  "immutable_full_archive": "evidence/full-run/status.json",
+  "manifest_sha256": "364d41ac3d1e5270186783d23c5a0c9fdfc1109f67eb80f504687e442aae604c",
+  "assumption_audit_sha256": "b01b6a4268478faa96b85186e6d52020db23f84bae0268fe8fbe4238ef9c9266",
+  "inherited_assumption_names": [
+    "CNotation.LE_arrow_field_congr",
+    "CNotation.RE_addr_of_congr",
+    "CNotation.eval_addr_expr",
+    "CNotation.eval_addr_expr_congr",
+    "CNotation.sizeof_alias_type",
+    "CNotation.sizeof_enum_type",
+    "CNotation.sizeof_struct_type",
+    "CNotation.sizeof_union_type",
+    "ClassicalDedekindReals.sig_forall_dec",
+    "ClassicalDedekindReals.sig_not_dec",
+    "Classical_Prop.classic",
+    "FunctionalExtensionality.functional_extensionality_dep",
+    "SeparationLogic.Snaive_C_Rules64.eval_addr"
+  ],
+  "human_intrinsic_spec_review": "pending",
+  "formal_isa_refinement_established": false,
+  "intrinsic_spec_boundary": {
+    "em_isa_add4": {
+      "original_intrinsic": "vaddq_f32",
+      "header": "shim/neon_specs.h",
+      "header_sha256": "2bf8007998b09170752e2d4bf7c611e064dbd1f3e4602140e7c7a9e9aea56c44",
+      "actual_signature": [
+        "float32x4_t",
+        "em_isa_add4",
+        "(",
+        "const",
+        "float32x4_t",
+        "*",
+        "a",
+        ",",
+        "const",
+        "float32x4_t",
+        "*",
+        "b",
+        ")"
+      ],
+      "actual_contract_sha256": "284689173e22cd7a5156510662f7180baa260366af1debd39c99a7a01e8ba5d4",
+      "official_source": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+      "configuration": "AArch64 AdvSIMD 4x/2x binary32; RNE, FPCR.DN=0,FZ=0, exceptions unobserved",
+      "Coq_definitions": [
+        "ExpMinusMax.IntrinsicModel.em_neon_add"
+      ],
+      "model_source_sha256": {
+        "proof/coq/IntrinsicModel.v": "dedf5c5f677ac5724f415583027d78427076a97c0d60143afb7e001c9991258a"
+      },
+      "formal_ISA_correspondence_proved": false,
+      "physical_ABI_bridge_proved": false,
+      "human_review": "pending"
+    },
+    "em_isa_sub4": {
+      "original_intrinsic": "vsubq_f32",
+      "header": "shim/neon_specs.h",
+      "header_sha256": "2bf8007998b09170752e2d4bf7c611e064dbd1f3e4602140e7c7a9e9aea56c44",
+      "actual_signature": [
+        "float32x4_t",
+        "em_isa_sub4",
+        "(",
+        "const",
+        "float32x4_t",
+        "*",
+        "a",
+        ",",
+        "const",
+        "float32x4_t",
+        "*",
+        "b",
+        ")"
+      ],
+      "actual_contract_sha256": "06b1b5efdd2057610d771bfad5a2ac40630ae4d5fdafa84d1db9e587856e333d",
+      "official_source": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+      "configuration": "AArch64 AdvSIMD 4x/2x binary32; RNE, FPCR.DN=0,FZ=0, exceptions unobserved",
+      "Coq_definitions": [
+        "ExpMinusMax.IntrinsicModel.em_neon_sub"
+      ],
+      "model_source_sha256": {
+        "proof/coq/IntrinsicModel.v": "dedf5c5f677ac5724f415583027d78427076a97c0d60143afb7e001c9991258a"
+      },
+      "formal_ISA_correspondence_proved": false,
+      "physical_ABI_bridge_proved": false,
+      "human_review": "pending"
+    },
+    "em_isa_mul4": {
+      "original_intrinsic": "vmulq_f32",
+      "header": "shim/neon_specs.h",
+      "header_sha256": "2bf8007998b09170752e2d4bf7c611e064dbd1f3e4602140e7c7a9e9aea56c44",
+      "actual_signature": [
+        "float32x4_t",
+        "em_isa_mul4",
+        "(",
+        "const",
+        "float32x4_t",
+        "*",
+        "a",
+        ",",
+        "const",
+        "float32x4_t",
+        "*",
+        "b",
+        ")"
+      ],
+      "actual_contract_sha256": "8e1a549d6bb25127b43c829869b58aa99d3db17a07578b02e249ae015ac8bced",
+      "official_source": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+      "configuration": "AArch64 AdvSIMD 4x/2x binary32; RNE, FPCR.DN=0,FZ=0, exceptions unobserved",
+      "Coq_definitions": [
+        "ExpMinusMax.IntrinsicModel.em_neon_mul"
+      ],
+      "model_source_sha256": {
+        "proof/coq/IntrinsicModel.v": "dedf5c5f677ac5724f415583027d78427076a97c0d60143afb7e001c9991258a"
+      },
+      "formal_ISA_correspondence_proved": false,
+      "physical_ABI_bridge_proved": false,
+      "human_review": "pending"
+    },
+    "em_isa_reint_f_i": {
+      "original_intrinsic": "vreinterpretq_s32_f32",
+      "header": "shim/neon_specs.h",
+      "header_sha256": "2bf8007998b09170752e2d4bf7c611e064dbd1f3e4602140e7c7a9e9aea56c44",
+      "actual_signature": [
+        "int32x4_t",
+        "em_isa_reint_f_i",
+        "(",
+        "const",
+        "float32x4_t",
+        "*",
+        "a",
+        ")"
+      ],
+      "actual_contract_sha256": "9002593e5abdb92bba1a73367e3d00684b21a46632441595834fde6a948a8eeb",
+      "official_source": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+      "configuration": "AArch64 AdvSIMD 4x/2x binary32; RNE, FPCR.DN=0,FZ=0, exceptions unobserved",
+      "Coq_definitions": [
+        "ExpMinusMax.IntrinsicModel.em_neon_reint_f_i"
+      ],
+      "model_source_sha256": {
+        "proof/coq/IntrinsicModel.v": "dedf5c5f677ac5724f415583027d78427076a97c0d60143afb7e001c9991258a"
+      },
+      "formal_ISA_correspondence_proved": false,
+      "physical_ABI_bridge_proved": false,
+      "human_review": "pending"
+    },
+    "em_isa_reint_i_f": {
+      "original_intrinsic": "vreinterpretq_f32_s32",
+      "header": "shim/neon_specs.h",
+      "header_sha256": "2bf8007998b09170752e2d4bf7c611e064dbd1f3e4602140e7c7a9e9aea56c44",
+      "actual_signature": [
+        "float32x4_t",
+        "em_isa_reint_i_f",
+        "(",
+        "const",
+        "int32x4_t",
+        "*",
+        "a",
+        ")"
+      ],
+      "actual_contract_sha256": "335dd2f8876619729205fbabfcee480a96239761d4e4761f7c1ec5b09935ee38",
+      "official_source": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+      "configuration": "AArch64 AdvSIMD 4x/2x binary32; RNE, FPCR.DN=0,FZ=0, exceptions unobserved",
+      "Coq_definitions": [
+        "ExpMinusMax.IntrinsicModel.em_neon_reint_i_f"
+      ],
+      "model_source_sha256": {
+        "proof/coq/IntrinsicModel.v": "dedf5c5f677ac5724f415583027d78427076a97c0d60143afb7e001c9991258a"
+      },
+      "formal_ISA_correspondence_proved": false,
+      "physical_ABI_bridge_proved": false,
+      "human_review": "pending"
+    },
+    "em_isa_reint_f_u": {
+      "original_intrinsic": "vreinterpretq_u32_f32",
+      "header": "shim/neon_specs.h",
+      "header_sha256": "2bf8007998b09170752e2d4bf7c611e064dbd1f3e4602140e7c7a9e9aea56c44",
+      "actual_signature": [
+        "uint32x4_t",
+        "em_isa_reint_f_u",
+        "(",
+        "const",
+        "float32x4_t",
+        "*",
+        "a",
+        ")"
+      ],
+      "actual_contract_sha256": "f90fb6304973d1969fcdb94fe9787ae640c33b02161db4234a12a1d05170396f",
+      "official_source": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+      "configuration": "AArch64 AdvSIMD 4x/2x binary32; RNE, FPCR.DN=0,FZ=0, exceptions unobserved",
+      "Coq_definitions": [
+        "ExpMinusMax.IntrinsicModel.em_neon_reint_f_u"
+      ],
+      "model_source_sha256": {
+        "proof/coq/IntrinsicModel.v": "dedf5c5f677ac5724f415583027d78427076a97c0d60143afb7e001c9991258a"
+      },
+      "formal_ISA_correspondence_proved": false,
+      "physical_ABI_bridge_proved": false,
+      "human_review": "pending"
+    },
+    "em_isa_reint_u_f": {
+      "original_intrinsic": "vreinterpretq_f32_u32",
+      "header": "shim/neon_specs.h",
+      "header_sha256": "2bf8007998b09170752e2d4bf7c611e064dbd1f3e4602140e7c7a9e9aea56c44",
+      "actual_signature": [
+        "float32x4_t",
+        "em_isa_reint_u_f",
+        "(",
+        "const",
+        "uint32x4_t",
+        "*",
+        "a",
+        ")"
+      ],
+      "actual_contract_sha256": "b2aabcde06284957fa2179b42b43ec5bba230b2d159f16188bbc81555375136b",
+      "official_source": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+      "configuration": "AArch64 AdvSIMD 4x/2x binary32; RNE, FPCR.DN=0,FZ=0, exceptions unobserved",
+      "Coq_definitions": [
+        "ExpMinusMax.IntrinsicModel.em_neon_reint_u_f"
+      ],
+      "model_source_sha256": {
+        "proof/coq/IntrinsicModel.v": "dedf5c5f677ac5724f415583027d78427076a97c0d60143afb7e001c9991258a"
+      },
+      "formal_ISA_correspondence_proved": false,
+      "physical_ABI_bridge_proved": false,
+      "human_review": "pending"
+    },
+    "em_isa_low": {
+      "original_intrinsic": "vget_low_f32",
+      "header": "shim/neon_specs.h",
+      "header_sha256": "2bf8007998b09170752e2d4bf7c611e064dbd1f3e4602140e7c7a9e9aea56c44",
+      "actual_signature": [
+        "float32x2_t",
+        "em_isa_low",
+        "(",
+        "const",
+        "float32x4_t",
+        "*",
+        "a",
+        ")"
+      ],
+      "actual_contract_sha256": "095400e7b071ecde4691c536e5379e900deff43952decf7bb017f6ad670e965c",
+      "official_source": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+      "configuration": "AArch64 AdvSIMD 4x/2x binary32; RNE, FPCR.DN=0,FZ=0, exceptions unobserved",
+      "Coq_definitions": [
+        "ExpMinusMax.IntrinsicModel.em_neon_low"
+      ],
+      "model_source_sha256": {
+        "proof/coq/IntrinsicModel.v": "dedf5c5f677ac5724f415583027d78427076a97c0d60143afb7e001c9991258a"
+      },
+      "formal_ISA_correspondence_proved": false,
+      "physical_ABI_bridge_proved": false,
+      "human_review": "pending"
+    },
+    "em_isa_high": {
+      "original_intrinsic": "vget_high_f32",
+      "header": "shim/neon_specs.h",
+      "header_sha256": "2bf8007998b09170752e2d4bf7c611e064dbd1f3e4602140e7c7a9e9aea56c44",
+      "actual_signature": [
+        "float32x2_t",
+        "em_isa_high",
+        "(",
+        "const",
+        "float32x4_t",
+        "*",
+        "a",
+        ")"
+      ],
+      "actual_contract_sha256": "1ff76c681c3256bf609c8292726b0d869e51692f0947f37a07cb5c4b8131dc80",
+      "official_source": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+      "configuration": "AArch64 AdvSIMD 4x/2x binary32; RNE, FPCR.DN=0,FZ=0, exceptions unobserved",
+      "Coq_definitions": [
+        "ExpMinusMax.IntrinsicModel.em_neon_high"
+      ],
+      "model_source_sha256": {
+        "proof/coq/IntrinsicModel.v": "dedf5c5f677ac5724f415583027d78427076a97c0d60143afb7e001c9991258a"
+      },
+      "formal_ISA_correspondence_proved": false,
+      "physical_ABI_bridge_proved": false,
+      "human_review": "pending"
+    },
+    "em_isa_dup4": {
+      "original_intrinsic": "vmovq_n_f32",
+      "header": "shim/neon_specs.h",
+      "header_sha256": "2bf8007998b09170752e2d4bf7c611e064dbd1f3e4602140e7c7a9e9aea56c44",
+      "actual_signature": [
+        "float32x4_t",
+        "em_isa_dup4",
+        "(",
+        "float",
+        "x",
+        ")"
+      ],
+      "actual_contract_sha256": "bbd7160531b1d4397b6cee17f821a23206621304c4c7307fdb2029168a47e129",
+      "official_source": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+      "configuration": "AArch64 AdvSIMD 4x/2x binary32; RNE, FPCR.DN=0,FZ=0, exceptions unobserved",
+      "Coq_definitions": [
+        "ExpMinusMax.IntrinsicModel.em_neon_dup"
+      ],
+      "model_source_sha256": {
+        "proof/coq/IntrinsicModel.v": "dedf5c5f677ac5724f415583027d78427076a97c0d60143afb7e001c9991258a"
+      },
+      "formal_ISA_correspondence_proved": false,
+      "physical_ABI_bridge_proved": false,
+      "human_review": "pending"
+    },
+    "em_isa_fma4": {
+      "original_intrinsic": "vfmaq_f32",
+      "header": "shim/neon_specs.h",
+      "header_sha256": "2bf8007998b09170752e2d4bf7c611e064dbd1f3e4602140e7c7a9e9aea56c44",
+      "actual_signature": [
+        "float32x4_t",
+        "em_isa_fma4",
+        "(",
+        "const",
+        "float32x4_t",
+        "*",
+        "a",
+        ",",
+        "const",
+        "float32x4_t",
+        "*",
+        "b",
+        ",",
+        "const",
+        "float32x4_t",
+        "*",
+        "c",
+        ")"
+      ],
+      "actual_contract_sha256": "9f0ce3f2f6fb79fd08f4f5b17fd52925d592d524d8350762784245bb03fa6aa5",
+      "official_source": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+      "configuration": "AArch64 AdvSIMD 4x/2x binary32; RNE, FPCR.DN=0,FZ=0, exceptions unobserved",
+      "Coq_definitions": [
+        "ExpMinusMax.IntrinsicModel.em_neon_fma"
+      ],
+      "model_source_sha256": {
+        "proof/coq/IntrinsicModel.v": "dedf5c5f677ac5724f415583027d78427076a97c0d60143afb7e001c9991258a"
+      },
+      "formal_ISA_correspondence_proved": false,
+      "physical_ABI_bridge_proved": false,
+      "human_review": "pending"
+    },
+    "em_isa_slli4": {
+      "original_intrinsic": "vshlq_n_s32",
+      "header": "shim/neon_specs.h",
+      "header_sha256": "2bf8007998b09170752e2d4bf7c611e064dbd1f3e4602140e7c7a9e9aea56c44",
+      "actual_signature": [
+        "int32x4_t",
+        "em_isa_slli4",
+        "(",
+        "const",
+        "int32x4_t",
+        "*",
+        "a",
+        ",",
+        "int",
+        "n",
+        ")"
+      ],
+      "actual_contract_sha256": "39ff8654b4c80d8c6d706cddefca60495aec3ccb5fc6efeaf0e0bdcfda6d17e5",
+      "official_source": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+      "configuration": "AArch64 AdvSIMD 4x/2x binary32; RNE, FPCR.DN=0,FZ=0, exceptions unobserved",
+      "Coq_definitions": [
+        "ExpMinusMax.IntrinsicModel.em_neon_slli"
+      ],
+      "model_source_sha256": {
+        "proof/coq/IntrinsicModel.v": "dedf5c5f677ac5724f415583027d78427076a97c0d60143afb7e001c9991258a"
+      },
+      "formal_ISA_correspondence_proved": false,
+      "physical_ABI_bridge_proved": false,
+      "human_review": "pending"
+    },
+    "em_isa_clt4": {
+      "original_intrinsic": "vcltq_f32",
+      "header": "shim/neon_specs.h",
+      "header_sha256": "2bf8007998b09170752e2d4bf7c611e064dbd1f3e4602140e7c7a9e9aea56c44",
+      "actual_signature": [
+        "uint32x4_t",
+        "em_isa_clt4",
+        "(",
+        "const",
+        "float32x4_t",
+        "*",
+        "a",
+        ",",
+        "const",
+        "float32x4_t",
+        "*",
+        "b",
+        ")"
+      ],
+      "actual_contract_sha256": "f2064d1324d16736e19db54652b7efe66ace124b0eae09936cd4fc4f7be06d28",
+      "official_source": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+      "configuration": "AArch64 AdvSIMD 4x/2x binary32; RNE, FPCR.DN=0,FZ=0, exceptions unobserved",
+      "Coq_definitions": [
+        "ExpMinusMax.IntrinsicModel.em_neon_clt"
+      ],
+      "model_source_sha256": {
+        "proof/coq/IntrinsicModel.v": "dedf5c5f677ac5724f415583027d78427076a97c0d60143afb7e001c9991258a"
+      },
+      "formal_ISA_correspondence_proved": false,
+      "physical_ABI_bridge_proved": false,
+      "human_review": "pending"
+    },
+    "em_isa_bic4": {
+      "original_intrinsic": "vbicq_u32",
+      "header": "shim/neon_specs.h",
+      "header_sha256": "2bf8007998b09170752e2d4bf7c611e064dbd1f3e4602140e7c7a9e9aea56c44",
+      "actual_signature": [
+        "uint32x4_t",
+        "em_isa_bic4",
+        "(",
+        "const",
+        "uint32x4_t",
+        "*",
+        "a",
+        ",",
+        "const",
+        "uint32x4_t",
+        "*",
+        "b",
+        ")"
+      ],
+      "actual_contract_sha256": "b1e8cb5068280bd40e45806d705282080bb84fdb75cce62637cd705189acd9b2",
+      "official_source": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+      "configuration": "AArch64 AdvSIMD 4x/2x binary32; RNE, FPCR.DN=0,FZ=0, exceptions unobserved",
+      "Coq_definitions": [
+        "ExpMinusMax.IntrinsicModel.em_neon_bic"
+      ],
+      "model_source_sha256": {
+        "proof/coq/IntrinsicModel.v": "dedf5c5f677ac5724f415583027d78427076a97c0d60143afb7e001c9991258a"
+      },
+      "formal_ISA_correspondence_proved": false,
+      "physical_ABI_bridge_proved": false,
+      "human_review": "pending"
+    },
+    "em_isa_reduce4": {
+      "original_intrinsic": "vaddvq_f32",
+      "header": "shim/neon_specs.h",
+      "header_sha256": "2bf8007998b09170752e2d4bf7c611e064dbd1f3e4602140e7c7a9e9aea56c44",
+      "actual_signature": [
+        "float",
+        "em_isa_reduce4",
+        "(",
+        "const",
+        "float32x4_t",
+        "*",
+        "a",
+        ")"
+      ],
+      "actual_contract_sha256": "819af5dbca6ef73c43b790105124fa181a8508f6e027417ed1515a43d45820bb",
+      "official_source": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+      "configuration": "AArch64 AdvSIMD 4x/2x binary32; RNE, FPCR.DN=0,FZ=0, exceptions unobserved",
+      "Coq_definitions": [
+        "ExpMinusMax.IntrinsicModel.em_neon_reduce4"
+      ],
+      "model_source_sha256": {
+        "proof/coq/IntrinsicModel.v": "dedf5c5f677ac5724f415583027d78427076a97c0d60143afb7e001c9991258a"
+      },
+      "formal_ISA_correspondence_proved": false,
+      "physical_ABI_bridge_proved": false,
+      "human_review": "pending"
+    },
+    "em_isa_reduce2": {
+      "original_intrinsic": "vaddv_f32",
+      "header": "shim/neon_specs.h",
+      "header_sha256": "2bf8007998b09170752e2d4bf7c611e064dbd1f3e4602140e7c7a9e9aea56c44",
+      "actual_signature": [
+        "float",
+        "em_isa_reduce2",
+        "(",
+        "const",
+        "float32x2_t",
+        "*",
+        "a",
+        ")"
+      ],
+      "actual_contract_sha256": "bfc4877e96a47c3fb603a670d4596a8ad3b9830a9e48a41d10b8408d30bdc3b6",
+      "official_source": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+      "configuration": "AArch64 AdvSIMD 4x/2x binary32; RNE, FPCR.DN=0,FZ=0, exceptions unobserved",
+      "Coq_definitions": [
+        "ExpMinusMax.IntrinsicModel.em_neon_reduce2"
+      ],
+      "model_source_sha256": {
+        "proof/coq/IntrinsicModel.v": "dedf5c5f677ac5724f415583027d78427076a97c0d60143afb7e001c9991258a"
+      },
+      "formal_ISA_correspondence_proved": false,
+      "physical_ABI_bridge_proved": false,
+      "human_review": "pending"
+    },
+    "em_isa_lane2": {
+      "original_intrinsic": "vget_lane_f32",
+      "header": "shim/neon_specs.h",
+      "header_sha256": "2bf8007998b09170752e2d4bf7c611e064dbd1f3e4602140e7c7a9e9aea56c44",
+      "actual_signature": [
+        "float",
+        "em_isa_lane2",
+        "(",
+        "const",
+        "float32x2_t",
+        "*",
+        "a",
+        ",",
+        "int",
+        "lane",
+        ")"
+      ],
+      "actual_contract_sha256": "1b69fede4094f7984f3247be1a38b8983c4d940ca7a5222738360ba193dddf59",
+      "official_source": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+      "configuration": "AArch64 AdvSIMD 4x/2x binary32; RNE, FPCR.DN=0,FZ=0, exceptions unobserved",
+      "Coq_definitions": [
+        "ExpMinusMax.VectorRecords.em_get_float32x2_t"
+      ],
+      "model_source_sha256": {
+        "proof/coq/VectorRecords.v": "c63a07f99e18ed86d1c213a250191c14aab6a68739821a940cf2d1fc060b4137"
+      },
+      "formal_ISA_correspondence_proved": false,
+      "physical_ABI_bridge_proved": false,
+      "human_review": "pending"
+    },
+    "em_isa_vlmax": {
+      "original_intrinsic": "__riscv_vsetvlmax_e32m4",
+      "header": "shim/rvv_specs.h",
+      "header_sha256": "b4bdd09025d687ed177d77b20731e50a5d4591e890dfa19efefea2b8c679a7ab",
+      "actual_signature": [
+        "size_t",
+        "em_isa_vlmax",
+        "(",
+        "void",
+        ")"
+      ],
+      "actual_contract_sha256": "2933f51c2aa41250845f2b7a98046d8b24682fae79b3bc794db17c2d2aaf0c48",
+      "official_source": "https://docs.riscv.org/reference/isa/unpriv/v-st-ext",
+      "configuration": "VLEN128, SEW32, LMUL4, VLMAX16, RNE, vstart0, arbitrary agnostic tails; _tu preserves old tail",
+      "Coq_definitions": [
+        "ExpMinusMax.IntrinsicModel.em_legal_vl"
+      ],
+      "model_source_sha256": {
+        "proof/coq/IntrinsicModel.v": "dedf5c5f677ac5724f415583027d78427076a97c0d60143afb7e001c9991258a"
+      },
+      "formal_ISA_correspondence_proved": false,
+      "physical_ABI_bridge_proved": false,
+      "human_review": "pending"
+    },
+    "em_isa_setvl": {
+      "original_intrinsic": "__riscv_vsetvl_e32m4",
+      "header": "shim/rvv_specs.h",
+      "header_sha256": "b4bdd09025d687ed177d77b20731e50a5d4591e890dfa19efefea2b8c679a7ab",
+      "actual_signature": [
+        "size_t",
+        "em_isa_setvl",
+        "(",
+        "size_t",
+        "avl",
+        ")"
+      ],
+      "actual_contract_sha256": "7e76c0ee16269f018880a361d33526e0d57aa29e15f4bbb37b836107a90dd316",
+      "official_source": "https://docs.riscv.org/reference/isa/unpriv/v-st-ext",
+      "configuration": "VLEN128, SEW32, LMUL4, VLMAX16, RNE, vstart0, arbitrary agnostic tails; _tu preserves old tail",
+      "Coq_definitions": [
+        "ExpMinusMax.IntrinsicModel.em_legal_vl"
+      ],
+      "model_source_sha256": {
+        "proof/coq/IntrinsicModel.v": "dedf5c5f677ac5724f415583027d78427076a97c0d60143afb7e001c9991258a",
+        "proof/coq/RvvVLFacts.v": "727c6208d73eacdd9dffe233b4f6830e7481e39b3fce503bd82151d0b80c46db"
+      },
+      "formal_ISA_correspondence_proved": false,
+      "physical_ABI_bridge_proved": false,
+      "human_review": "pending"
+    },
+    "em_isa_dup16": {
+      "original_intrinsic": "__riscv_vfmv_v_f_f32m4",
+      "header": "shim/rvv_specs.h",
+      "header_sha256": "b4bdd09025d687ed177d77b20731e50a5d4591e890dfa19efefea2b8c679a7ab",
+      "actual_signature": [
+        "vfloat32m4_t",
+        "em_isa_dup16",
+        "(",
+        "float",
+        "x",
+        ",",
+        "size_t",
+        "vl",
+        ")"
+      ],
+      "actual_contract_sha256": "b0f94264c170b42f2f838f7de5f3fd8a73293c931c997de9051919272f5670cf",
+      "official_source": "https://docs.riscv.org/reference/isa/unpriv/v-st-ext",
+      "configuration": "VLEN128, SEW32, LMUL4, VLMAX16, RNE, vstart0, arbitrary agnostic tails; _tu preserves old tail",
+      "Coq_definitions": [
+        "ExpMinusMax.RvvIntrinsicModel.em_rvv_dup_p"
+      ],
+      "model_source_sha256": {
+        "proof/coq/RvvIntrinsicModel.v": "b5884c262e99b201f796be2c9ce5da06c1258090aebfb8cfd60bf80958798e9b"
+      },
+      "formal_ISA_correspondence_proved": false,
+      "physical_ABI_bridge_proved": false,
+      "human_review": "pending"
+    },
+    "em_isa_load16": {
+      "original_intrinsic": "__riscv_vle32_v_f32m4",
+      "header": "shim/rvv_specs.h",
+      "header_sha256": "b4bdd09025d687ed177d77b20731e50a5d4591e890dfa19efefea2b8c679a7ab",
+      "actual_signature": [
+        "vfloat32m4_t",
+        "em_isa_load16",
+        "(",
+        "const",
+        "float",
+        "*",
+        "p",
+        ",",
+        "size_t",
+        "vl",
+        ")"
+      ],
+      "actual_contract_sha256": "d87fd8bfd70d8c417b5d8adbc12a650a37ac3df494b390794adb68639f9e484e",
+      "official_source": "https://docs.riscv.org/reference/isa/unpriv/v-st-ext",
+      "configuration": "VLEN128, SEW32, LMUL4, VLMAX16, RNE, vstart0, arbitrary agnostic tails; _tu preserves old tail",
+      "Coq_definitions": [
+        "ExpMinusMax.RvvIntrinsicModel.em_rvv_load_p"
+      ],
+      "model_source_sha256": {
+        "proof/coq/RvvIntrinsicModel.v": "b5884c262e99b201f796be2c9ce5da06c1258090aebfb8cfd60bf80958798e9b",
+        "proof/coq/RvvMemoryDomain.v": "035b64c43b2e400f5c326f7cad9fc2190e4a1d61082352c29a153583ee46682a"
+      },
+      "formal_ISA_correspondence_proved": false,
+      "physical_ABI_bridge_proved": false,
+      "human_review": "pending"
+    },
+    "em_isa_sub16": {
+      "original_intrinsic": "__riscv_vfsub_vf_f32m4",
+      "header": "shim/rvv_specs.h",
+      "header_sha256": "b4bdd09025d687ed177d77b20731e50a5d4591e890dfa19efefea2b8c679a7ab",
+      "actual_signature": [
+        "vfloat32m4_t",
+        "em_isa_sub16",
+        "(",
+        "const",
+        "vfloat32m4_t",
+        "*",
+        "a",
+        ",",
+        "float",
+        "x",
+        ",",
+        "size_t",
+        "vl",
+        ")"
+      ],
+      "actual_contract_sha256": "0f0b6522292d97003f00077c7ff72a5878f0fd564eb670c993bb929eec3faf2d",
+      "official_source": "https://docs.riscv.org/reference/isa/unpriv/v-st-ext",
+      "configuration": "VLEN128, SEW32, LMUL4, VLMAX16, RNE, vstart0, arbitrary agnostic tails; _tu preserves old tail",
+      "Coq_definitions": [
+        "ExpMinusMax.RvvIntrinsicModel.em_rvv_sub_p"
+      ],
+      "model_source_sha256": {
+        "proof/coq/RvvIntrinsicModel.v": "b5884c262e99b201f796be2c9ce5da06c1258090aebfb8cfd60bf80958798e9b"
+      },
+      "formal_ISA_correspondence_proved": false,
+      "physical_ABI_bridge_proved": false,
+      "human_review": "pending"
+    },
+    "em_isa_macvf16": {
+      "original_intrinsic": "__riscv_vfmacc_vf_f32m4",
+      "header": "shim/rvv_specs.h",
+      "header_sha256": "b4bdd09025d687ed177d77b20731e50a5d4591e890dfa19efefea2b8c679a7ab",
+      "actual_signature": [
+        "vfloat32m4_t",
+        "em_isa_macvf16",
+        "(",
+        "const",
+        "vfloat32m4_t",
+        "*",
+        "a",
+        ",",
+        "float",
+        "x",
+        ",",
+        "const",
+        "vfloat32m4_t",
+        "*",
+        "b",
+        ",",
+        "size_t",
+        "vl",
+        ")"
+      ],
+      "actual_contract_sha256": "7506acb38a8b34fdd6f2ab11eb6812993bdeec21af2187433a36eefa91e6aaf1",
+      "official_source": "https://docs.riscv.org/reference/isa/unpriv/v-st-ext",
+      "configuration": "VLEN128, SEW32, LMUL4, VLMAX16, RNE, vstart0, arbitrary agnostic tails; _tu preserves old tail",
+      "Coq_definitions": [
+        "ExpMinusMax.RvvIntrinsicModel.em_rvv_mac_vf_p"
+      ],
+      "model_source_sha256": {
+        "proof/coq/RvvIntrinsicModel.v": "b5884c262e99b201f796be2c9ce5da06c1258090aebfb8cfd60bf80958798e9b"
+      },
+      "formal_ISA_correspondence_proved": false,
+      "physical_ABI_bridge_proved": false,
+      "human_review": "pending"
+    },
+    "em_isa_madvf16": {
+      "original_intrinsic": "__riscv_vfmadd_vf_f32m4",
+      "header": "shim/rvv_specs.h",
+      "header_sha256": "b4bdd09025d687ed177d77b20731e50a5d4591e890dfa19efefea2b8c679a7ab",
+      "actual_signature": [
+        "vfloat32m4_t",
+        "em_isa_madvf16",
+        "(",
+        "const",
+        "vfloat32m4_t",
+        "*",
+        "a",
+        ",",
+        "float",
+        "x",
+        ",",
+        "const",
+        "vfloat32m4_t",
+        "*",
+        "b",
+        ",",
+        "size_t",
+        "vl",
+        ")"
+      ],
+      "actual_contract_sha256": "404ae5f23445330831183ec752e2f325a9fd1564df9d3020e6f3275eac1c2f9f",
+      "official_source": "https://docs.riscv.org/reference/isa/unpriv/v-st-ext",
+      "configuration": "VLEN128, SEW32, LMUL4, VLMAX16, RNE, vstart0, arbitrary agnostic tails; _tu preserves old tail",
+      "Coq_definitions": [
+        "ExpMinusMax.RvvIntrinsicModel.em_rvv_mad_vf_p"
+      ],
+      "model_source_sha256": {
+        "proof/coq/RvvIntrinsicModel.v": "b5884c262e99b201f796be2c9ce5da06c1258090aebfb8cfd60bf80958798e9b"
+      },
+      "formal_ISA_correspondence_proved": false,
+      "physical_ABI_bridge_proved": false,
+      "human_review": "pending"
+    },
+    "em_isa_macvv16": {
+      "original_intrinsic": "__riscv_vfmacc_vv_f32m4",
+      "header": "shim/rvv_specs.h",
+      "header_sha256": "b4bdd09025d687ed177d77b20731e50a5d4591e890dfa19efefea2b8c679a7ab",
+      "actual_signature": [
+        "vfloat32m4_t",
+        "em_isa_macvv16",
+        "(",
+        "const",
+        "vfloat32m4_t",
+        "*",
+        "a",
+        ",",
+        "const",
+        "vfloat32m4_t",
+        "*",
+        "b",
+        ",",
+        "const",
+        "vfloat32m4_t",
+        "*",
+        "c",
+        ",",
+        "size_t",
+        "vl",
+        ")"
+      ],
+      "actual_contract_sha256": "cb468f713e45b63a209812e435026f8745505767cb08c818bf73dbb2b4dcf81e",
+      "official_source": "https://docs.riscv.org/reference/isa/unpriv/v-st-ext",
+      "configuration": "VLEN128, SEW32, LMUL4, VLMAX16, RNE, vstart0, arbitrary agnostic tails; _tu preserves old tail",
+      "Coq_definitions": [
+        "ExpMinusMax.RvvIntrinsicModel.em_rvv_mac_vv_p"
+      ],
+      "model_source_sha256": {
+        "proof/coq/RvvIntrinsicModel.v": "b5884c262e99b201f796be2c9ce5da06c1258090aebfb8cfd60bf80958798e9b"
+      },
+      "formal_ISA_correspondence_proved": false,
+      "physical_ABI_bridge_proved": false,
+      "human_review": "pending"
+    },
+    "em_isa_mul16": {
+      "original_intrinsic": "__riscv_vfmul_vv_f32m4",
+      "header": "shim/rvv_specs.h",
+      "header_sha256": "b4bdd09025d687ed177d77b20731e50a5d4591e890dfa19efefea2b8c679a7ab",
+      "actual_signature": [
+        "vfloat32m4_t",
+        "em_isa_mul16",
+        "(",
+        "const",
+        "vfloat32m4_t",
+        "*",
+        "a",
+        ",",
+        "const",
+        "vfloat32m4_t",
+        "*",
+        "b",
+        ",",
+        "size_t",
+        "vl",
+        ")"
+      ],
+      "actual_contract_sha256": "c7b952c749fe2af3b0c6ec50103ecb024306d307e8624bec075445cf9c157bb1",
+      "official_source": "https://docs.riscv.org/reference/isa/unpriv/v-st-ext",
+      "configuration": "VLEN128, SEW32, LMUL4, VLMAX16, RNE, vstart0, arbitrary agnostic tails; _tu preserves old tail",
+      "Coq_definitions": [
+        "ExpMinusMax.RvvIntrinsicModel.em_rvv_mul_p"
+      ],
+      "model_source_sha256": {
+        "proof/coq/RvvIntrinsicModel.v": "b5884c262e99b201f796be2c9ce5da06c1258090aebfb8cfd60bf80958798e9b"
+      },
+      "formal_ISA_correspondence_proved": false,
+      "physical_ABI_bridge_proved": false,
+      "human_review": "pending"
+    },
+    "em_isa_merge16": {
+      "original_intrinsic": "__riscv_vfmerge_vfm_f32m4",
+      "header": "shim/rvv_specs.h",
+      "header_sha256": "b4bdd09025d687ed177d77b20731e50a5d4591e890dfa19efefea2b8c679a7ab",
+      "actual_signature": [
+        "vfloat32m4_t",
+        "em_isa_merge16",
+        "(",
+        "const",
+        "vfloat32m4_t",
+        "*",
+        "a",
+        ",",
+        "float",
+        "x",
+        ",",
+        "const",
+        "vbool8_t",
+        "*",
+        "m",
+        ",",
+        "size_t",
+        "vl",
+        ")"
+      ],
+      "actual_contract_sha256": "03115fbef10453d037a8bc57a6c1f8cdc56f4c45c0fefea0cdd6ee8335dd0534",
+      "official_source": "https://docs.riscv.org/reference/isa/unpriv/v-st-ext",
+      "configuration": "VLEN128, SEW32, LMUL4, VLMAX16, RNE, vstart0, arbitrary agnostic tails; _tu preserves old tail",
+      "Coq_definitions": [
+        "ExpMinusMax.RvvIntrinsicModel.em_rvv_merge_p"
+      ],
+      "model_source_sha256": {
+        "proof/coq/RvvIntrinsicModel.v": "b5884c262e99b201f796be2c9ce5da06c1258090aebfb8cfd60bf80958798e9b"
+      },
+      "formal_ISA_correspondence_proved": false,
+      "physical_ABI_bridge_proved": false,
+      "human_review": "pending"
+    },
+    "em_isa_slide16": {
+      "original_intrinsic": "__riscv_vslidedown_vx_f32m4",
+      "header": "shim/rvv_specs.h",
+      "header_sha256": "b4bdd09025d687ed177d77b20731e50a5d4591e890dfa19efefea2b8c679a7ab",
+      "actual_signature": [
+        "vfloat32m4_t",
+        "em_isa_slide16",
+        "(",
+        "const",
+        "vfloat32m4_t",
+        "*",
+        "a",
+        ",",
+        "size_t",
+        "offset",
+        ",",
+        "size_t",
+        "vl",
+        ")"
+      ],
+      "actual_contract_sha256": "22695ccb70b8f1b498dac8d35df38b07d1578f8285933d6e805f907e09865245",
+      "official_source": "https://docs.riscv.org/reference/isa/unpriv/v-st-ext",
+      "configuration": "VLEN128, SEW32, LMUL4, VLMAX16, RNE, vstart0, arbitrary agnostic tails; _tu preserves old tail",
+      "Coq_definitions": [
+        "ExpMinusMax.RvvIntrinsicModel.em_rvv_slide_p"
+      ],
+      "model_source_sha256": {
+        "proof/coq/RvvIntrinsicModel.v": "b5884c262e99b201f796be2c9ce5da06c1258090aebfb8cfd60bf80958798e9b"
+      },
+      "formal_ISA_correspondence_proved": false,
+      "physical_ABI_bridge_proved": false,
+      "human_review": "pending"
+    },
+    "em_isa_mask16": {
+      "original_intrinsic": "__riscv_vmflt_vf_f32m4_b8",
+      "header": "shim/rvv_specs.h",
+      "header_sha256": "b4bdd09025d687ed177d77b20731e50a5d4591e890dfa19efefea2b8c679a7ab",
+      "actual_signature": [
+        "vbool8_t",
+        "em_isa_mask16",
+        "(",
+        "const",
+        "vfloat32m4_t",
+        "*",
+        "a",
+        ",",
+        "float",
+        "x",
+        ",",
+        "size_t",
+        "vl",
+        ")"
+      ],
+      "actual_contract_sha256": "707909457c5b1454db09eb58314b50c9a546d83542f1c3295ab3629acd625d9e",
+      "official_source": "https://docs.riscv.org/reference/isa/unpriv/v-st-ext",
+      "configuration": "VLEN128, SEW32, LMUL4, VLMAX16, RNE, vstart0, arbitrary agnostic tails; _tu preserves old tail",
+      "Coq_definitions": [
+        "ExpMinusMax.RvvIntrinsicModel.em_rvv_mask_p"
+      ],
+      "model_source_sha256": {
+        "proof/coq/RvvIntrinsicModel.v": "b5884c262e99b201f796be2c9ce5da06c1258090aebfb8cfd60bf80958798e9b"
+      },
+      "formal_ISA_correspondence_proved": false,
+      "physical_ABI_bridge_proved": false,
+      "human_review": "pending"
+    },
+    "em_isa_reint_f_i16": {
+      "original_intrinsic": "__riscv_vreinterpret_v_f32m4_i32m4",
+      "header": "shim/rvv_specs.h",
+      "header_sha256": "b4bdd09025d687ed177d77b20731e50a5d4591e890dfa19efefea2b8c679a7ab",
+      "actual_signature": [
+        "vint32m4_t",
+        "em_isa_reint_f_i16",
+        "(",
+        "const",
+        "vfloat32m4_t",
+        "*",
+        "a",
+        ")"
+      ],
+      "actual_contract_sha256": "4b308947861a0ee09683f9850a3d0e30e278581c2a1a2016ab9028c890a900d9",
+      "official_source": "https://docs.riscv.org/reference/isa/unpriv/v-st-ext",
+      "configuration": "VLEN128, SEW32, LMUL4, VLMAX16, RNE, vstart0, arbitrary agnostic tails; _tu preserves old tail",
+      "Coq_definitions": [
+        "ExpMinusMax.RvvIntrinsicModel.em_rvv_reint_f_i"
+      ],
+      "model_source_sha256": {
+        "proof/coq/RvvIntrinsicModel.v": "b5884c262e99b201f796be2c9ce5da06c1258090aebfb8cfd60bf80958798e9b"
+      },
+      "formal_ISA_correspondence_proved": false,
+      "physical_ABI_bridge_proved": false,
+      "human_review": "pending"
+    },
+    "em_isa_reint_i_f16": {
+      "original_intrinsic": "__riscv_vreinterpret_v_i32m4_f32m4",
+      "header": "shim/rvv_specs.h",
+      "header_sha256": "b4bdd09025d687ed177d77b20731e50a5d4591e890dfa19efefea2b8c679a7ab",
+      "actual_signature": [
+        "vfloat32m4_t",
+        "em_isa_reint_i_f16",
+        "(",
+        "const",
+        "vint32m4_t",
+        "*",
+        "a",
+        ")"
+      ],
+      "actual_contract_sha256": "a24c855e4101e99cb702d619a17b42aa226fe46a1537a213d8d928e7974a91b2",
+      "official_source": "https://docs.riscv.org/reference/isa/unpriv/v-st-ext",
+      "configuration": "VLEN128, SEW32, LMUL4, VLMAX16, RNE, vstart0, arbitrary agnostic tails; _tu preserves old tail",
+      "Coq_definitions": [
+        "ExpMinusMax.RvvIntrinsicModel.em_rvv_reint_i_f"
+      ],
+      "model_source_sha256": {
+        "proof/coq/RvvIntrinsicModel.v": "b5884c262e99b201f796be2c9ce5da06c1258090aebfb8cfd60bf80958798e9b"
+      },
+      "formal_ISA_correspondence_proved": false,
+      "physical_ABI_bridge_proved": false,
+      "human_review": "pending"
+    },
+    "em_isa_shift16": {
+      "original_intrinsic": "__riscv_vsll_vx_i32m4",
+      "header": "shim/rvv_specs.h",
+      "header_sha256": "b4bdd09025d687ed177d77b20731e50a5d4591e890dfa19efefea2b8c679a7ab",
+      "actual_signature": [
+        "vint32m4_t",
+        "em_isa_shift16",
+        "(",
+        "const",
+        "vint32m4_t",
+        "*",
+        "a",
+        ",",
+        "size_t",
+        "offset",
+        ",",
+        "size_t",
+        "vl",
+        ")"
+      ],
+      "actual_contract_sha256": "0e01d3eaff3b370191469f7bab57f25b29d4633856504e8eb82a75a33013721e",
+      "official_source": "https://docs.riscv.org/reference/isa/unpriv/v-st-ext",
+      "configuration": "VLEN128, SEW32, LMUL4, VLMAX16, RNE, vstart0, arbitrary agnostic tails; _tu preserves old tail",
+      "Coq_definitions": [
+        "ExpMinusMax.RvvIntrinsicModel.em_rvv_shift_p"
+      ],
+      "model_source_sha256": {
+        "proof/coq/RvvIntrinsicModel.v": "b5884c262e99b201f796be2c9ce5da06c1258090aebfb8cfd60bf80958798e9b"
+      },
+      "formal_ISA_correspondence_proved": false,
+      "physical_ABI_bridge_proved": false,
+      "human_review": "pending"
+    },
+    "em_isa_first16": {
+      "original_intrinsic": "__riscv_vfmv_f_s_f32m4_f32",
+      "header": "shim/rvv_specs.h",
+      "header_sha256": "b4bdd09025d687ed177d77b20731e50a5d4591e890dfa19efefea2b8c679a7ab",
+      "actual_signature": [
+        "float",
+        "em_isa_first16",
+        "(",
+        "const",
+        "vfloat32m4_t",
+        "*",
+        "a",
+        ")"
+      ],
+      "actual_contract_sha256": "dad474ac09a03fe11826a562fe975a19fde32f60454ed71a55d2b642e299905c",
+      "official_source": "https://docs.riscv.org/reference/isa/unpriv/v-st-ext",
+      "configuration": "VLEN128, SEW32, LMUL4, VLMAX16, RNE, vstart0, arbitrary agnostic tails; _tu preserves old tail",
+      "Coq_definitions": [
+        "ExpMinusMax.VectorRecords.em_get_vfloat32m4_t"
+      ],
+      "model_source_sha256": {
+        "proof/coq/VectorRecords.v": "c63a07f99e18ed86d1c213a250191c14aab6a68739821a940cf2d1fc060b4137"
+      },
+      "formal_ISA_correspondence_proved": false,
+      "physical_ABI_bridge_proved": false,
+      "human_review": "pending"
+    },
+    "em_isa_addtu16": {
+      "original_intrinsic": "__riscv_vfadd_vv_f32m4_tu",
+      "header": "shim/rvv_specs.h",
+      "header_sha256": "b4bdd09025d687ed177d77b20731e50a5d4591e890dfa19efefea2b8c679a7ab",
+      "actual_signature": [
+        "vfloat32m4_t",
+        "em_isa_addtu16",
+        "(",
+        "const",
+        "vfloat32m4_t",
+        "*",
+        "d",
+        ",",
+        "const",
+        "vfloat32m4_t",
+        "*",
+        "a",
+        ",",
+        "const",
+        "vfloat32m4_t",
+        "*",
+        "b",
+        ",",
+        "size_t",
+        "vl",
+        ")"
+      ],
+      "actual_contract_sha256": "af241d0f22e1086905aed87a8c1e3df624977722c88c2ab3bc770870cfded278",
+      "official_source": "https://docs.riscv.org/reference/isa/unpriv/v-st-ext",
+      "configuration": "VLEN128, SEW32, LMUL4, VLMAX16, RNE, vstart0, arbitrary agnostic tails; _tu preserves old tail",
+      "Coq_definitions": [
+        "ExpMinusMax.RvvIntrinsicModel.em_rvv_add_tu"
+      ],
+      "model_source_sha256": {
+        "proof/coq/RvvIntrinsicModel.v": "b5884c262e99b201f796be2c9ce5da06c1258090aebfb8cfd60bf80958798e9b"
+      },
+      "formal_ISA_correspondence_proved": false,
+      "physical_ABI_bridge_proved": false,
+      "human_review": "pending"
+    },
+    "em_isa_store16": {
+      "original_intrinsic": "__riscv_vse32_v_f32m4",
+      "header": "shim/rvv_specs.h",
+      "header_sha256": "b4bdd09025d687ed177d77b20731e50a5d4591e890dfa19efefea2b8c679a7ab",
+      "actual_signature": [
+        "void",
+        "em_isa_store16",
+        "(",
+        "float",
+        "*",
+        "p",
+        ",",
+        "const",
+        "vfloat32m4_t",
+        "*",
+        "a",
+        ",",
+        "size_t",
+        "vl",
+        ")"
+      ],
+      "actual_contract_sha256": "a4e159b8d536f6242545c5133ffe42dc422c91936c0744f3795fde068230f14a",
+      "official_source": "https://docs.riscv.org/reference/isa/unpriv/v-st-ext",
+      "configuration": "VLEN128, SEW32, LMUL4, VLMAX16, RNE, vstart0, arbitrary agnostic tails; _tu preserves old tail",
+      "Coq_definitions": [
+        "ExpMinusMax.RvvIntrinsicModel.em_rvv_write"
+      ],
+      "model_source_sha256": {
+        "proof/coq/RvvIntrinsicModel.v": "b5884c262e99b201f796be2c9ce5da06c1258090aebfb8cfd60bf80958798e9b",
+        "proof/coq/RvvMemoryDomain.v": "035b64c43b2e400f5c326f7cad9fc2190e4a1d61082352c29a153583ee46682a"
+      },
+      "formal_ISA_correspondence_proved": false,
+      "physical_ABI_bridge_proved": false,
+      "human_review": "pending"
+    },
+    "em_isa_load4": {
+      "original_intrinsic": "vld1q_f32",
+      "header": "shim/memory_specs.h",
+      "header_sha256": "6b8e7acf774d2ed7464f87c509edacf67822f4999905d6b39346060ae5abdf16",
+      "actual_signature": [
+        "float32x4_t",
+        "em_isa_load4",
+        "(",
+        "const",
+        "float",
+        "*",
+        "p",
+        ")"
+      ],
+      "actual_contract_sha256": "324a68e4be15fa70596d46d7f7f0eacd738caf8af48e1be9fe2d6eb507a6f95e",
+      "official_source": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+      "configuration": "AArch64 AdvSIMD 4x/2x binary32; RNE, FPCR.DN=0,FZ=0, exceptions unobserved",
+      "Coq_definitions": [
+        "ExpMinusMax.BorrowedMemory.em_load_record4"
+      ],
+      "model_source_sha256": {
+        "proof/coq/BorrowedMemory.v": "32ed25ffd58a81bbd6a1e23e6afaf3cf3331f75a37e1f420b1a2c26207ad9664"
+      },
+      "formal_ISA_correspondence_proved": false,
+      "physical_ABI_bridge_proved": false,
+      "human_review": "pending"
+    },
+    "em_isa_load_dup4": {
+      "original_intrinsic": "vld1q_dup_f32",
+      "header": "shim/memory_specs.h",
+      "header_sha256": "6b8e7acf774d2ed7464f87c509edacf67822f4999905d6b39346060ae5abdf16",
+      "actual_signature": [
+        "float32x4_t",
+        "em_isa_load_dup4",
+        "(",
+        "const",
+        "float",
+        "*",
+        "p",
+        ")"
+      ],
+      "actual_contract_sha256": "b7cbe23e05bfb044b483dd17e21a4db0c9228319833a1a8bd19cef091b4b6df1",
+      "official_source": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+      "configuration": "AArch64 AdvSIMD 4x/2x binary32; RNE, FPCR.DN=0,FZ=0, exceptions unobserved",
+      "Coq_definitions": [
+        "ExpMinusMax.IntrinsicModel.em_neon_dup"
+      ],
+      "model_source_sha256": {
+        "proof/coq/IntrinsicModel.v": "dedf5c5f677ac5724f415583027d78427076a97c0d60143afb7e001c9991258a"
+      },
+      "formal_ISA_correspondence_proved": false,
+      "physical_ABI_bridge_proved": false,
+      "human_review": "pending"
+    },
+    "em_isa_store4": {
+      "original_intrinsic": "vst1q_f32",
+      "header": "shim/memory_specs.h",
+      "header_sha256": "6b8e7acf774d2ed7464f87c509edacf67822f4999905d6b39346060ae5abdf16",
+      "actual_signature": [
+        "void",
+        "em_isa_store4",
+        "(",
+        "float",
+        "*",
+        "p",
+        ",",
+        "const",
+        "float32x4_t",
+        "*",
+        "a",
+        ")"
+      ],
+      "actual_contract_sha256": "479ea67b79a4b176718000d91e86505a50a8d5766c50a62c0dc757e91d58da8f",
+      "official_source": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+      "configuration": "AArch64 AdvSIMD 4x/2x binary32; RNE, FPCR.DN=0,FZ=0, exceptions unobserved",
+      "Coq_definitions": [
+        "ExpMinusMax.BorrowedMemory.em_write_record4"
+      ],
+      "model_source_sha256": {
+        "proof/coq/BorrowedMemory.v": "32ed25ffd58a81bbd6a1e23e6afaf3cf3331f75a37e1f420b1a2c26207ad9664"
+      },
+      "formal_ISA_correspondence_proved": false,
+      "physical_ABI_bridge_proved": false,
+      "human_review": "pending"
+    },
+    "em_isa_store2": {
+      "original_intrinsic": "vst1_f32",
+      "header": "shim/memory_specs.h",
+      "header_sha256": "6b8e7acf774d2ed7464f87c509edacf67822f4999905d6b39346060ae5abdf16",
+      "actual_signature": [
+        "void",
+        "em_isa_store2",
+        "(",
+        "float",
+        "*",
+        "p",
+        ",",
+        "const",
+        "float32x2_t",
+        "*",
+        "a",
+        ")"
+      ],
+      "actual_contract_sha256": "07e7aaa7c0b8b30227f1aa398ec3e6e34caf160180fb5bf99e3edecc4242228d",
+      "official_source": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+      "configuration": "AArch64 AdvSIMD 4x/2x binary32; RNE, FPCR.DN=0,FZ=0, exceptions unobserved",
+      "Coq_definitions": [
+        "ExpMinusMax.BorrowedMemory.em_write_record2"
+      ],
+      "model_source_sha256": {
+        "proof/coq/BorrowedMemory.v": "32ed25ffd58a81bbd6a1e23e6afaf3cf3331f75a37e1f420b1a2c26207ad9664"
+      },
+      "formal_ISA_correspondence_proved": false,
+      "physical_ABI_bridge_proved": false,
+      "human_review": "pending"
+    },
+    "em_isa_store_lane0": {
+      "original_intrinsic": "vst1_lane_f32",
+      "header": "shim/memory_specs.h",
+      "header_sha256": "6b8e7acf774d2ed7464f87c509edacf67822f4999905d6b39346060ae5abdf16",
+      "actual_signature": [
+        "void",
+        "em_isa_store_lane0",
+        "(",
+        "float",
+        "*",
+        "p",
+        ",",
+        "const",
+        "float32x2_t",
+        "*",
+        "a",
+        ",",
+        "int",
+        "lane",
+        ")"
+      ],
+      "actual_contract_sha256": "3a18f018d1f49e75d31dc4fb1265dd5f1e6ab94323521ed3e1b5bb885e1a17ab",
+      "official_source": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+      "configuration": "AArch64 AdvSIMD 4x/2x binary32; RNE, FPCR.DN=0,FZ=0, exceptions unobserved",
+      "Coq_definitions": [
+        "ExpMinusMax.OutputMemory.em_output_put"
+      ],
+      "model_source_sha256": {
+        "proof/coq/OutputMemory.v": "e5667207d0c864fd00de6bb4d6b4d980245dbb00d4bf4d8b85135efdde680a2b"
+      },
+      "formal_ISA_correspondence_proved": false,
+      "physical_ABI_bridge_proved": false,
+      "human_review": "pending"
+    }
+  },
+  "limits": {
+    "configured_jobs": 32,
+    "ordinary_per_process_GiB": 16,
+    "heavy_per_process_GiB": 32,
+    "generation_timeout": 21600,
+    "ordinary_timeout": 7200,
+    "heavy_timeout": 14400,
+    "address_bits": 64,
+    "endian": "little",
+    "VLEN": 128,
+    "SEW": 32,
+    "LMUL": 4,
+    "VLMAX": 16,
+    "active_AVL_max": 4,
+    "all_legal_VL_choices": true,
+    "all_binary32_inputs": true,
+    "input_padding": 3,
+    "FP_rounding": "RNE",
+    "RO_and_mutable_disjoint": true,
+    "output_sum_alias_permitted": true,
+    "params_NULL_permitted": true
+  },
+  "remaining": [],
+  "verified_manifest_changed": false,
+  "formal_proof_replayed_by_writer": false,
+  "native_evidence": [
+    {
+      "path": "proof/native-status.json",
+      "sha256": "3ee3dc59a21805c2a012e13cc07a81bf018c9dd3166022e29d776a8b7da1b2ba",
+      "input_sha256": {
+        "shim/runtime/harness.c": "8cf0c2e48de8be51392a5e093a26babb6d1d333ba8f580c10dc512773c3478d5",
+        "shim/runtime/host.h": "a2f346480f60473adc384719664724739c8d58804b078c2a59119a79660dd395",
+        "proof/original/testNEON.c": "fb265d6a10ab6ada1ce0daf24fa8bf3331ffe45dd70067978ec1a0f641cd0460",
+        "proof/original/testRVV.c": "9c0ca18ff056bf3974023b5befb37337e539c072140ce17abfda325acabe9064",
+        "impl/testNEON.c": "8316a2835ad73cbba780749ea7e8a9f8f555830ac49c0609ce667923b56a75f2",
+        "impl/testRVV.c": "c0bae384af221a37ae0943eda865f769ec4ab57d90286b677dfc2723eaacac52",
+        "proof/native.py": "9988d1fce97533b55c1aa43fd2caf9906c036512dbdf3bd299d8caf5af6fe589",
+        "proof/repair.json": "6ef40a37dea87d0b76a925a33b3135c08775f00e7a9cf7afcec5128c00f712bf",
+        "proof/repair.patch": "e3489d7a2913c7106674029ec7d34e437cd72dac1df80004810e4ed9a71316c8",
+        "proof/originals.json": "a6e6f4faa70cdc13b429bdb2f25c00f8e10c0243b642fc8ffb7ec4f2960b0d7b",
+        "proof/literal-conversion.json": "349f1e889ba07a537514d61d255ec07428ea55c189bce9a5e566e08ecd18c046"
+      },
+      "recursive_input_sha256": {
+        "shim/runtime/harness.c": "8cf0c2e48de8be51392a5e093a26babb6d1d333ba8f580c10dc512773c3478d5",
+        "shim/runtime/host.h": "a2f346480f60473adc384719664724739c8d58804b078c2a59119a79660dd395",
+        "proof/original/testNEON.c": "fb265d6a10ab6ada1ce0daf24fa8bf3331ffe45dd70067978ec1a0f641cd0460",
+        "proof/original/testRVV.c": "9c0ca18ff056bf3974023b5befb37337e539c072140ce17abfda325acabe9064",
+        "impl/testNEON.c": "8316a2835ad73cbba780749ea7e8a9f8f555830ac49c0609ce667923b56a75f2",
+        "impl/testRVV.c": "c0bae384af221a37ae0943eda865f769ec4ab57d90286b677dfc2723eaacac52",
+        "proof/native.py": "9988d1fce97533b55c1aa43fd2caf9906c036512dbdf3bd299d8caf5af6fe589",
+        "proof/repair.json": "6ef40a37dea87d0b76a925a33b3135c08775f00e7a9cf7afcec5128c00f712bf",
+        "proof/repair.patch": "e3489d7a2913c7106674029ec7d34e437cd72dac1df80004810e4ed9a71316c8",
+        "proof/originals.json": "a6e6f4faa70cdc13b429bdb2f25c00f8e10c0243b642fc8ffb7ec4f2960b0d7b",
+        "proof/literal-conversion.json": "349f1e889ba07a537514d61d255ec07428ea55c189bce9a5e566e08ecd18c046"
+      }
+    },
+    {
+      "path": "proof/public-native-status.json",
+      "sha256": "730345b171a345c8aee94ed45488dba3ba65a503fb0fe14f0f18456e4664c94a",
+      "input_sha256": {
+        "shim/runtime/public_harness.c": "a6c55d77835ede0ec22e2e9cc461d9a6a14dd9b83dd441924d4a764c016e1548",
+        "shim/runtime/host.h": "a2f346480f60473adc384719664724739c8d58804b078c2a59119a79660dd395",
+        "proof/original/testNEON.c": "fb265d6a10ab6ada1ce0daf24fa8bf3331ffe45dd70067978ec1a0f641cd0460",
+        "proof/original/testRVV.c": "9c0ca18ff056bf3974023b5befb37337e539c072140ce17abfda325acabe9064",
+        "impl/testNEON.c": "8316a2835ad73cbba780749ea7e8a9f8f555830ac49c0609ce667923b56a75f2",
+        "impl/testRVV.c": "c0bae384af221a37ae0943eda865f769ec4ab57d90286b677dfc2723eaacac52",
+        "public_spec.c": "fab06da16d431a2f3ae33c77bdef8c314db5a46fa11d33e7ac96dd5f040e76f7",
+        "proof/native_public.py": "f2b463fbebf4162bbe53b08f3b0d89e3182ee938448bbdd998e4053560e00d82",
+        "proof/repair.json": "6ef40a37dea87d0b76a925a33b3135c08775f00e7a9cf7afcec5128c00f712bf",
+        "proof/repair.patch": "e3489d7a2913c7106674029ec7d34e437cd72dac1df80004810e4ed9a71316c8",
+        "proof/originals.json": "a6e6f4faa70cdc13b429bdb2f25c00f8e10c0243b642fc8ffb7ec4f2960b0d7b",
+        "proof/literal-conversion.json": "349f1e889ba07a537514d61d255ec07428ea55c189bce9a5e566e08ecd18c046"
+      },
+      "recursive_input_sha256": {
+        "shim/runtime/public_harness.c": "a6c55d77835ede0ec22e2e9cc461d9a6a14dd9b83dd441924d4a764c016e1548",
+        "shim/runtime/host.h": "a2f346480f60473adc384719664724739c8d58804b078c2a59119a79660dd395",
+        "proof/original/testNEON.c": "fb265d6a10ab6ada1ce0daf24fa8bf3331ffe45dd70067978ec1a0f641cd0460",
+        "proof/original/testRVV.c": "9c0ca18ff056bf3974023b5befb37337e539c072140ce17abfda325acabe9064",
+        "impl/testNEON.c": "8316a2835ad73cbba780749ea7e8a9f8f555830ac49c0609ce667923b56a75f2",
+        "impl/testRVV.c": "c0bae384af221a37ae0943eda865f769ec4ab57d90286b677dfc2723eaacac52",
+        "public_spec.c": "fab06da16d431a2f3ae33c77bdef8c314db5a46fa11d33e7ac96dd5f040e76f7",
+        "proof/native_public.py": "f2b463fbebf4162bbe53b08f3b0d89e3182ee938448bbdd998e4053560e00d82",
+        "proof/repair.json": "6ef40a37dea87d0b76a925a33b3135c08775f00e7a9cf7afcec5128c00f712bf",
+        "proof/repair.patch": "e3489d7a2913c7106674029ec7d34e437cd72dac1df80004810e4ed9a71316c8",
+        "proof/originals.json": "a6e6f4faa70cdc13b429bdb2f25c00f8e10c0243b642fc8ffb7ec4f2960b0d7b",
+        "proof/literal-conversion.json": "349f1e889ba07a537514d61d255ec07428ea55c189bce9a5e566e08ecd18c046"
+      }
+    }
+  ]
+}

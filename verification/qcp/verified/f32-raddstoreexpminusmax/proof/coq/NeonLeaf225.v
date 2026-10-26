@@ -1,0 +1,4 @@
+From ExpMinusMax Require Import neon_unit_goal NeonFinalRepair225.
+Module Checked.
+Definition proof_of_test_neon_partial_solve_wit_152_pure:ExpMinusMax.neon_unit_goal.test_neon_partial_solve_wit_152_pure:=NeonFinalRepair225.Checked.proof_of_test_neon_partial_solve_wit_152_pure.
+End Checked.

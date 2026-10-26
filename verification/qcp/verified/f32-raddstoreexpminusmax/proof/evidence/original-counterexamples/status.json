@@ -1,0 +1,64 @@
+{
+  "passed": true,
+  "whole_kernel_verified": false,
+  "scope": "bounded UBSan actual original/repaired source counterexample probe; no proof credit",
+  "run_directory": "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-raddstoreexpminusmax/.build/native-counter-ugguy034",
+  "input_sha256": {
+    "proof/original/testNEON.c": "fb265d6a10ab6ada1ce0daf24fa8bf3331ffe45dd70067978ec1a0f641cd0460",
+    "proof/original/testRVV.c": "9c0ca18ff056bf3974023b5befb37337e539c072140ce17abfda325acabe9064",
+    "impl/testNEON.c": "4297445a49266bb130c7a4a2b55f2973a040692ab7ec4d28034801f8d027b3c8",
+    "impl/testRVV.c": "5c5b426138ef669cb6a12319eb2982d4e9c415fc2daffcc77ddc3989c6483e09",
+    "shim/runtime/harness.c": "8cf0c2e48de8be51392a5e093a26babb6d1d333ba8f580c10dc512773c3478d5",
+    "shim/runtime/host.h": "a2f346480f60473adc384719664724739c8d58804b078c2a59119a79660dd395"
+  },
+  "max_live_processes": 1,
+  "per_process_memory_GiB": 16,
+  "records": [
+    {
+      "label": "compile",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "gcc",
+        "-std=c11",
+        "-O1",
+        "-g",
+        "-frounding-math",
+        "-ffp-contract=off",
+        "-fno-fast-math",
+        "-fsanitize=undefined",
+        "-fno-sanitize-recover=undefined",
+        "-Wall",
+        "-Wextra",
+        "-Wno-unused-function",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-raddstoreexpminusmax/shim/runtime/harness.c",
+        "-lm",
+        "-o",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-raddstoreexpminusmax/.build/native-counter-ugguy034/counter"
+      ],
+      "exit_code": 0,
+      "seconds": 0.75580133497715,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "08c65cfd28267057b821a134e8b6898ded20c3507b4b650f008af0003ac8b2bb",
+      "memory_GiB": 16,
+      "timeout_seconds": 300
+    },
+    {
+      "label": "counterexample",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-raddstoreexpminusmax/.build/native-counter-ugguy034/counter",
+        "counter"
+      ],
+      "exit_code": 0,
+      "seconds": 0.013890465022996068,
+      "stdout_sha256": "487a323e921bb1510145d39cd075e54359e9e4f9a4da3c83a1ebe1ac2b9ba1fc",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "memory_GiB": 16,
+      "timeout_seconds": 120
+    }
+  ]
+}

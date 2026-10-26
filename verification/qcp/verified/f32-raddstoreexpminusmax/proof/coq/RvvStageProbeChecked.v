@@ -1,0 +1,49 @@
+From ExpMinusMax Require Import NeonTactics RvvStageProbeModel rvv_stage_probe_goal.
+Import Snaive_C_Rules64. Local Open Scope sac. Local Open Scope Z_scope.
+Lemma em_record_eta16:forall r,make_record_vfloat32m4_t (vfloat32m4_t_s0 r)(vfloat32m4_t_s1 r)(vfloat32m4_t_s2 r)(vfloat32m4_t_s3 r)(vfloat32m4_t_s4 r)(vfloat32m4_t_s5 r)(vfloat32m4_t_s6 r)(vfloat32m4_t_s7 r)(vfloat32m4_t_s8 r)(vfloat32m4_t_s9 r)(vfloat32m4_t_s10 r)(vfloat32m4_t_s11 r)(vfloat32m4_t_s12 r)(vfloat32m4_t_s13 r)(vfloat32m4_t_s14 r)(vfloat32m4_t_s15 r)=r.
+Proof. intros [];reflexivity. Qed.
+Lemma em_rvv_dup_sub_same:forall X vl A B,em_rvv_dup_p X vl A ->em_rvv_sub_p A X vl B ->em_rvv_sub_self_p X vl B.
+Proof. unfold em_rvv_dup_p,em_rvv_sub_p,em_rvv_sub_self_p,em_rvv_active_float;intros X vl A B HA HB j Hj;rewrite HB by exact Hj;rewrite HA by exact Hj;reflexivity. Qed.
+Module CheckedRvvStageProbe.
+Lemma proof_of_em_rvv_stage_probe_return_wit_1:ExpMinusMax.rvv_stage_probe_goal.em_rvv_stage_probe_return_wit_1.
+Proof. unfold ExpMinusMax.rvv_stage_probe_goal.em_rvv_stage_probe_return_wit_1.
+ right;em_intro;rewrite em_record_eta16;apply _derivable1_andp_intros;[apply em_pure_right;eapply em_rvv_dup_sub_same;eassumption|entailer!].
+Qed.
+Lemma proof_of_em_rvv_stage_probe_partial_solve_wit_1_pure:ExpMinusMax.rvv_stage_probe_goal.em_rvv_stage_probe_partial_solve_wit_1_pure.
+Proof. unfold ExpMinusMax.rvv_stage_probe_goal.em_rvv_stage_probe_partial_solve_wit_1_pure.
+ em_intro;emk_frame.
+Qed.
+Lemma proof_of_em_rvv_stage_probe_partial_solve_wit_1:ExpMinusMax.rvv_stage_probe_goal.em_rvv_stage_probe_partial_solve_wit_1.
+Proof. unfold ExpMinusMax.rvv_stage_probe_goal.em_rvv_stage_probe_partial_solve_wit_1,ExpMinusMax.rvv_stage_probe_goal.em_rvv_stage_probe_partial_solve_wit_1_aux.
+ em_intro;emk_frame.
+Qed.
+Lemma proof_of_em_rvv_stage_probe_partial_solve_wit_2:ExpMinusMax.rvv_stage_probe_goal.em_rvv_stage_probe_partial_solve_wit_2.
+Proof. unfold ExpMinusMax.rvv_stage_probe_goal.em_rvv_stage_probe_partial_solve_wit_2.
+ em_intro;emk_frame.
+Qed.
+Lemma proof_of_em_rvv_stage_probe_partial_solve_wit_3_pure:ExpMinusMax.rvv_stage_probe_goal.em_rvv_stage_probe_partial_solve_wit_3_pure.
+Proof. unfold ExpMinusMax.rvv_stage_probe_goal.em_rvv_stage_probe_partial_solve_wit_3_pure.
+ em_intro;emk_frame.
+Qed.
+Lemma proof_of_em_rvv_stage_probe_partial_solve_wit_3:ExpMinusMax.rvv_stage_probe_goal.em_rvv_stage_probe_partial_solve_wit_3.
+Proof. unfold ExpMinusMax.rvv_stage_probe_goal.em_rvv_stage_probe_partial_solve_wit_3,ExpMinusMax.rvv_stage_probe_goal.em_rvv_stage_probe_partial_solve_wit_3_aux.
+ em_intro;emk_frame.
+Qed.
+Lemma proof_of_em_rvv_stage_probe_partial_solve_wit_4:ExpMinusMax.rvv_stage_probe_goal.em_rvv_stage_probe_partial_solve_wit_4.
+Proof. unfold ExpMinusMax.rvv_stage_probe_goal.em_rvv_stage_probe_partial_solve_wit_4.
+ em_intro;emk_frame.
+Qed.
+Lemma proof_of_em_rvv_stage_probe_partial_solve_wit_5:ExpMinusMax.rvv_stage_probe_goal.em_rvv_stage_probe_partial_solve_wit_5.
+Proof. unfold ExpMinusMax.rvv_stage_probe_goal.em_rvv_stage_probe_partial_solve_wit_5.
+ em_intro;emk_frame.
+Qed.
+End CheckedRvvStageProbe.
+Module ExactRvvStageProbe:ExpMinusMax.rvv_stage_probe_goal.VC_Correct :=CheckedRvvStageProbe.
+Print Assumptions ExactRvvStageProbe.proof_of_em_rvv_stage_probe_return_wit_1.
+Print Assumptions ExactRvvStageProbe.proof_of_em_rvv_stage_probe_partial_solve_wit_1_pure.
+Print Assumptions ExactRvvStageProbe.proof_of_em_rvv_stage_probe_partial_solve_wit_1.
+Print Assumptions ExactRvvStageProbe.proof_of_em_rvv_stage_probe_partial_solve_wit_2.
+Print Assumptions ExactRvvStageProbe.proof_of_em_rvv_stage_probe_partial_solve_wit_3_pure.
+Print Assumptions ExactRvvStageProbe.proof_of_em_rvv_stage_probe_partial_solve_wit_3.
+Print Assumptions ExactRvvStageProbe.proof_of_em_rvv_stage_probe_partial_solve_wit_4.
+Print Assumptions ExactRvvStageProbe.proof_of_em_rvv_stage_probe_partial_solve_wit_5.

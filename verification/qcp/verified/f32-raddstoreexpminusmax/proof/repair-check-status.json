@@ -1,0 +1,72 @@
+{
+  "passed": true,
+  "whole_kernel_verified": false,
+  "scope": "zero-fuzz repair replay and exact-rational/compiler literal identity only",
+  "run_directory": "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-raddstoreexpminusmax/.build/repair-check-n9jyq67m",
+  "records": [
+    {
+      "label": "patch",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "patch",
+        "--batch",
+        "--fuzz=0",
+        "-p1",
+        "-i",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-raddstoreexpminusmax/proof/repair.patch"
+      ],
+      "exit_code": 0,
+      "seconds": 0.008627462200820446,
+      "log_sha256": "9eb6cba3532f72dfca3735ef465e2bd2035abe9ab2228823109f277b4a479fde",
+      "memory_GiB": 16,
+      "timeout_seconds": 300
+    },
+    {
+      "label": "literal-compile",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "gcc",
+        "-std=c11",
+        "-O1",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-raddstoreexpminusmax/shim/runtime/literal_probe.c",
+        "-o",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-raddstoreexpminusmax/.build/repair-check-n9jyq67m/literals"
+      ],
+      "exit_code": 0,
+      "seconds": 0.06514804903417826,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "memory_GiB": 16,
+      "timeout_seconds": 300
+    },
+    {
+      "label": "literal-run",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-raddstoreexpminusmax/.build/repair-check-n9jyq67m/literals"
+      ],
+      "exit_code": 0,
+      "seconds": 0.014314817963168025,
+      "log_sha256": "9171818ea68d03ed55e037d287748ecca6ef041c5318f7d7cf277570a6d26850",
+      "memory_GiB": 16,
+      "timeout_seconds": 60
+    }
+  ],
+  "exact_patch_replay": true,
+  "exact_rational_literals": 9,
+  "compiler_bit_identity_literals": 9,
+  "ordinary_Coq_literal_bridge_passed": false,
+  "source_sha256": {
+    "proof/originals.json": "a6e6f4faa70cdc13b429bdb2f25c00f8e10c0243b642fc8ffb7ec4f2960b0d7b",
+    "proof/repair.patch": "e3489d7a2913c7106674029ec7d34e437cd72dac1df80004810e4ed9a71316c8",
+    "proof/literal-conversion.json": "349f1e889ba07a537514d61d255ec07428ea55c189bce9a5e566e08ecd18c046",
+    "impl/testNEON.c": "8316a2835ad73cbba780749ea7e8a9f8f555830ac49c0609ce667923b56a75f2",
+    "impl/testRVV.c": "c0bae384af221a37ae0943eda865f769ec4ab57d90286b677dfc2723eaacac52",
+    "shim/runtime/literal_probe.c": "4d1fe8edb0b13febc9f1b8878cd78890b1547e37db81a000a0093900b68c0ad9"
+  }
+}

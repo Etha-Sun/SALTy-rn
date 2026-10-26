@@ -1,0 +1,5 @@
+From ExpMinusMax Require Import neon_unit_goal NeonLeaf008 NeonLeaf024.
+Module Checked.
+Definition proof_of_test_neon_safety_wit_9:ExpMinusMax.neon_unit_goal.test_neon_safety_wit_9:=NeonLeaf008.Checked.proof_of_test_neon_safety_wit_9.
+Definition proof_of_test_neon_safety_wit_25:ExpMinusMax.neon_unit_goal.test_neon_safety_wit_25:=NeonLeaf024.Checked.proof_of_test_neon_safety_wit_25.
+End Checked.

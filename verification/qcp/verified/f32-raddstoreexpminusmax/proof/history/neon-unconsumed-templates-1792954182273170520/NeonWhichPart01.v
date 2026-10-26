@@ -1,0 +1,19 @@
+From ExpMinusMax Require Import NeonTactics neon_unit_goal.
+Import Snaive_C_Rules64. Local Open Scope sac.
+Module Checked.
+Lemma proof_of_test_neon_which_implies_wit_2:ExpMinusMax.neon_unit_goal.test_neon_which_implies_wit_2.
+Proof. unfold ExpMinusMax.neon_unit_goal.test_neon_which_implies_wit_2.
+ left;intros;first[apply em_record_stage_exact|apply em_record_stage_i4|apply em_record_stage_u4].
+Qed.
+Lemma proof_of_test_neon_which_implies_wit_18:ExpMinusMax.neon_unit_goal.test_neon_which_implies_wit_18.
+Proof. unfold ExpMinusMax.neon_unit_goal.test_neon_which_implies_wit_18.
+ left;intros;first[apply em_record_stage_exact|apply em_record_stage_i4|apply em_record_stage_u4].
+Qed.
+Lemma proof_of_test_neon_which_implies_wit_34:ExpMinusMax.neon_unit_goal.test_neon_which_implies_wit_34.
+Proof. unfold ExpMinusMax.neon_unit_goal.test_neon_which_implies_wit_34.
+ left;intros;first[apply em_record_stage_exact|apply em_record_stage_i4|apply em_record_stage_u4].
+Qed.
+End Checked.
+Print Assumptions Checked.proof_of_test_neon_which_implies_wit_2.
+Print Assumptions Checked.proof_of_test_neon_which_implies_wit_18.
+Print Assumptions Checked.proof_of_test_neon_which_implies_wit_34.

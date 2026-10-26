@@ -1,0 +1,28 @@
+Library pseudocode for shared/functions/float/fpprocessnan/FPProcessNaN
+// FPProcessNaN()
+// ==============
+bits(N) FPProcessNaN(FPType fptype, bits(N) op, FPCR_Type fpcr)
+constant boolean fpexc = TRUE;   // Generate floating-point exceptions
+return FPProcessNaN(fptype, op, fpcr, fpexc);
+// FPProcessNaN()
+// ==============
+// Handle NaN input operands, returning the operand or default NaN value
+// if fpcr.DN is selected. The 'fpcr' argument supplies the FPCR control bits.
+// The 'fpexc' argument controls the generation of exceptions, regardless of
+// whether 'fptype' is a signalling NaN or a quiet NaN.
+bits(N) FPProcessNaN(FPType fptype, bits(N) op, FPCR_Type fpcr, boolean fpexc)
+assert N IN {16,32,64};
+assert fptype IN {FPType_QNaN, FPType_SNaN};
+integer topfrac;
+case N of
+when 16 topfrac =  9;
+when 32 topfrac = 22;
+when 64 topfrac = 51;
+result = op;
+if fptype == FPType_SNaN then
+result<topfrac> = '1';
+if fpexc then FPProcessException(FPExc_InvalidOp, fpcr);
+if fpcr.DN == '1' then  // DefaultNaN requested
+result = FPDefaultNaN(fpcr, N);
+return result;
+Shared Pseudocode Functions Page 5891

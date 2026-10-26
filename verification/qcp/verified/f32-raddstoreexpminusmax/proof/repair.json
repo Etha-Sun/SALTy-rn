@@ -1,0 +1,42 @@
+{
+  "passed": false,
+  "whole_kernel_verified": false,
+  "variant": "exact_decimal_literals_and_explicit_NEON_accumulation_order_linearized_single_evaluation_temporaries",
+  "originals": "proof/originals.json",
+  "patch": "proof/repair.patch",
+  "patch_sha256": "e3489d7a2913c7106674029ec7d34e437cd72dac1df80004810e4ed9a71316c8",
+  "tokens_changed": true,
+  "kernel_hardware_configuration": {
+    "RVV_VLEN": 128,
+    "RVV_SEW": 32,
+    "RVV_LMUL": 4,
+    "RVV_VLMAX": 16
+  },
+  "reasons": [
+    "QCP compatibility: replace nine hexadecimal float literals with mathematically identical finite decimal literals, never approximated by handwritten constants.",
+    "Original RVV variable-lane accumulation and unordered reduction do not implement the NEON four-accumulator pairwise tree. Request AVL4 for bulk, retain VLMAX16, and explicitly extract lanes/reconstruct pairwise then2+1 tail order.",
+    "QCP representation compatibility: lower only nested reinterpret/bitclear and slide/extract expressions to named same-type temporaries, each original intrinsic is evaluated exactly once in the same dependency/order; no arithmetic reassociation."
+  ],
+  "retained": [
+    "all positive byte batches divisible by4",
+    "full FP32 including NaN/Inf/signed-zero/subnormal",
+    "RNE",
+    "original per-element FMA/multiply/subtract/bitshift order",
+    "unused params may be NULL",
+    "input padding3",
+    "all legal VL responses for repaired AVL requests"
+  ],
+  "counterexamples": [
+    "proof/original-counterexamples.json"
+  ],
+  "counterexample_status": "actual finite witness archived; original sums differ by1ULP",
+  "zero_fuzz_patch_replay_status": "passed current GNU zero-fuzz rollup: proof/repair-check-status.json",
+  "ordinary_helper_body_status": "three actual scalar/read/write/assert helper bodies complete5typed/second+5Print, sourcefresh dependency reuse explicit; not yet kernel credit",
+  "literal_formatter_diagnostic_history": [
+    ".build/native-counter-dvvy37c9",
+    ".build/native-counter-snma59cj"
+  ],
+  "compiler_literal_bit_identity": "9/9 compiler bits and ordinary Coq exact-real bridges passed",
+  "native_current_status_path": "proof/native-status.json",
+  "prior_native_source_receipt": "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-raddstoreexpminusmax/.build/pre-linearization-nzcmqs7g/proof/native-status.json"
+}

@@ -1,0 +1,9 @@
+From ExpMinusMax Require Import RvvTactics rvv_unit_goal.
+Import Snaive_C_Rules64. Local Open Scope sac.
+Module Checked.
+Lemma proof_of_test_rvv_safety_wit_31:ExpMinusMax.rvv_unit_goal.test_rvv_safety_wit_31.
+Proof. unfold ExpMinusMax.rvv_unit_goal.test_rvv_safety_wit_31.
+ emkf_pure_goal.
+Qed.
+End Checked.
+Print Assumptions Checked.proof_of_test_rvv_safety_wit_31.

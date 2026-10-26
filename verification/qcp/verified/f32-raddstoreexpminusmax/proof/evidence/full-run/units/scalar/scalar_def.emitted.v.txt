@@ -1,0 +1,515 @@
+Require Import Coq.ZArith.ZArith.
+Require Import Coq.Bool.Bool.
+Require Import Coq.Strings.String.
+Require Import Coq.Lists.List.
+Require Import Coq.Classes.RelationClasses.
+Require Import Coq.Classes.Morphisms.
+Require Import Coq.micromega.Psatz.
+Require Import Coq.Sorting.Permutation.
+From AUXLib Require Import int_auto Axioms Feq Idents ListLib VMap.
+Require Import SetsClass.SetsClass. Import SetsNotation.
+From SimpleC.SL Require Import Mem SeparationLogic.
+Require Import Logic.LogicGenerator.demo932.Interface.
+Local Open Scope Z_scope.
+Local Open Scope sets.
+Local Open Scope string.
+Local Open Scope list.
+Import naive_C_Rules.
+Local Open Scope sac.
+
+Record Recordint32x4_t : Type := make_record_int32x4_t {
+  int32x4_t_s0 : Z;
+  int32x4_t_s1 : Z;
+  int32x4_t_s2 : Z;
+  int32x4_t_s3 : Z
+}.
+
+Definition zero_record_int32x4_t : Recordint32x4_t :=
+  make_record_int32x4_t 0 0 0 0.
+
+Definition StructPredint32x4_t (x : Z) (v : Recordint32x4_t) : Assertion :=
+  ((&(x # "int32x4_t" ->ₛ "s0")) # Int  |-> v.(int32x4_t_s0)) **
+  ((&(x # "int32x4_t" ->ₛ "s1")) # Int  |-> v.(int32x4_t_s1)) **
+  ((&(x # "int32x4_t" ->ₛ "s2")) # Int  |-> v.(int32x4_t_s2)) **
+  ((&(x # "int32x4_t" ->ₛ "s3")) # Int  |-> v.(int32x4_t_s3)).
+
+Definition UndefStructPredint32x4_t (x : Z) : Assertion :=
+  ((&(x # "int32x4_t" ->ₛ "s0")) # Int  |->_) **
+  ((&(x # "int32x4_t" ->ₛ "s1")) # Int  |->_) **
+  ((&(x # "int32x4_t" ->ₛ "s2")) # Int  |->_) **
+  ((&(x # "int32x4_t" ->ₛ "s3")) # Int  |->_).
+
+Lemma store_Predint32x4_t_to_undef : forall x v,
+  StructPredint32x4_t x v |-- UndefStructPredint32x4_t x.
+Proof.
+  intros.
+  unfold StructPredint32x4_t, UndefStructPredint32x4_t.
+  sep_apply store_int_undef_store_int.
+  sep_apply store_int_undef_store_int.
+  sep_apply store_int_undef_store_int.
+  sep_apply store_int_undef_store_int.
+  cancel.
+Qed.
+
+Lemma undefstore_Predint32x4_t_to_align : forall x,
+  UndefStructPredint32x4_t x |-- store_align_n ((((0 + sizeof(INT)) + sizeof(INT)) + sizeof(INT)) + sizeof(INT)).
+Proof.
+  intros.
+  unfold UndefStructPredint32x4_t.
+  sep_apply undef_store_int_align4.
+  sep_apply undef_store_int_align4.
+  sep_apply undef_store_int_align4.
+  sep_apply undef_store_int_align4.
+  sep_apply store_align4_to_store_align.
+  sep_apply (store_align_merge (4 * 1)).
+  sep_apply (store_align_merge ((4 * 1 + 4 * 1))).
+  sep_apply (store_align_merge (((4 * 1 + 4 * 1) + 4 * 1))).
+  try rewrite sizeof_int.
+  try rewrite sizeof_int.
+  try rewrite sizeof_int.
+  try rewrite sizeof_int.
+  replace (((((0 + 4) + 4) + 4) + 4)) with 16 by lia.
+  replace ((((4 * 1 + 4 * 1) + 4 * 1) + 4 * 1)) with 16 by lia.
+  cancel.
+Qed.
+
+Lemma store_Predint32x4_t_to_align : forall x v,
+  StructPredint32x4_t x v |-- store_align_n ((((0 + sizeof(INT)) + sizeof(INT)) + sizeof(INT)) + sizeof(INT)).
+Proof.
+  intros.
+  sep_apply store_Predint32x4_t_to_undef.
+  sep_apply undefstore_Predint32x4_t_to_align.
+  cancel.
+Qed.
+
+Module StoreStructint32x4_tAsElement <: ELEMENT_STORE.
+  Definition A := Recordint32x4_t.
+  Definition sizeA := ((((0 + sizeof(INT)) + sizeof(INT)) + sizeof(INT)) + sizeof(INT)).
+  Definition storeA (x: addr) (lo: Z) (a: Recordint32x4_t): Assertion :=
+    (StructPredint32x4_t (x + lo * sizeA) a).
+  Definition undefstoreA (x: addr) (lo: Z): Assertion :=
+    (UndefStructPredint32x4_t (x + lo * sizeA)).
+
+  Lemma store_to_undefstore : forall x lo a,
+    storeA x lo a |-- undefstoreA x lo.
+  Proof.
+    intros.
+    unfold storeA, undefstoreA.
+    sep_apply store_Predint32x4_t_to_undef.
+    cancel.
+  Qed.
+
+  Lemma storeA_shift : forall x n lo a,
+    storeA (x + n * sizeA) lo a --||-- storeA x (lo + n) a.
+  Proof.
+    intros.
+    unfold storeA.
+    replace (x + n * sizeA + lo * sizeA) with (x + (lo + n) * sizeA) by lia.
+    reflexivity.
+  Qed.
+
+  Lemma undefstoreA_shift : forall x n lo,
+    undefstoreA (x + n * sizeA) lo --||-- undefstoreA x (lo + n).
+  Proof.
+    intros.
+    unfold undefstoreA.
+    replace (x + n * sizeA + lo * sizeA) with (x + (lo + n) * sizeA) by lia.
+    reflexivity.
+  Qed.
+
+  Lemma store_to_align : forall x lo a, storeA x lo a |-- store_align_n sizeA.
+  Proof.
+    intros.
+    unfold storeA, sizeA.
+    sep_apply store_Predint32x4_t_to_align.
+    cancel.
+  Qed.
+
+  Lemma undefstore_to_align : forall x lo, undefstoreA x lo |-- store_align_n sizeA.
+  Proof.
+    intros.
+    unfold undefstoreA, sizeA.
+    sep_apply undefstore_Predint32x4_t_to_align.
+    cancel.
+  Qed.
+
+  Lemma sizeA_valid : 0 < sizeA < Int.max_unsigned.
+  Proof.
+    unfold sizeA.
+  try rewrite sizeof_int.
+  try rewrite sizeof_int.
+  try rewrite sizeof_int.
+  try rewrite sizeof_int.
+    replace Int.max_unsigned with 4294967295 by reflexivity.
+    lia.
+  Qed.
+
+End StoreStructint32x4_tAsElement.
+
+Module Structint32x4_tArray := ArrayLib (StoreStructint32x4_tAsElement).
+
+Record Recorduint32x4_t : Type := make_record_uint32x4_t {
+  uint32x4_t_s0 : Z;
+  uint32x4_t_s1 : Z;
+  uint32x4_t_s2 : Z;
+  uint32x4_t_s3 : Z
+}.
+
+Definition zero_record_uint32x4_t : Recorduint32x4_t :=
+  make_record_uint32x4_t 0 0 0 0.
+
+Definition StructPreduint32x4_t (x : Z) (v : Recorduint32x4_t) : Assertion :=
+  ((&(x # "uint32x4_t" ->ₛ "s0")) # UInt  |-> v.(uint32x4_t_s0)) **
+  ((&(x # "uint32x4_t" ->ₛ "s1")) # UInt  |-> v.(uint32x4_t_s1)) **
+  ((&(x # "uint32x4_t" ->ₛ "s2")) # UInt  |-> v.(uint32x4_t_s2)) **
+  ((&(x # "uint32x4_t" ->ₛ "s3")) # UInt  |-> v.(uint32x4_t_s3)).
+
+Definition UndefStructPreduint32x4_t (x : Z) : Assertion :=
+  ((&(x # "uint32x4_t" ->ₛ "s0")) # UInt  |->_) **
+  ((&(x # "uint32x4_t" ->ₛ "s1")) # UInt  |->_) **
+  ((&(x # "uint32x4_t" ->ₛ "s2")) # UInt  |->_) **
+  ((&(x # "uint32x4_t" ->ₛ "s3")) # UInt  |->_).
+
+Lemma store_Preduint32x4_t_to_undef : forall x v,
+  StructPreduint32x4_t x v |-- UndefStructPreduint32x4_t x.
+Proof.
+  intros.
+  unfold StructPreduint32x4_t, UndefStructPreduint32x4_t.
+  sep_apply store_uint_undef_store_uint.
+  sep_apply store_uint_undef_store_uint.
+  sep_apply store_uint_undef_store_uint.
+  sep_apply store_uint_undef_store_uint.
+  cancel.
+Qed.
+
+Lemma undefstore_Preduint32x4_t_to_align : forall x,
+  UndefStructPreduint32x4_t x |-- store_align_n ((((0 + sizeof(UINT)) + sizeof(UINT)) + sizeof(UINT)) + sizeof(UINT)).
+Proof.
+  intros.
+  unfold UndefStructPreduint32x4_t.
+  sep_apply undef_store_uint_align4.
+  sep_apply undef_store_uint_align4.
+  sep_apply undef_store_uint_align4.
+  sep_apply undef_store_uint_align4.
+  sep_apply store_align4_to_store_align.
+  sep_apply (store_align_merge (4 * 1)).
+  sep_apply (store_align_merge ((4 * 1 + 4 * 1))).
+  sep_apply (store_align_merge (((4 * 1 + 4 * 1) + 4 * 1))).
+  try rewrite sizeof_uint.
+  try rewrite sizeof_uint.
+  try rewrite sizeof_uint.
+  try rewrite sizeof_uint.
+  replace (((((0 + 4) + 4) + 4) + 4)) with 16 by lia.
+  replace ((((4 * 1 + 4 * 1) + 4 * 1) + 4 * 1)) with 16 by lia.
+  cancel.
+Qed.
+
+Lemma store_Preduint32x4_t_to_align : forall x v,
+  StructPreduint32x4_t x v |-- store_align_n ((((0 + sizeof(UINT)) + sizeof(UINT)) + sizeof(UINT)) + sizeof(UINT)).
+Proof.
+  intros.
+  sep_apply store_Preduint32x4_t_to_undef.
+  sep_apply undefstore_Preduint32x4_t_to_align.
+  cancel.
+Qed.
+
+Module StoreStructuint32x4_tAsElement <: ELEMENT_STORE.
+  Definition A := Recorduint32x4_t.
+  Definition sizeA := ((((0 + sizeof(UINT)) + sizeof(UINT)) + sizeof(UINT)) + sizeof(UINT)).
+  Definition storeA (x: addr) (lo: Z) (a: Recorduint32x4_t): Assertion :=
+    (StructPreduint32x4_t (x + lo * sizeA) a).
+  Definition undefstoreA (x: addr) (lo: Z): Assertion :=
+    (UndefStructPreduint32x4_t (x + lo * sizeA)).
+
+  Lemma store_to_undefstore : forall x lo a,
+    storeA x lo a |-- undefstoreA x lo.
+  Proof.
+    intros.
+    unfold storeA, undefstoreA.
+    sep_apply store_Preduint32x4_t_to_undef.
+    cancel.
+  Qed.
+
+  Lemma storeA_shift : forall x n lo a,
+    storeA (x + n * sizeA) lo a --||-- storeA x (lo + n) a.
+  Proof.
+    intros.
+    unfold storeA.
+    replace (x + n * sizeA + lo * sizeA) with (x + (lo + n) * sizeA) by lia.
+    reflexivity.
+  Qed.
+
+  Lemma undefstoreA_shift : forall x n lo,
+    undefstoreA (x + n * sizeA) lo --||-- undefstoreA x (lo + n).
+  Proof.
+    intros.
+    unfold undefstoreA.
+    replace (x + n * sizeA + lo * sizeA) with (x + (lo + n) * sizeA) by lia.
+    reflexivity.
+  Qed.
+
+  Lemma store_to_align : forall x lo a, storeA x lo a |-- store_align_n sizeA.
+  Proof.
+    intros.
+    unfold storeA, sizeA.
+    sep_apply store_Preduint32x4_t_to_align.
+    cancel.
+  Qed.
+
+  Lemma undefstore_to_align : forall x lo, undefstoreA x lo |-- store_align_n sizeA.
+  Proof.
+    intros.
+    unfold undefstoreA, sizeA.
+    sep_apply undefstore_Preduint32x4_t_to_align.
+    cancel.
+  Qed.
+
+  Lemma sizeA_valid : 0 < sizeA < Int.max_unsigned.
+  Proof.
+    unfold sizeA.
+  try rewrite sizeof_uint.
+  try rewrite sizeof_uint.
+  try rewrite sizeof_uint.
+  try rewrite sizeof_uint.
+    replace Int.max_unsigned with 4294967295 by reflexivity.
+    lia.
+  Qed.
+
+End StoreStructuint32x4_tAsElement.
+
+Module Structuint32x4_tArray := ArrayLib (StoreStructuint32x4_tAsElement).
+
+Record Recordfloat32x2_t : Type := make_record_float32x2_t {
+  float32x2_t_s0 : R;
+  float32x2_t_s1 : R
+}.
+
+Definition zero_record_float32x2_t : Recordfloat32x2_t :=
+  make_record_float32x2_t 0 0.
+
+Definition StructPredfloat32x2_t (x : Z) (v : Recordfloat32x2_t) : Assertion :=
+  ((&(x # "float32x2_t" ->ₛ "s0")) # Int  |-> v.(float32x2_t_s0)) **
+  ((&(x # "float32x2_t" ->ₛ "s1")) # Int  |-> v.(float32x2_t_s1)).
+
+Definition UndefStructPredfloat32x2_t (x : Z) : Assertion :=
+  ((&(x # "float32x2_t" ->ₛ "s0")) # Int  |->_) **
+  ((&(x # "float32x2_t" ->ₛ "s1")) # Int  |->_).
+
+Lemma store_Predfloat32x2_t_to_undef : forall x v,
+  StructPredfloat32x2_t x v |-- UndefStructPredfloat32x2_t x.
+Proof.
+  intros.
+  unfold StructPredfloat32x2_t, UndefStructPredfloat32x2_t.
+  sep_apply store_int_undef_store_int.
+  sep_apply store_int_undef_store_int.
+  cancel.
+Qed.
+
+Lemma undefstore_Predfloat32x2_t_to_align : forall x,
+  UndefStructPredfloat32x2_t x |-- store_align_n ((0 + 4) + 4).
+Proof.
+  intros.
+  unfold UndefStructPredfloat32x2_t.
+  sep_apply undef_store_int_align4.
+  sep_apply undef_store_int_align4.
+  sep_apply store_align4_to_store_align.
+  sep_apply (store_align_merge (4 * 1)).
+  replace (((0 + 4) + 4)) with 8 by lia.
+  replace ((4 * 1 + 4 * 1)) with 8 by lia.
+  cancel.
+Qed.
+
+Lemma store_Predfloat32x2_t_to_align : forall x v,
+  StructPredfloat32x2_t x v |-- store_align_n ((0 + 4) + 4).
+Proof.
+  intros.
+  sep_apply store_Predfloat32x2_t_to_undef.
+  sep_apply undefstore_Predfloat32x2_t_to_align.
+  cancel.
+Qed.
+
+Module StoreStructfloat32x2_tAsElement <: ELEMENT_STORE.
+  Definition A := Recordfloat32x2_t.
+  Definition sizeA := ((0 + 4) + 4).
+  Definition storeA (x: addr) (lo: Z) (a: Recordfloat32x2_t): Assertion :=
+    (StructPredfloat32x2_t (x + lo * sizeA) a).
+  Definition undefstoreA (x: addr) (lo: Z): Assertion :=
+    (UndefStructPredfloat32x2_t (x + lo * sizeA)).
+
+  Lemma store_to_undefstore : forall x lo a,
+    storeA x lo a |-- undefstoreA x lo.
+  Proof.
+    intros.
+    unfold storeA, undefstoreA.
+    sep_apply store_Predfloat32x2_t_to_undef.
+    cancel.
+  Qed.
+
+  Lemma storeA_shift : forall x n lo a,
+    storeA (x + n * sizeA) lo a --||-- storeA x (lo + n) a.
+  Proof.
+    intros.
+    unfold storeA.
+    replace (x + n * sizeA + lo * sizeA) with (x + (lo + n) * sizeA) by lia.
+    reflexivity.
+  Qed.
+
+  Lemma undefstoreA_shift : forall x n lo,
+    undefstoreA (x + n * sizeA) lo --||-- undefstoreA x (lo + n).
+  Proof.
+    intros.
+    unfold undefstoreA.
+    replace (x + n * sizeA + lo * sizeA) with (x + (lo + n) * sizeA) by lia.
+    reflexivity.
+  Qed.
+
+  Lemma store_to_align : forall x lo a, storeA x lo a |-- store_align_n sizeA.
+  Proof.
+    intros.
+    unfold storeA, sizeA.
+    sep_apply store_Predfloat32x2_t_to_align.
+    cancel.
+  Qed.
+
+  Lemma undefstore_to_align : forall x lo, undefstoreA x lo |-- store_align_n sizeA.
+  Proof.
+    intros.
+    unfold undefstoreA, sizeA.
+    sep_apply undefstore_Predfloat32x2_t_to_align.
+    cancel.
+  Qed.
+
+  Lemma sizeA_valid : 0 < sizeA < Int.max_unsigned.
+  Proof.
+    unfold sizeA.
+    replace Int.max_unsigned with 4294967295 by reflexivity.
+    lia.
+  Qed.
+
+End StoreStructfloat32x2_tAsElement.
+
+Module Structfloat32x2_tArray := ArrayLib (StoreStructfloat32x2_tAsElement).
+
+Record Recordfloat32x4_t : Type := make_record_float32x4_t {
+  float32x4_t_s0 : R;
+  float32x4_t_s1 : R;
+  float32x4_t_s2 : R;
+  float32x4_t_s3 : R
+}.
+
+Definition zero_record_float32x4_t : Recordfloat32x4_t :=
+  make_record_float32x4_t 0 0 0 0.
+
+Definition StructPredfloat32x4_t (x : Z) (v : Recordfloat32x4_t) : Assertion :=
+  ((&(x # "float32x4_t" ->ₛ "s0")) # Int  |-> v.(float32x4_t_s0)) **
+  ((&(x # "float32x4_t" ->ₛ "s1")) # Int  |-> v.(float32x4_t_s1)) **
+  ((&(x # "float32x4_t" ->ₛ "s2")) # Int  |-> v.(float32x4_t_s2)) **
+  ((&(x # "float32x4_t" ->ₛ "s3")) # Int  |-> v.(float32x4_t_s3)).
+
+Definition UndefStructPredfloat32x4_t (x : Z) : Assertion :=
+  ((&(x # "float32x4_t" ->ₛ "s0")) # Int  |->_) **
+  ((&(x # "float32x4_t" ->ₛ "s1")) # Int  |->_) **
+  ((&(x # "float32x4_t" ->ₛ "s2")) # Int  |->_) **
+  ((&(x # "float32x4_t" ->ₛ "s3")) # Int  |->_).
+
+Lemma store_Predfloat32x4_t_to_undef : forall x v,
+  StructPredfloat32x4_t x v |-- UndefStructPredfloat32x4_t x.
+Proof.
+  intros.
+  unfold StructPredfloat32x4_t, UndefStructPredfloat32x4_t.
+  sep_apply store_int_undef_store_int.
+  sep_apply store_int_undef_store_int.
+  sep_apply store_int_undef_store_int.
+  sep_apply store_int_undef_store_int.
+  cancel.
+Qed.
+
+Lemma undefstore_Predfloat32x4_t_to_align : forall x,
+  UndefStructPredfloat32x4_t x |-- store_align_n ((((0 + 4) + 4) + 4) + 4).
+Proof.
+  intros.
+  unfold UndefStructPredfloat32x4_t.
+  sep_apply undef_store_int_align4.
+  sep_apply undef_store_int_align4.
+  sep_apply undef_store_int_align4.
+  sep_apply undef_store_int_align4.
+  sep_apply store_align4_to_store_align.
+  sep_apply (store_align_merge (4 * 1)).
+  sep_apply (store_align_merge ((4 * 1 + 4 * 1))).
+  sep_apply (store_align_merge (((4 * 1 + 4 * 1) + 4 * 1))).
+  replace (((((0 + 4) + 4) + 4) + 4)) with 16 by lia.
+  replace ((((4 * 1 + 4 * 1) + 4 * 1) + 4 * 1)) with 16 by lia.
+  cancel.
+Qed.
+
+Lemma store_Predfloat32x4_t_to_align : forall x v,
+  StructPredfloat32x4_t x v |-- store_align_n ((((0 + 4) + 4) + 4) + 4).
+Proof.
+  intros.
+  sep_apply store_Predfloat32x4_t_to_undef.
+  sep_apply undefstore_Predfloat32x4_t_to_align.
+  cancel.
+Qed.
+
+Module StoreStructfloat32x4_tAsElement <: ELEMENT_STORE.
+  Definition A := Recordfloat32x4_t.
+  Definition sizeA := ((((0 + 4) + 4) + 4) + 4).
+  Definition storeA (x: addr) (lo: Z) (a: Recordfloat32x4_t): Assertion :=
+    (StructPredfloat32x4_t (x + lo * sizeA) a).
+  Definition undefstoreA (x: addr) (lo: Z): Assertion :=
+    (UndefStructPredfloat32x4_t (x + lo * sizeA)).
+
+  Lemma store_to_undefstore : forall x lo a,
+    storeA x lo a |-- undefstoreA x lo.
+  Proof.
+    intros.
+    unfold storeA, undefstoreA.
+    sep_apply store_Predfloat32x4_t_to_undef.
+    cancel.
+  Qed.
+
+  Lemma storeA_shift : forall x n lo a,
+    storeA (x + n * sizeA) lo a --||-- storeA x (lo + n) a.
+  Proof.
+    intros.
+    unfold storeA.
+    replace (x + n * sizeA + lo * sizeA) with (x + (lo + n) * sizeA) by lia.
+    reflexivity.
+  Qed.
+
+  Lemma undefstoreA_shift : forall x n lo,
+    undefstoreA (x + n * sizeA) lo --||-- undefstoreA x (lo + n).
+  Proof.
+    intros.
+    unfold undefstoreA.
+    replace (x + n * sizeA + lo * sizeA) with (x + (lo + n) * sizeA) by lia.
+    reflexivity.
+  Qed.
+
+  Lemma store_to_align : forall x lo a, storeA x lo a |-- store_align_n sizeA.
+  Proof.
+    intros.
+    unfold storeA, sizeA.
+    sep_apply store_Predfloat32x4_t_to_align.
+    cancel.
+  Qed.
+
+  Lemma undefstore_to_align : forall x lo, undefstoreA x lo |-- store_align_n sizeA.
+  Proof.
+    intros.
+    unfold undefstoreA, sizeA.
+    sep_apply undefstore_Predfloat32x4_t_to_align.
+    cancel.
+  Qed.
+
+  Lemma sizeA_valid : 0 < sizeA < Int.max_unsigned.
+  Proof.
+    unfold sizeA.
+    replace Int.max_unsigned with 4294967295 by reflexivity.
+    lia.
+  Qed.
+
+End StoreStructfloat32x4_tAsElement.
+
+Module Structfloat32x4_tArray := ArrayLib (StoreStructfloat32x4_tAsElement).
+

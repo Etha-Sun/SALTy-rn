@@ -1,0 +1,86 @@
+Chars 0 - 40 [From~Coq~Require~Import~ZArith...] 0.365 secs (0.247u,0.111s)
+Chars 41 - 113 [From~ExpMinusMax~Require~Impor...] 5.757 secs (4.579u,0.981s)
+Chars 114 - 138 [Import~Snaive_C_Rules64.] 0.04 secs (0.04u,0.s)
+Chars 139 - 164 [#[local]~Open~Scope~Z_scope.] 0. secs (0.u,0.s)
+Chars 165 - 186 [#[local]~Open~Scope~sac.] 0. secs (0.u,0.s)
+Chars 187 - 457 [#[local]~Opaque~em_rvv_reint_i...] 0. secs (0.u,0.s)
+Chars 458 - 630 [#[local]~Opaque~StructPredvflo...] 0. secs (0.u,0.s)
+Chars 631 - 874 [Ltac~~em119_common_leaves~l~q~...] 0. secs (0.u,0.s)
+Chars 875 - 992 [Ltac~~em119_common_frame~:=~~~...] 0. secs (0.u,0.s)
+Chars 993 - 1162 [Ltac~~em119_set_leaves~l~:=~~~...] 0. secs (0.u,0.s)
+Chars 1163 - 1302 [Ltac~~em119_set_frame~:=~~~mat...] 0. secs (0.u,0.s)
+Chars 1303 - 1318 [Module~Checked.] 0. secs (0.u,0.s)
+Chars 1319 - 1424 [Lemma~proof_of_test_rvv_partia...] 0. secs (0.u,0.s)
+Chars 1425 - 1431 [Proof.] 0. secs (0.u,0.s)
+Chars 1433 - 1497 [(unfold~ExpMinusMax.rvv_unit_g...] 0. secs (0.u,0.s)
+Chars 1499 - 1508 [em_intro.] 0.006 secs (0.006u,0.s)
+Chars 1510 - 1530 [(rewrite~?emrm_eta16).] 0.022 secs (0.022u,0.s)
+Chars 1532 - 1581 [(repeat~progress~rewrite~<-~lo...] 0.087 secs (0.083u,0.003s)
+Chars 1583 - 1613 [(apply~_derivable1_andp_intros).] 0.004 secs (0.004u,0.s)
+Chars 1615 - 1616 [-] 0. secs (0.u,0.s)
+Chars 1617 - 1625 [em_pure.] 0.523 secs (0.476u,0.046s)
+Chars 1627 - 1628 [-] 0. secs (0.u,0.s)
+Chars 1629 - 1648 [em119_common_frame.] 0.479 secs (0.476u,0.002s)
+Chars 1652 - 1721 [#[local]~Transparent~StructPre...] 0. secs (0.u,0.s)
+Chars 1725 - 1783 [(unfold~StructPredvfloat32m4_t...] 0. secs (0.u,0.s)
+Chars 1787 - 1819 [(rewrite~?em_local_field_addre...] 0.314 secs (0.314u,0.s)
+Chars 1823 - 1839 [em119_set_frame.] 2.488 secs (2.302u,0.18s)
+Chars 1840 - 1844 [Qed.] 0.682 secs (0.674u,0.006s)
+Chars 1845 - 1857 [End~Checked.] 0. secs (0.u,0.s)
+Chars 1858 - 1994 [Definition~ExactSecond119~:~~~...] 0. secs (0.u,0.s)
+Axioms:
+sizeof_union_type : String.string -> Z
+sizeof_struct_type : String.string -> Z
+sizeof_enum_type : String.string -> Z
+sizeof_alias_type : String.string -> Z
+ClassicalDedekindReals.sig_not_dec : forall P : Prop, {~ ~ P} + {~ P}
+ClassicalDedekindReals.sig_forall_dec :
+  forall P : nat -> Prop,
+  (forall n : nat, {P n} + {~ P n}) ->
+  {n : nat | ~ P n} + {forall n : nat, P n}
+FunctionalExtensionality.functional_extensionality_dep :
+  forall (A : Type) (B : A -> Type) (f g : forall x : A, B x),
+  (forall x : A, f x = g x) -> f = g
+eval_addr_expr_congr :
+  Morphisms.Proper (Morphisms.respectful rvalue_expr_equiv eq) eval_addr_expr
+eval_addr_expr : rvalue_expr -> addr
+eval_addr :
+  forall (R : rvalue_expr) (t : front_end_type),
+  rvalue_expr_equiv (RE_const (eval_addr_expr R) t) R
+Classical_Prop.classic : forall P : Prop, P \/ ~ P
+RE_addr_of_congr :
+  Morphisms.Proper (Morphisms.respectful lvalue_expr_equiv rvalue_expr_equiv)
+    RE_addr_of
+LE_arrow_field_congr :
+  Morphisms.Proper
+    (Morphisms.respectful rvalue_expr_equiv
+       (Morphisms.respectful eq lvalue_expr_equiv)) LE_arrow_field
+Chars 1995 - 2061 [Print~Assumptions~Checked.proo...] 0.895 secs (0.851u,0.038s)
+Axioms:
+sizeof_union_type : String.string -> Z
+sizeof_struct_type : String.string -> Z
+sizeof_enum_type : String.string -> Z
+sizeof_alias_type : String.string -> Z
+ClassicalDedekindReals.sig_not_dec : forall P : Prop, {~ ~ P} + {~ P}
+ClassicalDedekindReals.sig_forall_dec :
+  forall P : nat -> Prop,
+  (forall n : nat, {P n} + {~ P n}) ->
+  {n : nat | ~ P n} + {forall n : nat, P n}
+FunctionalExtensionality.functional_extensionality_dep :
+  forall (A : Type) (B : A -> Type) (f g : forall x : A, B x),
+  (forall x : A, f x = g x) -> f = g
+eval_addr_expr_congr :
+  Morphisms.Proper (Morphisms.respectful rvalue_expr_equiv eq) eval_addr_expr
+eval_addr_expr : rvalue_expr -> addr
+eval_addr :
+  forall (R : rvalue_expr) (t : front_end_type),
+  rvalue_expr_equiv (RE_const (eval_addr_expr R) t) R
+Classical_Prop.classic : forall P : Prop, P \/ ~ P
+RE_addr_of_congr :
+  Morphisms.Proper (Morphisms.respectful lvalue_expr_equiv rvalue_expr_equiv)
+    RE_addr_of
+LE_arrow_field_congr :
+  Morphisms.Proper
+    (Morphisms.respectful rvalue_expr_equiv
+       (Morphisms.respectful eq lvalue_expr_equiv)) LE_arrow_field
+Chars 2062 - 2095 [Print~Assumptions~ExactSecond119.] 0.826 secs (0.805u,0.011s)

@@ -1,0 +1,43 @@
+Chars 0 - 45 [From~Coq~Require~Import~ZArith...] 0.312 secs (0.193u,0.118s)
+Chars 46 - 111 [From~ExpMinusMax~Require~Impor...] 3.416 secs (2.814u,0.6s)
+Chars 112 - 136 [Import~Snaive_C_Rules64.] 0.034 secs (0.034u,0.s)
+Chars 137 - 162 [#[local]~Open~Scope~Z_scope.] 0. secs (0.u,0.s)
+Chars 163 - 184 [#[local]~Open~Scope~sac.] 0. secs (0.u,0.s)
+Chars 185 - 200 [Module~Checked.] 0. secs (0.u,0.s)
+Chars 201 - 291 [Lemma~proof_of_test_neon_entai...] 0. secs (0.u,0.s)
+Chars 292 - 298 [Proof.] 0. secs (0.u,0.s)
+Chars 300 - 494 [(unfold~ExpMinusMax.neon_unit_...] 0.007 secs (0.007u,0.s)
+Chars 496 - 528 [Exists~(em_neon_dup~fp32_zero)~0.] 1.151 secs (1.12u,0.031s)
+Chars 530 - 581 [(change~(em_arm_output_prefix~...] 0.002 secs (0.002u,0.s)
+Chars 583 - 675 [(assert~~~(HA~:~em_same_record...] 0.001 secs (0.001u,0.s)
+Chars 677 - 687 [emk_frame.] 9.432 secs (8.459u,0.062s)
+Chars 688 - 692 [Qed.] 1.864 secs (1.801u,0.062s)
+Chars 693 - 705 [End~Checked.] 0. secs (0.u,0.s)
+Axioms:
+sizeof_union_type : String.string -> Z
+sizeof_struct_type : String.string -> Z
+sizeof_enum_type : String.string -> Z
+sizeof_alias_type : String.string -> Z
+ClassicalDedekindReals.sig_not_dec : forall P : Prop, {~ ~ P} + {~ P}
+ClassicalDedekindReals.sig_forall_dec :
+  forall P : nat -> Prop,
+  (forall n : nat, {P n} + {~ P n}) ->
+  {n : nat | ~ P n} + {forall n : nat, P n}
+FunctionalExtensionality.functional_extensionality_dep :
+  forall (A : Type) (B : A -> Type) (f g : forall x : A, B x),
+  (forall x : A, f x = g x) -> f = g
+eval_addr_expr_congr :
+  Morphisms.Proper (Morphisms.respectful rvalue_expr_equiv eq) eval_addr_expr
+eval_addr_expr : rvalue_expr -> addr
+eval_addr :
+  forall (R : rvalue_expr) (t : front_end_type),
+  rvalue_expr_equiv (RE_const (eval_addr_expr R) t) R
+Classical_Prop.classic : forall P : Prop, P \/ ~ P
+RE_addr_of_congr :
+  Morphisms.Proper (Morphisms.respectful lvalue_expr_equiv rvalue_expr_equiv)
+    RE_addr_of
+LE_arrow_field_congr :
+  Morphisms.Proper
+    (Morphisms.respectful rvalue_expr_equiv
+       (Morphisms.respectful eq lvalue_expr_equiv)) LE_arrow_field
+Chars 706 - 764 [Print~Assumptions~Checked.proo...] 2.199 secs (1.063u,0.057s)

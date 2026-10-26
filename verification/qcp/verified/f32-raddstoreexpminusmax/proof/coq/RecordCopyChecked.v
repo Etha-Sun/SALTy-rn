@@ -1,0 +1,24 @@
+From Coq Require Import ZArith Lia List.
+From ExpMinusMax Require Import Frame record_copy_goal.
+Import Snaive_C_Rules64. Local Open Scope Z_scope. Local Open Scope sac.
+Module CheckedRecordCopy:ExpMinusMax.record_copy_goal.VC_Correct.
+Lemma proof_of_em_copy4_return_wit_1:ExpMinusMax.record_copy_goal.em_copy4_return_wit_1.
+Proof. unfold ExpMinusMax.record_copy_goal.em_copy4_return_wit_1;em_intro;em_frame. Qed.
+Lemma proof_of_em_copy4_partial_solve_wit_1:ExpMinusMax.record_copy_goal.em_copy4_partial_solve_wit_1.
+Proof. unfold ExpMinusMax.record_copy_goal.em_copy4_partial_solve_wit_1;em_intro;em_frame. Qed.
+Lemma proof_of_em_copy4_partial_solve_wit_2:ExpMinusMax.record_copy_goal.em_copy4_partial_solve_wit_2.
+Proof. unfold ExpMinusMax.record_copy_goal.em_copy4_partial_solve_wit_2;em_intro;em_frame. Qed.
+Lemma proof_of_em_copy16_return_wit_1:ExpMinusMax.record_copy_goal.em_copy16_return_wit_1.
+Proof. unfold ExpMinusMax.record_copy_goal.em_copy16_return_wit_1;em_intro;em_frame. Qed.
+Lemma proof_of_em_copy16_partial_solve_wit_1:ExpMinusMax.record_copy_goal.em_copy16_partial_solve_wit_1.
+Proof. unfold ExpMinusMax.record_copy_goal.em_copy16_partial_solve_wit_1;em_intro;em_frame. Qed.
+Lemma proof_of_em_copy16_partial_solve_wit_2:ExpMinusMax.record_copy_goal.em_copy16_partial_solve_wit_2.
+Proof. unfold ExpMinusMax.record_copy_goal.em_copy16_partial_solve_wit_2;em_intro;em_frame. Qed.
+End CheckedRecordCopy.
+Module ExactRecordCopy:ExpMinusMax.record_copy_goal.VC_Correct:=CheckedRecordCopy.
+Print Assumptions ExactRecordCopy.proof_of_em_copy4_return_wit_1.
+Print Assumptions ExactRecordCopy.proof_of_em_copy4_partial_solve_wit_1.
+Print Assumptions ExactRecordCopy.proof_of_em_copy4_partial_solve_wit_2.
+Print Assumptions ExactRecordCopy.proof_of_em_copy16_return_wit_1.
+Print Assumptions ExactRecordCopy.proof_of_em_copy16_partial_solve_wit_1.
+Print Assumptions ExactRecordCopy.proof_of_em_copy16_partial_solve_wit_2.

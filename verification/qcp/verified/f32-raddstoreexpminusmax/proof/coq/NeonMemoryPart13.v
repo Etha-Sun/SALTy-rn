@@ -1,0 +1,18 @@
+From ExpMinusMax Require Import neon_unit_goal NeonMemoryPart00 NeonMemoryPart01 NeonMemoryPart02 NeonMemoryPart03 NeonMemoryPart09 NeonMemoryPart12.
+Module ConfirmedExistingFive.
+Lemma proof_of_test_neon_entail_wit_1:ExpMinusMax.neon_unit_goal.test_neon_entail_wit_1.
+Proof. exact ExpMinusMax.NeonMemoryPart00.Checked.proof_of_test_neon_entail_wit_1. Qed.
+Lemma proof_of_test_neon_entail_wit_2:ExpMinusMax.neon_unit_goal.test_neon_entail_wit_2.
+Proof. exact ExpMinusMax.NeonMemoryPart01.Checked.proof_of_test_neon_entail_wit_2. Qed.
+Lemma proof_of_test_neon_entail_wit_3:ExpMinusMax.neon_unit_goal.test_neon_entail_wit_3.
+Proof. exact ExpMinusMax.NeonMemoryPart02.Checked.proof_of_test_neon_entail_wit_3. Qed.
+Lemma proof_of_test_neon_entail_wit_4:ExpMinusMax.neon_unit_goal.test_neon_entail_wit_4.
+Proof. exact ExpMinusMax.NeonMemoryPart03.Checked.proof_of_test_neon_entail_wit_4. Qed.
+Lemma proof_of_test_neon_return_wit_1:ExpMinusMax.neon_unit_goal.test_neon_return_wit_1.
+Proof. exact ExpMinusMax.NeonMemoryPart09.Checked.proof_of_test_neon_return_wit_1. Qed.
+End ConfirmedExistingFive.
+Print Assumptions ConfirmedExistingFive.proof_of_test_neon_entail_wit_1.
+Print Assumptions ConfirmedExistingFive.proof_of_test_neon_entail_wit_2.
+Print Assumptions ConfirmedExistingFive.proof_of_test_neon_entail_wit_3.
+Print Assumptions ConfirmedExistingFive.proof_of_test_neon_entail_wit_4.
+Print Assumptions ConfirmedExistingFive.proof_of_test_neon_return_wit_1.

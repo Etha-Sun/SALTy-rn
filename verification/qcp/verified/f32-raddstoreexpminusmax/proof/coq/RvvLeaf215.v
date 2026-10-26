@@ -1,0 +1,5 @@
+From ExpMinusMax Require Export rvv_unit_goal RvvFinalRepair119.
+Module Checked.
+Definition proof_of_test_rvv_partial_solve_wit_119:ExpMinusMax.rvv_unit_goal.test_rvv_partial_solve_wit_119:=RvvFinalRepair119.Checked.proof_of_test_rvv_partial_solve_wit_119.
+End Checked.
+Print Assumptions Checked.proof_of_test_rvv_partial_solve_wit_119.

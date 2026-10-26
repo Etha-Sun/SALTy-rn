@@ -1,0 +1,49 @@
+From ExpMinusMax Require Import NeonTactics neon_unit_goal.
+Import Snaive_C_Rules64. Local Open Scope sac.
+Module Checked.
+Lemma proof_of_test_neon_partial_solve_wit_15:ExpMinusMax.neon_unit_goal.test_neon_partial_solve_wit_15.
+Proof. unfold ExpMinusMax.neon_unit_goal.test_neon_partial_solve_wit_15,ExpMinusMax.neon_unit_goal.test_neon_partial_solve_wit_15_aux.
+ em_intro;emk_frame.
+Qed.
+Lemma proof_of_test_neon_partial_solve_wit_31:ExpMinusMax.neon_unit_goal.test_neon_partial_solve_wit_31.
+Proof. unfold ExpMinusMax.neon_unit_goal.test_neon_partial_solve_wit_31,ExpMinusMax.neon_unit_goal.test_neon_partial_solve_wit_31_aux.
+ em_intro;emk_frame.
+Qed.
+Lemma proof_of_test_neon_partial_solve_wit_47:ExpMinusMax.neon_unit_goal.test_neon_partial_solve_wit_47.
+Proof. unfold ExpMinusMax.neon_unit_goal.test_neon_partial_solve_wit_47.
+ em_intro;emk_frame.
+Qed.
+Lemma proof_of_test_neon_partial_solve_wit_63:ExpMinusMax.neon_unit_goal.test_neon_partial_solve_wit_63.
+Proof. unfold ExpMinusMax.neon_unit_goal.test_neon_partial_solve_wit_63.
+ em_intro;emk_frame.
+Qed.
+Lemma proof_of_test_neon_partial_solve_wit_79:ExpMinusMax.neon_unit_goal.test_neon_partial_solve_wit_79.
+Proof. unfold ExpMinusMax.neon_unit_goal.test_neon_partial_solve_wit_79.
+ em_intro;emk_frame.
+Qed.
+Lemma proof_of_test_neon_partial_solve_wit_95:ExpMinusMax.neon_unit_goal.test_neon_partial_solve_wit_95.
+Proof. unfold ExpMinusMax.neon_unit_goal.test_neon_partial_solve_wit_95.
+ em_intro;emk_frame.
+Qed.
+Lemma proof_of_test_neon_partial_solve_wit_111:ExpMinusMax.neon_unit_goal.test_neon_partial_solve_wit_111.
+Proof. unfold ExpMinusMax.neon_unit_goal.test_neon_partial_solve_wit_111.
+ em_intro;emk_frame.
+Qed.
+Lemma proof_of_test_neon_partial_solve_wit_127:ExpMinusMax.neon_unit_goal.test_neon_partial_solve_wit_127.
+Proof. unfold ExpMinusMax.neon_unit_goal.test_neon_partial_solve_wit_127.
+ em_intro;emk_frame.
+Qed.
+Lemma proof_of_test_neon_partial_solve_wit_143:ExpMinusMax.neon_unit_goal.test_neon_partial_solve_wit_143.
+Proof. unfold ExpMinusMax.neon_unit_goal.test_neon_partial_solve_wit_143.
+ em_intro;emk_frame.
+Qed.
+End Checked.
+Print Assumptions Checked.proof_of_test_neon_partial_solve_wit_15.
+Print Assumptions Checked.proof_of_test_neon_partial_solve_wit_31.
+Print Assumptions Checked.proof_of_test_neon_partial_solve_wit_47.
+Print Assumptions Checked.proof_of_test_neon_partial_solve_wit_63.
+Print Assumptions Checked.proof_of_test_neon_partial_solve_wit_79.
+Print Assumptions Checked.proof_of_test_neon_partial_solve_wit_95.
+Print Assumptions Checked.proof_of_test_neon_partial_solve_wit_111.
+Print Assumptions Checked.proof_of_test_neon_partial_solve_wit_127.
+Print Assumptions Checked.proof_of_test_neon_partial_solve_wit_143.

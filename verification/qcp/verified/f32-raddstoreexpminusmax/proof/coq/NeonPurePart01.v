@@ -1,0 +1,5 @@
+From ExpMinusMax Require Import neon_unit_goal NeonLeaf048 NeonRepair091.
+Module Checked.
+Definition proof_of_test_neon_partial_solve_wit_2_pure:ExpMinusMax.neon_unit_goal.test_neon_partial_solve_wit_2_pure:=NeonLeaf048.Checked.proof_of_test_neon_partial_solve_wit_2_pure.
+Definition proof_of_test_neon_partial_solve_wit_29_pure:ExpMinusMax.neon_unit_goal.test_neon_partial_solve_wit_29_pure:=NeonRepair091.Checked.proof_of_test_neon_partial_solve_wit_29_pure.
+End Checked.

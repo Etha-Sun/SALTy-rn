@@ -1,0 +1,5 @@
+From ExpMinusMax Require Import neon_unit_goal NeonLeaf243 NeonLeaf259.
+Module Checked.
+Definition proof_of_test_neon_which_implies_wit_13:ExpMinusMax.neon_unit_goal.test_neon_which_implies_wit_13:=NeonLeaf243.Checked.proof_of_test_neon_which_implies_wit_13.
+Definition proof_of_test_neon_which_implies_wit_29:ExpMinusMax.neon_unit_goal.test_neon_which_implies_wit_29:=NeonLeaf259.Checked.proof_of_test_neon_which_implies_wit_29.
+End Checked.

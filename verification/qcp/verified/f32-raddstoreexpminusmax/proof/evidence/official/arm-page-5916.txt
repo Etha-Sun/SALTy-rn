@@ -1,0 +1,47 @@
+Library pseudocode for shared/functions/float/fpsub/FPSub
+// FPSub()
+// =======
+bits(N) FPSub(bits(N) op1, bits(N) op2, FPCR_Type fpcr)
+constant boolean fpexc = TRUE;       // Generate floating-point exceptions
+return FPSub(op1, op2, fpcr, fpexc);
+// FPSub()
+// =======
+bits(N) FPSub(bits(N) op1, bits(N) op2, FPCR_Type fpcr, boolean fpexc)
+assert N IN {16,32,64};
+rounding = FPRoundingMode(fpcr);
+(type1,sign1,value1) = FPUnpack(op1, fpcr, fpexc);
+(type2,sign2,value2) = FPUnpack(op2, fpcr, fpexc);
+(done,result) = FPProcessNaNs(type1, type2, op1, op2, fpcr, fpexc);
+if !done then
+inf1 = (type1 == FPType_Infinity);
+inf2 = (type2 == FPType_Infinity);
+zero1 = (type1 == FPType_Zero);
+zero2 = (type2 == FPType_Zero);
+if inf1 && inf2 && sign1 == sign2 then
+result = FPDefaultNaN(fpcr, N);
+if fpexc then FPProcessException(FPExc_InvalidOp, fpcr);
+elsif (inf1 && sign1 == '0') || (inf2 && sign2 == '1') then
+result = FPInfinity('0', N);
+elsif (inf1 && sign1 == '1') || (inf2 && sign2 == '0') then
+result = FPInfinity('1', N);
+elsif zero1 && zero2 && sign1 == NOT(sign2) then
+result = FPZero(sign1, N);
+else
+result_value = value1 - value2;
+if result_value == 0.0 then  // Sign of exact zero result depends on rounding mode
+result_sign = if rounding == FPRounding_NEGINF then '1' else '0';
+result = FPZero(result_sign, N);
+else
+result = FPRound(result_value, fpcr, rounding, fpexc, N);
+if fpexc then FPProcessDenorms(type1, type2, N, fpcr);
+return result;
+Library pseudocode for shared/functions/float/fpsub/FPSub_ZA
+// FPSub_ZA()
+// ==========
+// Calculates op1-op2 for SME2 ZA-targeting instructions.
+bits(N) FPSub_ZA(bits(N) op1, bits(N) op2, FPCR_Type fpcr_in)
+FPCR_Type fpcr = fpcr_in;
+constant boolean fpexc = FALSE; // Do not generate floating-point exceptions
+fpcr.DN = '1';                  // Generate default NaN values
+return FPSub(op1, op2, fpcr, fpexc);
+Shared Pseudocode Functions Page 5914

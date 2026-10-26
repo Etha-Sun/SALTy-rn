@@ -1,0 +1,46 @@
+Chars 0 - 45 [From~Coq~Require~Import~ZArith...] 0.308 secs (0.21u,0.098s)
+Chars 46 - 109 [From~ExpMinusMax~Require~Impor...] 3.542 secs (2.912u,0.571s)
+Chars 110 - 134 [Import~Snaive_C_Rules64.] 0.037 secs (0.037u,0.s)
+Chars 135 - 160 [#[local]~Open~Scope~Z_scope.] 0. secs (0.u,0.s)
+Chars 161 - 182 [#[local]~Open~Scope~sac.] 0. secs (0.u,0.s)
+Chars 183 - 198 [Module~Checked.] 0. secs (0.u,0.s)
+Chars 199 - 286 [Lemma~proof_of_test_rvv_entail...] 0. secs (0.u,0.s)
+Chars 287 - 293 [Proof.] 0. secs (0.u,0.s)
+Chars 295 - 528 [(unfold~ExpMinusMax.rvv_unit_g...] 0.01 secs (0.01u,0.s)
+Chars 530 - 558 [(subst~retval;~Exists~EMRV1~0).] 1.919 secs (1.89u,0.027s)
+Chars 560 - 609 [(change~(em_rvv_output_prefix~...] 0.001 secs (0.001u,0.s)
+Chars 611 - 688 [(assert~(HA~:~em_rvv_acc_prefi...] 0. secs (0.u,0.s)
+Chars 690 - 736 [(emk_literal;~emk_prepare;~rew...] 0.234 secs (0.234u,0.s)
+Chars 738 - 828 [replace~(Z.quot~(4~*~N)~4)~wit...] 0.009 secs (0.009u,0.s)
+Chars 830 - 859 [replace~(N~-~4~*~0)~with~N~by~...] 0.014 secs (0.014u,0.s)
+Chars 861 - 871 [emk_frame.] 2.88 secs (2.837u,0.025s)
+Chars 872 - 876 [Qed.] 0.675 secs (0.665u,0.008s)
+Chars 877 - 889 [End~Checked.] 0. secs (0.u,0.s)
+Axioms:
+sizeof_union_type : String.string -> Z
+sizeof_struct_type : String.string -> Z
+sizeof_enum_type : String.string -> Z
+sizeof_alias_type : String.string -> Z
+ClassicalDedekindReals.sig_not_dec : forall P : Prop, {~ ~ P} + {~ P}
+ClassicalDedekindReals.sig_forall_dec :
+  forall P : nat -> Prop,
+  (forall n : nat, {P n} + {~ P n}) ->
+  {n : nat | ~ P n} + {forall n : nat, P n}
+FunctionalExtensionality.functional_extensionality_dep :
+  forall (A : Type) (B : A -> Type) (f g : forall x : A, B x),
+  (forall x : A, f x = g x) -> f = g
+eval_addr_expr_congr :
+  Morphisms.Proper (Morphisms.respectful rvalue_expr_equiv eq) eval_addr_expr
+eval_addr_expr : rvalue_expr -> addr
+eval_addr :
+  forall (R : rvalue_expr) (t : front_end_type),
+  rvalue_expr_equiv (RE_const (eval_addr_expr R) t) R
+Classical_Prop.classic : forall P : Prop, P \/ ~ P
+RE_addr_of_congr :
+  Morphisms.Proper (Morphisms.respectful lvalue_expr_equiv rvalue_expr_equiv)
+    RE_addr_of
+LE_arrow_field_congr :
+  Morphisms.Proper
+    (Morphisms.respectful rvalue_expr_equiv
+       (Morphisms.respectful eq lvalue_expr_equiv)) LE_arrow_field
+Chars 890 - 947 [Print~Assumptions~Checked.proo...] 0.98 secs (0.942u,0.035s)

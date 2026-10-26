@@ -1,0 +1,5 @@
+From ExpMinusMax Require Export rvv_unit_goal RvvSupplementCall7.
+Module Checked.
+Definition proof_of_test_rvv_partial_solve_wit_7:ExpMinusMax.rvv_unit_goal.test_rvv_partial_solve_wit_7:=RvvSupplementCall7.Checked.proof_of_test_rvv_partial_solve_wit_7.
+End Checked.
+Print Assumptions Checked.proof_of_test_rvv_partial_solve_wit_7.

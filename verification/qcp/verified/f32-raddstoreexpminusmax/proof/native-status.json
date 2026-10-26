@@ -1,0 +1,227 @@
+{
+  "passed": true,
+  "whole_kernel_verified": false,
+  "scope": "finite native only; two legal VL representatives do not prove all VL",
+  "configured_jobs": 32,
+  "max_live_processes": 1,
+  "per_process_memory_GiB": 16,
+  "run_directory": "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-raddstoreexpminusmax/.build/native-full-_mlhfuhq",
+  "records": [
+    {
+      "label": "dependencies",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "gcc-12",
+        "-std=c11",
+        "-MM",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-raddstoreexpminusmax/shim/runtime/harness.c"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "seconds": 0.3420629359316081,
+      "timeout_seconds": 1800,
+      "log_sha256": "f5ff2fe63edbe21ce11783aed051ddab4c96992e941f0cdd9cda2ce81f5d2c99"
+    },
+    {
+      "label": "compiler-version",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "gcc-12",
+        "--version"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "seconds": 0.008479695999994874,
+      "timeout_seconds": 1800,
+      "log_sha256": "3e224b49b56582e88dcbe211e5147c1b457ce8d4481f5a64b42ab55fc1c43d6f"
+    },
+    {
+      "label": "undefined-compile",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "gcc-12",
+        "-std=c11",
+        "-O1",
+        "-g",
+        "-frounding-math",
+        "-ffp-contract=off",
+        "-fno-fast-math",
+        "-fno-pie",
+        "-no-pie",
+        "-fsanitize=undefined",
+        "-fno-sanitize-recover=all",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-Wno-unused-parameter",
+        "-Wno-unused-function",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-raddstoreexpminusmax/shim/runtime/harness.c",
+        "-lm",
+        "-o",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-raddstoreexpminusmax/.build/native-full-_mlhfuhq/undefined"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "seconds": 1.07368743699044,
+      "timeout_seconds": 1800,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "undefined-run",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-raddstoreexpminusmax/.build/native-full-_mlhfuhq/undefined"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "seconds": 0.25060101388953626,
+      "timeout_seconds": 1800,
+      "log_sha256": "f0afead02ca401ccd04448ff645cad2e43c881e63f734f131f041967f0725367"
+    },
+    {
+      "label": "undefined-common-wrong",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-raddstoreexpminusmax/.build/native-full-_mlhfuhq/undefined",
+        "wrong"
+      ],
+      "exit_code": 2,
+      "expected_exit_code": 2,
+      "seconds": 0.0467851550783962,
+      "timeout_seconds": 1800,
+      "log_sha256": "29deeef49929d8ed6cd9d71767ef9924a321c9812bed3c34878cf92cf4b1978c"
+    },
+    {
+      "label": "address-compile",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "gcc-12",
+        "-std=c11",
+        "-O1",
+        "-g",
+        "-frounding-math",
+        "-ffp-contract=off",
+        "-fno-fast-math",
+        "-fno-pie",
+        "-no-pie",
+        "-fsanitize=address",
+        "-fno-sanitize-recover=all",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-Wno-unused-parameter",
+        "-Wno-unused-function",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-raddstoreexpminusmax/shim/runtime/harness.c",
+        "-lm",
+        "-o",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-raddstoreexpminusmax/.build/native-full-_mlhfuhq/address"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "seconds": 1.7382986238226295,
+      "timeout_seconds": 1800,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "address-run",
+      "command": [
+        "systemd-run",
+        "--user",
+        "--wait",
+        "--pipe",
+        "--quiet",
+        "-p",
+        "MemoryMax=17179869184",
+        "-p",
+        "MemorySwapMax=0",
+        "python3",
+        "-c",
+        "import pathlib,subprocess,json,sys;p=pathlib.Path('/proc/self/cgroup').read_text().strip().split('::',1)[1];d=pathlib.Path('/sys/fs/cgroup')/p.lstrip('/');m=(d/'memory.max').read_text().strip();s=(d/'memory.swap.max').read_text().strip();assert m=='17179869184'and s=='0';print(json.dumps({'actual_memory_max':m,'actual_memory_swap_max':s}),flush=True);sys.exit(subprocess.run(sys.argv[1:]).returncode)",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-raddstoreexpminusmax/.build/native-full-_mlhfuhq/address"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "seconds": 1.0900097959674895,
+      "timeout_seconds": 1800,
+      "log_sha256": "ccbfb0de7c6a0ce91b094eb23b445e16de52ebe3d481ef4b34a8850670ef13e0"
+    },
+    {
+      "label": "address-common-wrong",
+      "command": [
+        "systemd-run",
+        "--user",
+        "--wait",
+        "--pipe",
+        "--quiet",
+        "-p",
+        "MemoryMax=17179869184",
+        "-p",
+        "MemorySwapMax=0",
+        "python3",
+        "-c",
+        "import pathlib,subprocess,json,sys;p=pathlib.Path('/proc/self/cgroup').read_text().strip().split('::',1)[1];d=pathlib.Path('/sys/fs/cgroup')/p.lstrip('/');m=(d/'memory.max').read_text().strip();s=(d/'memory.swap.max').read_text().strip();assert m=='17179869184'and s=='0';print(json.dumps({'actual_memory_max':m,'actual_memory_swap_max':s}),flush=True);sys.exit(subprocess.run(sys.argv[1:]).returncode)",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-raddstoreexpminusmax/.build/native-full-_mlhfuhq/address",
+        "wrong"
+      ],
+      "exit_code": 2,
+      "expected_exit_code": 2,
+      "seconds": 0.15483149094507098,
+      "timeout_seconds": 1800,
+      "log_sha256": "6f8bd395fd3500f7dbca66dcb91f6d6b673c5e3ad136f3d723ecc95faf5b30e4"
+    }
+  ],
+  "input_sha256": {
+    "shim/runtime/harness.c": "8cf0c2e48de8be51392a5e093a26babb6d1d333ba8f580c10dc512773c3478d5",
+    "shim/runtime/host.h": "a2f346480f60473adc384719664724739c8d58804b078c2a59119a79660dd395",
+    "proof/original/testNEON.c": "fb265d6a10ab6ada1ce0daf24fa8bf3331ffe45dd70067978ec1a0f641cd0460",
+    "proof/original/testRVV.c": "9c0ca18ff056bf3974023b5befb37337e539c072140ce17abfda325acabe9064",
+    "impl/testNEON.c": "8316a2835ad73cbba780749ea7e8a9f8f555830ac49c0609ce667923b56a75f2",
+    "impl/testRVV.c": "c0bae384af221a37ae0943eda865f769ec4ab57d90286b677dfc2723eaacac52",
+    "proof/native.py": "9988d1fce97533b55c1aa43fd2caf9906c036512dbdf3bd299d8caf5af6fe589",
+    "proof/repair.json": "6ef40a37dea87d0b76a925a33b3135c08775f00e7a9cf7afcec5128c00f712bf",
+    "proof/repair.patch": "e3489d7a2913c7106674029ec7d34e437cd72dac1df80004810e4ed9a71316c8",
+    "proof/originals.json": "a6e6f4faa70cdc13b429bdb2f25c00f8e10c0243b642fc8ffb7ec4f2960b0d7b",
+    "proof/literal-conversion.json": "349f1e889ba07a537514d61d255ec07428ea55c189bce9a5e566e08ecd18c046"
+  },
+  "system_headers_in_inventory": false,
+  "compiler_version": "gcc-12 (Ubuntu 12.3.0-1ubuntu1~22.04.3) 12.3.0",
+  "undefined_counts": {
+    "cases": 6192,
+    "lanes_per_side": 402480,
+    "original_sum_mismatches": 824
+  },
+  "undefined_negative_control": {
+    "neon": "3f800001",
+    "rvv": "3f800001",
+    "oracle": "3f800000",
+    "exit_code": 2
+  },
+  "address_counts": {
+    "cases": 6192,
+    "lanes_per_side": 402480,
+    "original_sum_mismatches": 824
+  },
+  "address_negative_control": {
+    "neon": "3f800001",
+    "rvv": "3f800001",
+    "oracle": "3f800000",
+    "exit_code": 2
+  },
+  "common_wrong_negative_control_rejected": true,
+  "covered": "n1..129, full-bit special/random and finite FP32, two legal original VL choices, arbitrary inactive poison representative, max/input RO alias and sum/output repeated-write alias, padding/canary, NULL params",
+  "observation": "numeric-or-bothNaN for final floating outputs and sum; no FP flags",
+  "independent_oracle": "scalar fmaf/sub/mul/bit operations, explicit four-accumulator pairwise then 2+1 tail tree; vector APIs and VL not used",
+  "formal_C_fields": 0
+}
