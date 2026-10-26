@@ -1,0 +1,45 @@
+From HwcConv Require Import public_mode_goal FastFrame MemoryModel OutputMemory HwcProgressModel NeonKernelModel HwcPublicObservationModel.
+From Coq Require Import Lia.
+Import Snaive_C_Rules64. Local Open Scope Z_scope. Local Open Scope sac.
+Local Opaque hc_data hc_output hc_neon_raw hc_rvv_raw hc_final hc_visible hc_get hc_present hwp_state_observe hwp_unwritten_frame.
+Ltac hp_const := try change(INT_MAX)with 2147483647 in *;try change(INT_MIN)with(-2147483648)in *.
+Module Checked : HwcConv.public_mode_goal.VC_Correct.
+Include HwcConv.hc_maps_strategy_proof.CheckedMaps.
+Lemma proof_of_hwc_public_mode_safety_wit_1 : HwcConv.public_mode_goal.hwc_public_mode_safety_wit_1.
+Proof. unfold HwcConv.public_mode_goal.hwc_public_mode_safety_wit_1;intros;subst;hp_const;entailer!;try lia;try assumption. Qed.
+Lemma proof_of_hwc_public_mode_safety_wit_2 : HwcConv.public_mode_goal.hwc_public_mode_safety_wit_2.
+Proof. unfold HwcConv.public_mode_goal.hwc_public_mode_safety_wit_2;intros;subst;hp_const;entailer!;try lia;try assumption. Qed.
+Lemma proof_of_hwc_public_mode_safety_wit_3 : HwcConv.public_mode_goal.hwc_public_mode_safety_wit_3.
+Proof. unfold HwcConv.public_mode_goal.hwc_public_mode_safety_wit_3;intros;subst;hp_const;entailer!;try lia;try assumption. Qed.
+Lemma proof_of_hwc_public_mode_return_wit_1 : HwcConv.public_mode_goal.hwc_public_mode_return_wit_1.
+Proof. unfold HwcConv.public_mode_goal.hwc_public_mode_return_wit_1;right;intros;entailer!;first[apply hwp_final_unwritten|apply hwp_state_refl|apply hwp_final_same_allocation]. Qed.
+Lemma proof_of_hwc_public_mode_return_wit_2 : HwcConv.public_mode_goal.hwc_public_mode_return_wit_2.
+Proof. unfold HwcConv.public_mode_goal.hwc_public_mode_return_wit_2;right;intros;entailer!;first[apply hwp_final_unwritten|apply hwp_state_refl|apply hwp_final_same_allocation]. Qed.
+Lemma proof_of_hwc_public_mode_partial_solve_wit_1_pure : HwcConv.public_mode_goal.hwc_public_mode_partial_solve_wit_1_pure.
+Proof. unfold HwcConv.public_mode_goal.hwc_public_mode_partial_solve_wit_1_pure;intros;subst;hp_const;entailer!;try lia;try assumption. Qed.
+Lemma proof_of_hwc_public_mode_partial_solve_wit_1 : HwcConv.public_mode_goal.hwc_public_mode_partial_solve_wit_1.
+Proof. unfold HwcConv.public_mode_goal.hwc_public_mode_partial_solve_wit_1;unfold HwcConv.public_mode_goal.hwc_public_mode_partial_solve_wit_1_aux;intros;subst;entailer!;try assumption;try reflexivity. Qed.
+Lemma proof_of_hwc_public_mode_partial_solve_wit_2_pure : HwcConv.public_mode_goal.hwc_public_mode_partial_solve_wit_2_pure.
+Proof. unfold HwcConv.public_mode_goal.hwc_public_mode_partial_solve_wit_2_pure;intros;subst;hp_const;entailer!;try lia;try assumption. Qed.
+Lemma proof_of_hwc_public_mode_partial_solve_wit_2 : HwcConv.public_mode_goal.hwc_public_mode_partial_solve_wit_2.
+Proof. unfold HwcConv.public_mode_goal.hwc_public_mode_partial_solve_wit_2;unfold HwcConv.public_mode_goal.hwc_public_mode_partial_solve_wit_2_aux;intros;subst;entailer!;try assumption;try reflexivity. Qed.
+End Checked.
+Module Independent : HwcConv.public_mode_goal.VC_Correct := Checked.
+Print Assumptions Checked.proof_of_hwc_public_mode_safety_wit_1.
+Print Assumptions Independent.proof_of_hwc_public_mode_safety_wit_1.
+Print Assumptions Checked.proof_of_hwc_public_mode_safety_wit_2.
+Print Assumptions Independent.proof_of_hwc_public_mode_safety_wit_2.
+Print Assumptions Checked.proof_of_hwc_public_mode_safety_wit_3.
+Print Assumptions Independent.proof_of_hwc_public_mode_safety_wit_3.
+Print Assumptions Checked.proof_of_hwc_public_mode_return_wit_1.
+Print Assumptions Independent.proof_of_hwc_public_mode_return_wit_1.
+Print Assumptions Checked.proof_of_hwc_public_mode_return_wit_2.
+Print Assumptions Independent.proof_of_hwc_public_mode_return_wit_2.
+Print Assumptions Checked.proof_of_hwc_public_mode_partial_solve_wit_1_pure.
+Print Assumptions Independent.proof_of_hwc_public_mode_partial_solve_wit_1_pure.
+Print Assumptions Checked.proof_of_hwc_public_mode_partial_solve_wit_1.
+Print Assumptions Independent.proof_of_hwc_public_mode_partial_solve_wit_1.
+Print Assumptions Checked.proof_of_hwc_public_mode_partial_solve_wit_2_pure.
+Print Assumptions Independent.proof_of_hwc_public_mode_partial_solve_wit_2_pure.
+Print Assumptions Checked.proof_of_hwc_public_mode_partial_solve_wit_2.
+Print Assumptions Independent.proof_of_hwc_public_mode_partial_solve_wit_2.

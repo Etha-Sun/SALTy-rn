@@ -1,0 +1,1481 @@
+--- a/impl/testNEON.c
++++ b/impl/testNEON.c
+@@ -1,3 +1,5 @@
++#include "../shim/store_half.h"
++#include "../shim/neon_rows_pixel.h"
+ /*
+ struct xnn_f32_minmax_params {
+   struct {
+@@ -89,235 +91,24 @@
+       }
+ 
+       // viMx0 = ( iM0c2, iM0c1, iM0c0, --- )
+-      float32x4_t vi0x0 = vmovq_n_f32(0.0f);
+-      float32x4_t vi1x0 = vmovq_n_f32(0.0f);
+-      float32x4_t vi2x0 = vmovq_n_f32(0.0f);
+-      float32x4_t vi3x0 = vmovq_n_f32(0.0f);
+-      float32x4_t vi4x0 = vmovq_n_f32(0.0f);
+ 
++      const float *hc_row0=i0;
++      const float *hc_row1=i1;
++      const float *hc_row2=i2;
++      const float *hc_row3=i3;
++      const float *hc_row4=i4;
+       size_t iw = input_width;
+       for (; iw >= 4; iw -= 4) {
+-        float32x4_t vo0x0 = vld1q_f32(w);
+-        float32x4_t vo1x0 = vo0x0;
+-        float32x4_t vo0x1 = vo0x0;
+-        float32x4_t vo1x1 = vo0x0;
+-
+-        const float32x4_t vk00c0 = vld1q_f32(w + 4);
+-
+-        // viMx1 = ( iM2c0, iM1c2, iM1c1, iM1c0 )
+-        const float32x4_t vi0x1 = vld1q_f32(i0); i0 += 4;
+-        const float32x4_t vi1x1 = vld1q_f32(i1); i1 += 4;
+-        const float32x4_t vi2x1 = vld1q_f32(i2); i2 += 4;
+-        const float32x4_t vi3x1 = vld1q_f32(i3); i3 += 4;
+-        const float32x4_t vi4x1 = vld1q_f32(i4); i4 += 4;
+-
+-        vo0x0 = vfmaq_laneq_f32(vo0x0, vk00c0, vi0x0, 1);
+-        vo1x0 = vfmaq_laneq_f32(vo1x0, vk00c0, vi2x0, 1);
+-        vo0x1 = vfmaq_laneq_f32(vo0x1, vk00c0, vi0x1, 3);
+-        vo1x1 = vfmaq_laneq_f32(vo1x1, vk00c0, vi2x1, 3);
+-
+-        const float32x4_t vk10c0 = vld1q_f32(w + 8);
+-
+-        vo0x0 = vfmaq_laneq_f32(vo0x0, vk10c0, vi1x0, 1);
+-        vo1x0 = vfmaq_laneq_f32(vo1x0, vk10c0, vi3x0, 1);
+-        vo0x1 = vfmaq_laneq_f32(vo0x1, vk10c0, vi1x1, 3);
+-        vo1x1 = vfmaq_laneq_f32(vo1x1, vk10c0, vi3x1, 3);
+-
+-        const float32x4_t vk20c0 = vld1q_f32(w + 12);
+-
+-        vo0x0 = vfmaq_laneq_f32(vo0x0, vk20c0, vi2x0, 1);
+-        vo1x0 = vfmaq_laneq_f32(vo1x0, vk20c0, vi4x0, 1);
+-        vo0x1 = vfmaq_laneq_f32(vo0x1, vk20c0, vi2x1, 3);
+-        vo1x1 = vfmaq_laneq_f32(vo1x1, vk20c0, vi4x1, 3);
+-
+-        const float32x4_t vk00c1 = vld1q_f32(w + 16);
+-
+-        // viMx2 = ( iM3c1, iM3c0, iM2c2, iM2c1 )
+-        const float32x4_t vi0x2 = vld1q_f32(i0); i0 += 4;
+-        const float32x4_t vi1x2 = vld1q_f32(i1); i1 += 4;
+-        const float32x4_t vi2x2 = vld1q_f32(i2); i2 += 4;
+-        const float32x4_t vi3x2 = vld1q_f32(i3); i3 += 4;
+-        const float32x4_t vi4x2 = vld1q_f32(i4); i4 += 4;
+-
+-        vo0x0 = vfmaq_laneq_f32(vo0x0, vk00c1, vi0x0, 2);
+-        vo1x0 = vfmaq_laneq_f32(vo1x0, vk00c1, vi2x0, 2);
+-        vo0x1 = vfmaq_laneq_f32(vo0x1, vk00c1, vi0x2, 0);
+-        vo1x1 = vfmaq_laneq_f32(vo1x1, vk00c1, vi2x2, 0);
+-
+-        const float32x4_t vk10c1 = vld1q_f32(w + 20);
+-
+-        vo0x0 = vfmaq_laneq_f32(vo0x0, vk10c1, vi1x0, 2);
+-        vo1x0 = vfmaq_laneq_f32(vo1x0, vk10c1, vi3x0, 2);
+-        vo0x1 = vfmaq_laneq_f32(vo0x1, vk10c1, vi1x2, 0);
+-        vo1x1 = vfmaq_laneq_f32(vo1x1, vk10c1, vi3x2, 0);
+-
+-        const float32x4_t vk20c1 = vld1q_f32(w + 24);
+-
+-        vo0x0 = vfmaq_laneq_f32(vo0x0, vk20c1, vi2x0, 2);
+-        vo1x0 = vfmaq_laneq_f32(vo1x0, vk20c1, vi4x0, 2);
+-        vo0x1 = vfmaq_laneq_f32(vo0x1, vk20c1, vi2x2, 0);
+-        vo1x1 = vfmaq_laneq_f32(vo1x1, vk20c1, vi4x2, 0);
+-
+-        const float32x4_t vk00c2 = vld1q_f32(w + 28);
+-
+-        vo0x0 = vfmaq_laneq_f32(vo0x0, vk00c2, vi0x0, 3);
+-        vo1x0 = vfmaq_laneq_f32(vo1x0, vk00c2, vi2x0, 3);
+-        vo0x1 = vfmaq_laneq_f32(vo0x1, vk00c2, vi0x2, 1);
+-        vo1x1 = vfmaq_laneq_f32(vo1x1, vk00c2, vi2x2, 1);
+-
+-        const float32x4_t vk10c2 = vld1q_f32(w + 32);
+-
+-        vo0x0 = vfmaq_laneq_f32(vo0x0, vk10c2, vi1x0, 3);
+-        vo1x0 = vfmaq_laneq_f32(vo1x0, vk10c2, vi3x0, 3);
+-        vo0x1 = vfmaq_laneq_f32(vo0x1, vk10c2, vi1x2, 1);
+-        vo1x1 = vfmaq_laneq_f32(vo1x1, vk10c2, vi3x2, 1);
+-
+-        const float32x4_t vk20c2 = vld1q_f32(w + 36);
+-
+-        vo0x0 = vfmaq_laneq_f32(vo0x0, vk20c2, vi2x0, 3);
+-        vo1x0 = vfmaq_laneq_f32(vo1x0, vk20c2, vi4x0, 3);
+-        vo0x1 = vfmaq_laneq_f32(vo0x1, vk20c2, vi2x2, 1);
+-        vo1x1 = vfmaq_laneq_f32(vo1x1, vk20c2, vi4x2, 1);
+-
+-        const float32x4_t vk01c0 = vld1q_f32(w + 40);
+-
+-        vo0x0 = vfmaq_laneq_f32(vo0x0, vk01c0, vi0x1, 0);
+-        vo1x0 = vfmaq_laneq_f32(vo1x0, vk01c0, vi2x1, 0);
+-        vo0x1 = vfmaq_laneq_f32(vo0x1, vk01c0, vi0x2, 2);
+-        vo1x1 = vfmaq_laneq_f32(vo1x1, vk01c0, vi2x2, 2);
+-
+-        const float32x4_t vk11c0 = vld1q_f32(w + 44);
+-
+-        vo0x0 = vfmaq_laneq_f32(vo0x0, vk11c0, vi1x1, 0);
+-        vo1x0 = vfmaq_laneq_f32(vo1x0, vk11c0, vi3x1, 0);
+-        vo0x1 = vfmaq_laneq_f32(vo0x1, vk11c0, vi1x2, 2);
+-        vo1x1 = vfmaq_laneq_f32(vo1x1, vk11c0, vi3x2, 2);
+-
+-        const float32x4_t vk21c0 = vld1q_f32(w + 48);
+-
+-        vo0x0 = vfmaq_laneq_f32(vo0x0, vk21c0, vi2x1, 0);
+-        vo1x0 = vfmaq_laneq_f32(vo1x0, vk21c0, vi4x1, 0);
+-        vo0x1 = vfmaq_laneq_f32(vo0x1, vk21c0, vi2x2, 2);
+-        vo1x1 = vfmaq_laneq_f32(vo1x1, vk21c0, vi4x2, 2);
+-
+-        const float32x4_t vk01c1 = vld1q_f32(w + 52);
+-
+-        vo0x0 = vfmaq_laneq_f32(vo0x0, vk01c1, vi0x1, 1);
+-        vo1x0 = vfmaq_laneq_f32(vo1x0, vk01c1, vi2x1, 1);
+-        vo0x1 = vfmaq_laneq_f32(vo0x1, vk01c1, vi0x2, 3);
+-        vo1x1 = vfmaq_laneq_f32(vo1x1, vk01c1, vi2x2, 3);
+-
+-        const float32x4_t vk11c1 = vld1q_f32(w + 56);
+-
+-        vo0x0 = vfmaq_laneq_f32(vo0x0, vk11c1, vi1x1, 1);
+-        vo1x0 = vfmaq_laneq_f32(vo1x0, vk11c1, vi3x1, 1);
+-        vo0x1 = vfmaq_laneq_f32(vo0x1, vk11c1, vi1x2, 3);
+-        vo1x1 = vfmaq_laneq_f32(vo1x1, vk11c1, vi3x2, 3);
+-
+-        const float32x4_t vk21c1 = vld1q_f32(w + 60);
+-
+-        vo0x0 = vfmaq_laneq_f32(vo0x0, vk21c1, vi2x1, 1);
+-        vo1x0 = vfmaq_laneq_f32(vo1x0, vk21c1, vi4x1, 1);
+-        vo0x1 = vfmaq_laneq_f32(vo0x1, vk21c1, vi2x2, 3);
+-        vo1x1 = vfmaq_laneq_f32(vo1x1, vk21c1, vi4x2, 3);
+-
+-        const float32x4_t vk01c2 = vld1q_f32(w + 64);
+-
+-        // viMx3 = ( iM4c2, iM4c1, iM4c0, iM3c2 )
+-        const float32x4_t vi0x3 = vld1q_f32(i0); i0 += 4;
+-        const float32x4_t vi1x3 = vld1q_f32(i1); i1 += 4;
+-        const float32x4_t vi2x3 = vld1q_f32(i2); i2 += 4;
+-        const float32x4_t vi3x3 = vld1q_f32(i3); i3 += 4;
+-        const float32x4_t vi4x3 = vld1q_f32(i4); i4 += 4;
+-
+-        vo0x0 = vfmaq_laneq_f32(vo0x0, vk01c2, vi0x1, 2);
+-        vo1x0 = vfmaq_laneq_f32(vo1x0, vk01c2, vi2x1, 2);
+-        vo0x1 = vfmaq_laneq_f32(vo0x1, vk01c2, vi0x3, 0);
+-        vo1x1 = vfmaq_laneq_f32(vo1x1, vk01c2, vi2x3, 0);
+-
+-        const float32x4_t vk11c2 = vld1q_f32(w + 68);
+-
+-        vo0x0 = vfmaq_laneq_f32(vo0x0, vk11c2, vi1x1, 2);
+-        vo1x0 = vfmaq_laneq_f32(vo1x0, vk11c2, vi3x1, 2);
+-        vo0x1 = vfmaq_laneq_f32(vo0x1, vk11c2, vi1x3, 0);
+-        vo1x1 = vfmaq_laneq_f32(vo1x1, vk11c2, vi3x3, 0);
+-
+-        const float32x4_t vk21c2 = vld1q_f32(w + 72);
+-
+-        vo0x0 = vfmaq_laneq_f32(vo0x0, vk21c2, vi2x1, 2);
+-        vo1x0 = vfmaq_laneq_f32(vo1x0, vk21c2, vi4x1, 2);
+-        vo0x1 = vfmaq_laneq_f32(vo0x1, vk21c2, vi2x3, 0);
+-        vo1x1 = vfmaq_laneq_f32(vo1x1, vk21c2, vi4x3, 0);
+-
+-        const float32x4_t vk02c0 = vld1q_f32(w + 76);
+-
+-        vo0x0 = vfmaq_laneq_f32(vo0x0, vk02c0, vi0x1, 3);
+-        vo1x0 = vfmaq_laneq_f32(vo1x0, vk02c0, vi2x1, 3);
+-        vo0x1 = vfmaq_laneq_f32(vo0x1, vk02c0, vi0x3, 1);
+-        vo1x1 = vfmaq_laneq_f32(vo1x1, vk02c0, vi2x3, 1);
+-
+-        const float32x4_t vk12c0 = vld1q_f32(w + 80);
+-
+-        vo0x0 = vfmaq_laneq_f32(vo0x0, vk12c0, vi1x1, 3);
+-        vo1x0 = vfmaq_laneq_f32(vo1x0, vk12c0, vi3x1, 3);
+-        vo0x1 = vfmaq_laneq_f32(vo0x1, vk12c0, vi1x3, 1);
+-        vo1x1 = vfmaq_laneq_f32(vo1x1, vk12c0, vi3x3, 1);
+-
+-        const float32x4_t vk22c0 = vld1q_f32(w + 84);
+-
+-        vo0x0 = vfmaq_laneq_f32(vo0x0, vk22c0, vi2x1, 3);
+-        vo1x0 = vfmaq_laneq_f32(vo1x0, vk22c0, vi4x1, 3);
+-        vo0x1 = vfmaq_laneq_f32(vo0x1, vk22c0, vi2x3, 1);
+-        vo1x1 = vfmaq_laneq_f32(vo1x1, vk22c0, vi4x3, 1);
+-
+-        const float32x4_t vk02c1 = vld1q_f32(w + 88);
+-
+-        vo0x0 = vfmaq_laneq_f32(vo0x0, vk02c1, vi0x2, 0);
+-        vo1x0 = vfmaq_laneq_f32(vo1x0, vk02c1, vi2x2, 0);
+-        vo0x1 = vfmaq_laneq_f32(vo0x1, vk02c1, vi0x3, 2);
+-        vo1x1 = vfmaq_laneq_f32(vo1x1, vk02c1, vi2x3, 2);
+-
+-        const float32x4_t vk12c1 = vld1q_f32(w + 92);
+-
+-        vo0x0 = vfmaq_laneq_f32(vo0x0, vk12c1, vi1x2, 0);
+-        vo1x0 = vfmaq_laneq_f32(vo1x0, vk12c1, vi3x2, 0);
+-        vo0x1 = vfmaq_laneq_f32(vo0x1, vk12c1, vi1x3, 2);
+-        vo1x1 = vfmaq_laneq_f32(vo1x1, vk12c1, vi3x3, 2);
+-
+-        const float32x4_t vk22c1 = vld1q_f32(w + 96);
+-
+-        vo0x0 = vfmaq_laneq_f32(vo0x0, vk22c1, vi2x2, 0);
+-        vo1x0 = vfmaq_laneq_f32(vo1x0, vk22c1, vi4x2, 0);
+-        vo0x1 = vfmaq_laneq_f32(vo0x1, vk22c1, vi2x3, 2);
+-        vo1x1 = vfmaq_laneq_f32(vo1x1, vk22c1, vi4x3, 2);
+-
+-        const float32x4_t vk02c2 = vld1q_f32(w + 100);
+-
+-        vo0x0 = vfmaq_laneq_f32(vo0x0, vk02c2, vi0x2, 1);
+-        vo1x0 = vfmaq_laneq_f32(vo1x0, vk02c2, vi2x2, 1);
+-        vo0x1 = vfmaq_laneq_f32(vo0x1, vk02c2, vi0x3, 3);
+-        vo1x1 = vfmaq_laneq_f32(vo1x1, vk02c2, vi2x3, 3);
+-
+-        const float32x4_t vk12c2 = vld1q_f32(w + 104);
+-
+-        vo0x0 = vfmaq_laneq_f32(vo0x0, vk12c2, vi1x2, 1);
+-        vo1x0 = vfmaq_laneq_f32(vo1x0, vk12c2, vi3x2, 1);
+-        vo0x1 = vfmaq_laneq_f32(vo0x1, vk12c2, vi1x3, 3);
+-        vo1x1 = vfmaq_laneq_f32(vo1x1, vk12c2, vi3x3, 3);
+-
+-        const float32x4_t vk22c2 = vld1q_f32(w + 108);
+-
+-        vo0x0 = vfmaq_laneq_f32(vo0x0, vk22c2, vi2x2, 1);
+-        vo1x0 = vfmaq_laneq_f32(vo1x0, vk22c2, vi4x2, 1);
+-        vo0x1 = vfmaq_laneq_f32(vo0x1, vk22c2, vi2x3, 3);
+-        vo1x1 = vfmaq_laneq_f32(vo1x1, vk22c2, vi4x3, 3);
+-
+-        vi0x0 = vi0x3;
+-        vi1x0 = vi1x3;
+-        vi2x0 = vi2x3;
+-        vi3x0 = vi3x3;
+-        vi4x0 = vi4x3;
+-
++        const size_t hc_x=(input_width-iw)/2;
++        float32x4_t vo0x0=hc_neon_rows_pixel27(hc_row0,hc_row1,hc_row2,w,input_width,hc_x);
++        float32x4_t vo1x0=hc_neon_rows_pixel27(hc_row2,hc_row3,hc_row4,w,input_width,hc_x);
++        float32x4_t vo0x1=hc_neon_rows_pixel27(hc_row0,hc_row1,hc_row2,w,input_width,hc_x+1);
++        float32x4_t vo1x1=hc_neon_rows_pixel27(hc_row2,hc_row3,hc_row4,w,input_width,hc_x+1);
++        i0+=12;
++        i1+=12;
++        i2+=12;
++        i3+=12;
++        i4+=12;
+         vo0x0 = vmaxq_f32(vo0x0, vmin);
+         vo1x0 = vmaxq_f32(vo1x0, vmin);
+         vo0x1 = vmaxq_f32(vo0x1, vmin);
+@@ -334,249 +125,27 @@
+         const float32x4_t vo1c23 = vzip2q_f32(vo1x0, vo1x1);
+ 
+         // Always 2+ output width elements remaining
+-        vst1_f32(o1c0, vget_low_f32(vo1c01)); o1c0 += 2;
+-        vst1_f32(o1c1, vget_high_f32(vo1c01)); o1c1 += 2;
+-        vst1_f32(o1c2, vget_low_f32(vo1c23)); o1c2 += 2;
+-        vst1_f32(o1c3, vget_high_f32(vo1c23)); o1c3 += 2;
+-
+-        vst1_f32(o0c0, vget_low_f32(vo0c01)); o0c0 += 2;
+-        vst1_f32(o0c1, vget_high_f32(vo0c01)); o0c1 += 2;
+-        vst1_f32(o0c2, vget_low_f32(vo0c23)); o0c2 += 2;
+-        vst1_f32(o0c3, vget_high_f32(vo0c23)); o0c3 += 2;
++        hc_store_low_half(o1c0,&vo1c01); o1c0 += 2;
++        hc_store_high_half(o1c1,&vo1c01); o1c1 += 2;
++        hc_store_low_half(o1c2,&vo1c23); o1c2 += 2;
++        hc_store_high_half(o1c3,&vo1c23); o1c3 += 2;
++
++        hc_store_low_half(o0c0,&vo0c01); o0c0 += 2;
++        hc_store_high_half(o0c1,&vo0c01); o0c1 += 2;
++        hc_store_low_half(o0c2,&vo0c23); o0c2 += 2;
++        hc_store_high_half(o0c3,&vo0c23); o0c3 += 2;
+       }
+       assert(iw < 4);
+       if XNN_UNLIKELY(iw != 0) {
+-        float32x4_t vo0x0 = vld1q_f32(w);
+-        float32x4_t vo1x0 = vo0x0;
+-        float32x4_t vo0x1 = vo0x0;
+-        float32x4_t vo1x1 = vo0x0;
+-
+-        const float32x4_t vk00c0 = vld1q_f32(w + 4);
+-
+-        // viMx1 = ( iM2c0, iM1c2, iM1c1, iM1c0 )
+-        float32x4_t vi0x1 = vld1q_f32(i0);
+-        float32x4_t vi1x1 = vld1q_f32(i1);
+-        float32x4_t vi2x1 = vld1q_f32(i2);
+-        float32x4_t vi3x1 = vld1q_f32(i3);
+-        float32x4_t vi4x1 = vld1q_f32(i4);
+-
+-        vo0x0 = vfmaq_laneq_f32(vo0x0, vk00c0, vi0x0, 1);
+-        vo1x0 = vfmaq_laneq_f32(vo1x0, vk00c0, vi2x0, 1);
+-        if (iw > 2) {
+-          vo0x1 = vfmaq_laneq_f32(vo0x1, vk00c0, vi0x1, 3);
+-          vo1x1 = vfmaq_laneq_f32(vo1x1, vk00c0, vi2x1, 3);
++        const size_t hc_x=(input_width-iw)/2;
++        float32x4_t vo0x0=hc_neon_rows_pixel27(hc_row0,hc_row1,hc_row2,w,input_width,hc_x);
++        float32x4_t vo1x0=hc_neon_rows_pixel27(hc_row2,hc_row3,hc_row4,w,input_width,hc_x);
++        float32x4_t vo0x1=vmovq_n_f32(0.0f);
++        float32x4_t vo1x1=vmovq_n_f32(0.0f);
++        if(iw==3){
++          vo0x1=hc_neon_rows_pixel27(hc_row0,hc_row1,hc_row2,w,input_width,hc_x+1);
++          vo1x1=hc_neon_rows_pixel27(hc_row2,hc_row3,hc_row4,w,input_width,hc_x+1);
+         }
+-
+-        const float32x4_t vk10c0 = vld1q_f32(w + 8);
+-
+-        vo0x0 = vfmaq_laneq_f32(vo0x0, vk10c0, vi1x0, 1);
+-        vo1x0 = vfmaq_laneq_f32(vo1x0, vk10c0, vi3x0, 1);
+-        if (iw > 2) {
+-          vo0x1 = vfmaq_laneq_f32(vo0x1, vk10c0, vi1x1, 3);
+-          vo1x1 = vfmaq_laneq_f32(vo1x1, vk10c0, vi3x1, 3);
+-        }
+-
+-        const float32x4_t vk20c0 = vld1q_f32(w + 12);
+-
+-        vo0x0 = vfmaq_laneq_f32(vo0x0, vk20c0, vi2x0, 1);
+-        vo1x0 = vfmaq_laneq_f32(vo1x0, vk20c0, vi4x0, 1);
+-        if (iw > 2) {
+-          vo0x1 = vfmaq_laneq_f32(vo0x1, vk20c0, vi2x1, 3);
+-          vo1x1 = vfmaq_laneq_f32(vo1x1, vk20c0, vi4x1, 3);
+-        }
+-
+-        const float32x4_t vk00c1 = vld1q_f32(w + 16);
+-
+-        float32x4_t vi0x2 = vmovq_n_f32(0.0f);
+-        float32x4_t vi1x2 = vmovq_n_f32(0.0f);
+-        float32x4_t vi2x2 = vmovq_n_f32(0.0f);
+-        float32x4_t vi3x2 = vmovq_n_f32(0.0f);
+-        float32x4_t vi4x2 = vmovq_n_f32(0.0f);
+-        if (iw >= 2) {
+-          // viMx2 = ( iM3c1, iM3c0, iM2c2, iM2c1 )
+-          vi0x2 = vld1q_f32(i0 + 4);
+-          vi1x2 = vld1q_f32(i1 + 4);
+-          vi2x2 = vld1q_f32(i2 + 4);
+-          vi3x2 = vld1q_f32(i3 + 4);
+-          vi4x2 = vld1q_f32(i4 + 4);
+-        }
+-
+-        vo0x0 = vfmaq_laneq_f32(vo0x0, vk00c1, vi0x0, 2);
+-        vo1x0 = vfmaq_laneq_f32(vo1x0, vk00c1, vi2x0, 2);
+-        vo0x1 = vfmaq_laneq_f32(vo0x1, vk00c1, vi0x2, 0);
+-        vo1x1 = vfmaq_laneq_f32(vo1x1, vk00c1, vi2x2, 0);
+-
+-        const float32x4_t vk10c1 = vld1q_f32(w + 20);
+-
+-        vo0x0 = vfmaq_laneq_f32(vo0x0, vk10c1, vi1x0, 2);
+-        vo1x0 = vfmaq_laneq_f32(vo1x0, vk10c1, vi3x0, 2);
+-        vo0x1 = vfmaq_laneq_f32(vo0x1, vk10c1, vi1x2, 0);
+-        vo1x1 = vfmaq_laneq_f32(vo1x1, vk10c1, vi3x2, 0);
+-
+-        const float32x4_t vk20c1 = vld1q_f32(w + 24);
+-
+-        vo0x0 = vfmaq_laneq_f32(vo0x0, vk20c1, vi2x0, 2);
+-        vo1x0 = vfmaq_laneq_f32(vo1x0, vk20c1, vi4x0, 2);
+-        vo0x1 = vfmaq_laneq_f32(vo0x1, vk20c1, vi2x2, 0);
+-        vo1x1 = vfmaq_laneq_f32(vo1x1, vk20c1, vi4x2, 0);
+-
+-        const float32x4_t vk00c2 = vld1q_f32(w + 28);
+-
+-        vo0x0 = vfmaq_laneq_f32(vo0x0, vk00c2, vi0x0, 3);
+-        vo1x0 = vfmaq_laneq_f32(vo1x0, vk00c2, vi2x0, 3);
+-        vo0x1 = vfmaq_laneq_f32(vo0x1, vk00c2, vi0x2, 1);
+-        vo1x1 = vfmaq_laneq_f32(vo1x1, vk00c2, vi2x2, 1);
+-
+-        const float32x4_t vk10c2 = vld1q_f32(w + 32);
+-
+-        vo0x0 = vfmaq_laneq_f32(vo0x0, vk10c2, vi1x0, 3);
+-        vo1x0 = vfmaq_laneq_f32(vo1x0, vk10c2, vi3x0, 3);
+-        vo0x1 = vfmaq_laneq_f32(vo0x1, vk10c2, vi1x2, 1);
+-        vo1x1 = vfmaq_laneq_f32(vo1x1, vk10c2, vi3x2, 1);
+-
+-        const float32x4_t vk20c2 = vld1q_f32(w + 36);
+-
+-        vo0x0 = vfmaq_laneq_f32(vo0x0, vk20c2, vi2x0, 3);
+-        vo1x0 = vfmaq_laneq_f32(vo1x0, vk20c2, vi4x0, 3);
+-        vo0x1 = vfmaq_laneq_f32(vo0x1, vk20c2, vi2x2, 1);
+-        vo1x1 = vfmaq_laneq_f32(vo1x1, vk20c2, vi4x2, 1);
+-
+-        const float32x4_t vk01c0 = vld1q_f32(w + 40);
+-
+-        vo0x0 = vfmaq_laneq_f32(vo0x0, vk01c0, vi0x1, 0);
+-        vo1x0 = vfmaq_laneq_f32(vo1x0, vk01c0, vi2x1, 0);
+-        if (iw > 2) {
+-          vo0x1 = vfmaq_laneq_f32(vo0x1, vk01c0, vi0x2, 2);
+-          vo1x1 = vfmaq_laneq_f32(vo1x1, vk01c0, vi2x2, 2);
+-        }
+-
+-        const float32x4_t vk11c0 = vld1q_f32(w + 44);
+-
+-        vo0x0 = vfmaq_laneq_f32(vo0x0, vk11c0, vi1x1, 0);
+-        vo1x0 = vfmaq_laneq_f32(vo1x0, vk11c0, vi3x1, 0);
+-        if (iw > 2) {
+-          vo0x1 = vfmaq_laneq_f32(vo0x1, vk11c0, vi1x2, 2);
+-          vo1x1 = vfmaq_laneq_f32(vo1x1, vk11c0, vi3x2, 2);
+-        }
+-
+-        const float32x4_t vk21c0 = vld1q_f32(w + 48);
+-
+-        vo0x0 = vfmaq_laneq_f32(vo0x0, vk21c0, vi2x1, 0);
+-        vo1x0 = vfmaq_laneq_f32(vo1x0, vk21c0, vi4x1, 0);
+-        if (iw > 2) {
+-          vo0x1 = vfmaq_laneq_f32(vo0x1, vk21c0, vi2x2, 2);
+-          vo1x1 = vfmaq_laneq_f32(vo1x1, vk21c0, vi4x2, 2);
+-        }
+-
+-        const float32x4_t vk01c1 = vld1q_f32(w + 52);
+-
+-        vo0x0 = vfmaq_laneq_f32(vo0x0, vk01c1, vi0x1, 1);
+-        vo1x0 = vfmaq_laneq_f32(vo1x0, vk01c1, vi2x1, 1);
+-        if (iw > 2) {
+-          vo0x1 = vfmaq_laneq_f32(vo0x1, vk01c1, vi0x2, 3);
+-          vo1x1 = vfmaq_laneq_f32(vo1x1, vk01c1, vi2x2, 3);
+-        }
+-
+-        const float32x4_t vk11c1 = vld1q_f32(w + 56);
+-
+-        vo0x0 = vfmaq_laneq_f32(vo0x0, vk11c1, vi1x1, 1);
+-        vo1x0 = vfmaq_laneq_f32(vo1x0, vk11c1, vi3x1, 1);
+-        if (iw > 2) {
+-          vo0x1 = vfmaq_laneq_f32(vo0x1, vk11c1, vi1x2, 3);
+-          vo1x1 = vfmaq_laneq_f32(vo1x1, vk11c1, vi3x2, 3);
+-        }
+-
+-        const float32x4_t vk21c1 = vld1q_f32(w + 60);
+-
+-        vo0x0 = vfmaq_laneq_f32(vo0x0, vk21c1, vi2x1, 1);
+-        vo1x0 = vfmaq_laneq_f32(vo1x0, vk21c1, vi4x1, 1);
+-        if (iw > 2) {
+-          vo0x1 = vfmaq_laneq_f32(vo0x1, vk21c1, vi2x2, 3);
+-          vo1x1 = vfmaq_laneq_f32(vo1x1, vk21c1, vi4x2, 3);
+-        }
+-
+-        const float32x4_t vk01c2 = vld1q_f32(w + 64);
+-
+-        float32x4_t vi0x3 = vmovq_n_f32(0.0f);
+-        float32x4_t vi1x3 = vmovq_n_f32(0.0f);
+-        float32x4_t vi2x3 = vmovq_n_f32(0.0f);
+-        float32x4_t vi3x3 = vmovq_n_f32(0.0f);
+-        float32x4_t vi4x3 = vmovq_n_f32(0.0f);
+-        if (iw > 2) {
+-          // viMx3 = ( 0.0, 0.0, 0.0, iM3c2 )
+-          vi0x3 = vld1q_lane_f32(i0 + 8, vi0x3, 0);
+-          vi1x3 = vld1q_lane_f32(i1 + 8, vi1x3, 0);
+-          vi2x3 = vld1q_lane_f32(i2 + 8, vi2x3, 0);
+-          vi3x3 = vld1q_lane_f32(i3 + 8, vi3x3, 0);
+-          vi4x3 = vld1q_lane_f32(i4 + 8, vi4x3, 0);
+-        }
+-
+-        vo0x0 = vfmaq_laneq_f32(vo0x0, vk01c2, vi0x1, 2);
+-        vo1x0 = vfmaq_laneq_f32(vo1x0, vk01c2, vi2x1, 2);
+-        vo0x1 = vfmaq_laneq_f32(vo0x1, vk01c2, vi0x3, 0);
+-        vo1x1 = vfmaq_laneq_f32(vo1x1, vk01c2, vi2x3, 0);
+-
+-        const float32x4_t vk11c2 = vld1q_f32(w + 68);
+-
+-        vo0x0 = vfmaq_laneq_f32(vo0x0, vk11c2, vi1x1, 2);
+-        vo1x0 = vfmaq_laneq_f32(vo1x0, vk11c2, vi3x1, 2);
+-        vo0x1 = vfmaq_laneq_f32(vo0x1, vk11c2, vi1x3, 0);
+-        vo1x1 = vfmaq_laneq_f32(vo1x1, vk11c2, vi3x3, 0);
+-
+-        const float32x4_t vk21c2 = vld1q_f32(w + 72);
+-
+-        vo0x0 = vfmaq_laneq_f32(vo0x0, vk21c2, vi2x1, 2);
+-        vo1x0 = vfmaq_laneq_f32(vo1x0, vk21c2, vi4x1, 2);
+-        vo0x1 = vfmaq_laneq_f32(vo0x1, vk21c2, vi2x3, 0);
+-        vo1x1 = vfmaq_laneq_f32(vo1x1, vk21c2, vi4x3, 0);
+-
+-        if (iw >= 2) {
+-          const float32x4_t vk02c0 = vld1q_f32(w + 76);
+-
+-          vo0x0 = vfmaq_laneq_f32(vo0x0, vk02c0, vi0x1, 3);
+-          vo1x0 = vfmaq_laneq_f32(vo1x0, vk02c0, vi2x1, 3);
+-
+-          const float32x4_t vk12c0 = vld1q_f32(w + 80);
+-
+-          vo0x0 = vfmaq_laneq_f32(vo0x0, vk12c0, vi1x1, 3);
+-          vo1x0 = vfmaq_laneq_f32(vo1x0, vk12c0, vi3x1, 3);
+-
+-          const float32x4_t vk22c0 = vld1q_f32(w + 84);
+-
+-          vo0x0 = vfmaq_laneq_f32(vo0x0, vk22c0, vi2x1, 3);
+-          vo1x0 = vfmaq_laneq_f32(vo1x0, vk22c0, vi4x1, 3);
+-
+-          const float32x4_t vk02c1 = vld1q_f32(w + 88);
+-
+-          vo0x0 = vfmaq_laneq_f32(vo0x0, vk02c1, vi0x2, 0);
+-          vo1x0 = vfmaq_laneq_f32(vo1x0, vk02c1, vi2x2, 0);
+-
+-          const float32x4_t vk12c1 = vld1q_f32(w + 92);
+-
+-          vo0x0 = vfmaq_laneq_f32(vo0x0, vk12c1, vi1x2, 0);
+-          vo1x0 = vfmaq_laneq_f32(vo1x0, vk12c1, vi3x2, 0);
+-
+-          const float32x4_t vk22c1 = vld1q_f32(w + 96);
+-
+-          vo0x0 = vfmaq_laneq_f32(vo0x0, vk22c1, vi2x2, 0);
+-          vo1x0 = vfmaq_laneq_f32(vo1x0, vk22c1, vi4x2, 0);
+-
+-          const float32x4_t vk02c2 = vld1q_f32(w + 100);
+-
+-          vo0x0 = vfmaq_laneq_f32(vo0x0, vk02c2, vi0x2, 1);
+-          vo1x0 = vfmaq_laneq_f32(vo1x0, vk02c2, vi2x2, 1);
+-
+-          const float32x4_t vk12c2 = vld1q_f32(w + 104);
+-
+-          vo0x0 = vfmaq_laneq_f32(vo0x0, vk12c2, vi1x2, 1);
+-          vo1x0 = vfmaq_laneq_f32(vo1x0, vk12c2, vi3x2, 1);
+-
+-          const float32x4_t vk22c2 = vld1q_f32(w + 108);
+-
+-          vo0x0 = vfmaq_laneq_f32(vo0x0, vk22c2, vi2x2, 1);
+-          vo1x0 = vfmaq_laneq_f32(vo1x0, vk22c2, vi4x2, 1);
+-        }
+-
+         vo0x0 = vmaxq_f32(vo0x0, vmin);
+         vo1x0 = vmaxq_f32(vo1x0, vmin);
+         vo0x1 = vmaxq_f32(vo0x1, vmin);
+@@ -594,15 +163,15 @@
+           const float32x4_t vo1c01 = vzip1q_f32(vo1x0, vo1x1);
+           const float32x4_t vo1c23 = vzip2q_f32(vo1x0, vo1x1);
+ 
+-          vst1_f32(o1c0, vget_low_f32(vo1c01)); o1c0 += 2;
+-          vst1_f32(o1c1, vget_high_f32(vo1c01)); o1c1 += 2;
+-          vst1_f32(o1c2, vget_low_f32(vo1c23)); o1c2 += 2;
+-          vst1_f32(o1c3, vget_high_f32(vo1c23)); o1c3 += 2;
+-
+-          vst1_f32(o0c0, vget_low_f32(vo0c01)); o0c0 += 2;
+-          vst1_f32(o0c1, vget_high_f32(vo0c01)); o0c1 += 2;
+-          vst1_f32(o0c2, vget_low_f32(vo0c23)); o0c2 += 2;
+-          vst1_f32(o0c3, vget_high_f32(vo0c23)); o0c3 += 2;
++          hc_store_low_half(o1c0,&vo1c01); o1c0 += 2;
++          hc_store_high_half(o1c1,&vo1c01); o1c1 += 2;
++          hc_store_low_half(o1c2,&vo1c23); o1c2 += 2;
++          hc_store_high_half(o1c3,&vo1c23); o1c3 += 2;
++
++          hc_store_low_half(o0c0,&vo0c01); o0c0 += 2;
++          hc_store_high_half(o0c1,&vo0c01); o0c1 += 2;
++          hc_store_low_half(o0c2,&vo0c23); o0c2 += 2;
++          hc_store_high_half(o0c3,&vo0c23); o0c3 += 2;
+         } else {
+           // Exactly 1 output width element remaining
+ 
+--- a/impl/testRVV.c
++++ b/impl/testRVV.c
+@@ -1,3 +1,6 @@
++#include "../shim/hc_rvv_pixel9.h"
++#include "../shim/nan_helpers.h"
++#include "../shim/read_api.h"
+ void test_rvv(
+     size_t input_height,
+     size_t input_width,
+@@ -78,13 +81,6 @@
+       size_t ow = output_width;
+       size_t ow_done = 0;
+       
+-      // Base pointers shifted back by 1 pixel (3 channels) to ensure all indexed offsets are non-negative
+-      const float* i0_base = (const float*)((uintptr_t)i0 - 3 * sizeof(float));
+-      const float* i1_base = (const float*)((uintptr_t)i1 - 3 * sizeof(float));
+-      const float* i2_base = (const float*)((uintptr_t)i2 - 3 * sizeof(float));
+-      const float* i3_base = (const float*)((uintptr_t)i3 - 3 * sizeof(float));
+-      const float* i4_base = (const float*)((uintptr_t)i4 - 3 * sizeof(float));
+-
+       float* current_o0c0 = o0c0;
+       float* current_o0c1 = o0c1;
+       float* current_o0c2 = o0c2;
+@@ -96,88 +92,33 @@
+ 
+       while (ow > 0) {
+         size_t vl = __riscv_vsetvl_e32m1(ow);
+-        vfloat32m1_t v_zero = __riscv_vfmv_v_f_f32m1(0.0f, vl);
+-
+-        vuint32m1_t vj = __riscv_vid_v_u32m1(vl);
+-        vuint32m1_t v_j_plus_done = __riscv_vadd_vx_u32m1(vj, ow_done, vl);
+-        
+-        // v_idx_base_pos = 2 * (j + ow_done)
+-        vuint32m1_t v_idx_base_pos = __riscv_vmul_vx_u32m1(v_j_plus_done, 2, vl);
+-        // v_offset_base_pos = v_idx_base_pos * 3 channels * sizeof(float)
+-        vuint32m1_t v_offset_base_pos = __riscv_vmul_vx_u32m1(v_idx_base_pos, 12, vl);
+-
+-        // True signed index for bounds checking: 2 * (j + ow_done) - 1
+-        vint32m1_t v_idx_base = __riscv_vsub_vx_i32m1(__riscv_vreinterpret_v_u32m1_i32m1(v_idx_base_pos), 1, vl);
+-
+-        vfloat32m1_t v_o0c0 = __riscv_vfmv_v_f_f32m1(w[0], vl);
+-        vfloat32m1_t v_o0c1 = __riscv_vfmv_v_f_f32m1(w[1], vl);
+-        vfloat32m1_t v_o0c2 = __riscv_vfmv_v_f_f32m1(w[2], vl);
+-        vfloat32m1_t v_o0c3 = __riscv_vfmv_v_f_f32m1(w[3], vl);
+-
+-        vfloat32m1_t v_o1c0 = __riscv_vfmv_v_f_f32m1(w[0], vl);
+-        vfloat32m1_t v_o1c1 = __riscv_vfmv_v_f_f32m1(w[1], vl);
+-        vfloat32m1_t v_o1c2 = __riscv_vfmv_v_f_f32m1(w[2], vl);
+-        vfloat32m1_t v_o1c3 = __riscv_vfmv_v_f_f32m1(w[3], vl);
+-
+-        for (int dx = 0; dx < 3; dx++) {
+-          vint32m1_t v_idx = __riscv_vadd_vx_i32m1(v_idx_base, dx, vl);
+-          vbool32_t mask = __riscv_vmand_mm_b32(
+-              __riscv_vmsge_vx_i32m1_b32(v_idx, 0, vl),
+-              __riscv_vmslt_vx_i32m1_b32(v_idx, input_width, vl),
+-              vl
+-          );
+-
+-          for (int c_in = 0; c_in < 3; c_in++) {
+-            int32_t scalar_offset = (dx * 3 + c_in) * 4;
+-            // Per-lane offset is (lane+ow_done)*24 + scalar_offset: a fixed 24-byte stride,
+-            // so a strided load + mask-merge replaces the indexed gather (same values).
+-            const ptrdiff_t v_off = (ptrdiff_t)ow_done * 24 + scalar_offset;
+-            const ptrdiff_t v_str = 24;
+-            vfloat32m1_t v_in0 = __riscv_vmerge_vvm_f32m1(v_zero, __riscv_vlse32_v_f32m1((const float*)((uintptr_t)i0_base + v_off), v_str, vl), mask, vl);
+-            vfloat32m1_t v_in1 = __riscv_vmerge_vvm_f32m1(v_zero, __riscv_vlse32_v_f32m1((const float*)((uintptr_t)i1_base + v_off), v_str, vl), mask, vl);
+-            vfloat32m1_t v_in2 = __riscv_vmerge_vvm_f32m1(v_zero, __riscv_vlse32_v_f32m1((const float*)((uintptr_t)i2_base + v_off), v_str, vl), mask, vl);
+-            vfloat32m1_t v_in3 = __riscv_vmerge_vvm_f32m1(v_zero, __riscv_vlse32_v_f32m1((const float*)((uintptr_t)i3_base + v_off), v_str, vl), mask, vl);
+-            vfloat32m1_t v_in4 = __riscv_vmerge_vvm_f32m1(v_zero, __riscv_vlse32_v_f32m1((const float*)((uintptr_t)i4_base + v_off), v_str, vl), mask, vl);
+-
+-            for (int ky = 0; ky < 3; ky++) {
+-              vfloat32m1_t v_in_row0 = (ky == 0) ? v_in0 : (ky == 1) ? v_in1 : v_in2;
+-              vfloat32m1_t v_in_row1 = (ky == 0) ? v_in2 : (ky == 1) ? v_in3 : v_in4;
+-
+-              // NEON c3x4 plane order = kc*9 + ch*3 + kr (= dx*9 + c_in*3 + ky); aligns weight
+-              // reads with the gold so the shared symbolic weight buffer matches on both sides.
+-              int w_idx = (dx * 9 + c_in * 3 + ky) * 4;
+-              float w0 = w[4 + w_idx + 0];
+-              float w1 = w[4 + w_idx + 1];
+-              float w2 = w[4 + w_idx + 2];
+-              float w3 = w[4 + w_idx + 3];
+-
+-              v_o0c0 = __riscv_vfmacc_vf_f32m1(v_o0c0, w0, v_in_row0, vl);
+-              v_o0c1 = __riscv_vfmacc_vf_f32m1(v_o0c1, w1, v_in_row0, vl);
+-              v_o0c2 = __riscv_vfmacc_vf_f32m1(v_o0c2, w2, v_in_row0, vl);
+-              v_o0c3 = __riscv_vfmacc_vf_f32m1(v_o0c3, w3, v_in_row0, vl);
+-
+-              v_o1c0 = __riscv_vfmacc_vf_f32m1(v_o1c0, w0, v_in_row1, vl);
+-              v_o1c1 = __riscv_vfmacc_vf_f32m1(v_o1c1, w1, v_in_row1, vl);
+-              v_o1c2 = __riscv_vfmacc_vf_f32m1(v_o1c2, w2, v_in_row1, vl);
+-              v_o1c3 = __riscv_vfmacc_vf_f32m1(v_o1c3, w3, v_in_row1, vl);
+-            }
+-          }
+-        }
+-
+-        v_o0c0 = __riscv_vfmax_vf_f32m1(v_o0c0, params->scalar.min, vl);
+-        v_o0c1 = __riscv_vfmax_vf_f32m1(v_o0c1, params->scalar.min, vl);
+-        v_o0c2 = __riscv_vfmax_vf_f32m1(v_o0c2, params->scalar.min, vl);
+-        v_o0c3 = __riscv_vfmax_vf_f32m1(v_o0c3, params->scalar.min, vl);
+-
+-        v_o1c0 = __riscv_vfmax_vf_f32m1(v_o1c0, params->scalar.min, vl);
+-        v_o1c1 = __riscv_vfmax_vf_f32m1(v_o1c1, params->scalar.min, vl);
+-        v_o1c2 = __riscv_vfmax_vf_f32m1(v_o1c2, params->scalar.min, vl);
+-        v_o1c3 = __riscv_vfmax_vf_f32m1(v_o1c3, params->scalar.min, vl);
+-
+-        v_o0c0 = __riscv_vfmin_vf_f32m1(v_o0c0, params->scalar.max, vl);
+-        v_o0c1 = __riscv_vfmin_vf_f32m1(v_o0c1, params->scalar.max, vl);
+-        v_o0c2 = __riscv_vfmin_vf_f32m1(v_o0c2, params->scalar.max, vl);
+-        v_o0c3 = __riscv_vfmin_vf_f32m1(v_o0c3, params->scalar.max, vl);
++        vfloat32m1_t v_o0c0 = hc_rvv_pixel9_raw(i0,i1,i2,w,input_width,ow_done,0u,vl);
++        vfloat32m1_t v_o0c1 = hc_rvv_pixel9_raw(i0,i1,i2,w,input_width,ow_done,1u,vl);
++        vfloat32m1_t v_o0c2 = hc_rvv_pixel9_raw(i0,i1,i2,w,input_width,ow_done,2u,vl);
++        vfloat32m1_t v_o0c3 = hc_rvv_pixel9_raw(i0,i1,i2,w,input_width,ow_done,3u,vl);
++        vfloat32m1_t v_o1c0 = hc_rvv_pixel9_raw(i2,i3,i4,w,input_width,ow_done,0u,vl);
++        vfloat32m1_t v_o1c1 = hc_rvv_pixel9_raw(i2,i3,i4,w,input_width,ow_done,1u,vl);
++        vfloat32m1_t v_o1c2 = hc_rvv_pixel9_raw(i2,i3,i4,w,input_width,ow_done,2u,vl);
++        vfloat32m1_t v_o1c3 = hc_rvv_pixel9_raw(i2,i3,i4,w,input_width,ow_done,3u,vl);
++
++        v_o0c0 = hc_max_f32m1(&v_o0c0, hc_read_scalar(&(params->scalar.min)), vl);
++        v_o0c1 = hc_max_f32m1(&v_o0c1, hc_read_scalar(&(params->scalar.min)), vl);
++        v_o0c2 = hc_max_f32m1(&v_o0c2, hc_read_scalar(&(params->scalar.min)), vl);
++        v_o0c3 = hc_max_f32m1(&v_o0c3, hc_read_scalar(&(params->scalar.min)), vl);
++
++        v_o1c0 = hc_max_f32m1(&v_o1c0, hc_read_scalar(&(params->scalar.min)), vl);
++        v_o1c1 = hc_max_f32m1(&v_o1c1, hc_read_scalar(&(params->scalar.min)), vl);
++        v_o1c2 = hc_max_f32m1(&v_o1c2, hc_read_scalar(&(params->scalar.min)), vl);
++        v_o1c3 = hc_max_f32m1(&v_o1c3, hc_read_scalar(&(params->scalar.min)), vl);
++
++        v_o0c0 = hc_min_f32m1(&v_o0c0, hc_read_scalar(&(params->scalar.max)), vl);
++        v_o0c1 = hc_min_f32m1(&v_o0c1, hc_read_scalar(&(params->scalar.max)), vl);
++        v_o0c2 = hc_min_f32m1(&v_o0c2, hc_read_scalar(&(params->scalar.max)), vl);
++        v_o0c3 = hc_min_f32m1(&v_o0c3, hc_read_scalar(&(params->scalar.max)), vl);
++        v_o1c0 = hc_min_f32m1(&v_o1c0, hc_read_scalar(&(params->scalar.max)), vl);
++        v_o1c1 = hc_min_f32m1(&v_o1c1, hc_read_scalar(&(params->scalar.max)), vl);
++        v_o1c2 = hc_min_f32m1(&v_o1c2, hc_read_scalar(&(params->scalar.max)), vl);
++        v_o1c3 = hc_min_f32m1(&v_o1c3, hc_read_scalar(&(params->scalar.max)), vl);
+ 
+         // Store row 1 BEFORE row 0: when there is a single output row the caller
+         // aliases output1==output0, so the LAST store must be the valid row 0
+--- /dev/null
++++ b/shim/assert.c
+@@ -0,0 +1,4 @@
++#include "assert_api.h"
++void hc_assert(int c)
++/*@ Require c!=0 && emp Ensure emp */
++{}
+--- /dev/null
++++ b/shim/assert_api.h
+@@ -0,0 +1,6 @@
++#ifndef HWC_ASSERT_API_H
++#define HWC_ASSERT_API_H
++void hc_assert(int c)
++/*@ Require c!=0 && emp Ensure emp */;
++#define assert(c) hc_assert(c)
++#endif
+--- /dev/null
++++ b/shim/clamp_views.h
+@@ -0,0 +1,31 @@
++#ifndef HWC_CLAMP_VIEWS_H
++#define HWC_CLAMP_VIEWS_H
++#include "vector_types.h"
++#include "copy_float.h"
++/*@ Import Coq Require Import HwcConv.ClampModel HwcConv.MaskModel */
++/*@ Extern Coq (hc_legal_mask : Recordvbool32_t -> Z -> Prop) (hc_uconstant : Recordvuint32m1_t -> Z -> Z -> Prop)
++ (hc_reinterpret : Recordvfloat32m1_t -> Recordvuint32m1_t -> Prop)
++ (hc_selfmask : Recordvbool32_t -> Recordvfloat32m1_t -> Z -> Prop)
++ (hc_isa_min : Recordvfloat32m1_t -> Recordvfloat32m1_t -> fp32 -> Z -> Prop)
++ (hc_isa_max : Recordvfloat32m1_t -> Recordvfloat32m1_t -> fp32 -> Z -> Prop)
++ (hc_isa_merge : Recordvfloat32m1_t -> Recordvfloat32m1_t -> Recordvfloat32m1_t -> Recordvbool32_t -> Z -> Prop) */
++vuint32m1_t hc_isa_splat_u32(unsigned int x,size_t vl)
++/*@ Require 0<=vl && vl<=4 && emp Ensure exists(R:Recordvuint32m1_t), hc_uconstant(R,x,vl) && StructPredvuint32m1_t(&__return,R) */;
++vfloat32m1_t hc_isa_bits_to_float(const vuint32m1_t *a)
++/*@ With (A:Recordvuint32m1_t) Require StructPredvuint32m1_t(a,A) Ensure exists(R:Recordvfloat32m1_t),hc_reinterpret(R,A) && (StructPredvuint32m1_t(a,A) * StructPredvfloat32m1_t(&__return,R)) */;
++vbool32_t hc_isa_self_ne(const vfloat32m1_t *a,size_t vl)
++/*@ With (A:Recordvfloat32m1_t) Require 0<=vl && vl<=4 && StructPredvfloat32m1_t(a,A) Ensure exists(R:Recordvbool32_t),hc_selfmask(R,A,vl) && hc_legal_mask(R,vl) && (StructPredvfloat32m1_t(a,A) * StructPredvbool32_t(&__return,R)) */;
++vfloat32m1_t hc_isa_min_view(const vfloat32m1_t *a,float b,size_t vl)
++/*@ With (A:Recordvfloat32m1_t) Require 0<=vl && vl<=4 && StructPredvfloat32m1_t(a,A) Ensure exists(R:Recordvfloat32m1_t),hc_isa_min(R,A,b,vl) && (StructPredvfloat32m1_t(a,A) * StructPredvfloat32m1_t(&__return,R)) */;
++vfloat32m1_t hc_isa_max_view(const vfloat32m1_t *a,float b,size_t vl)
++/*@ With (A:Recordvfloat32m1_t) Require 0<=vl && vl<=4 && StructPredvfloat32m1_t(a,A) Ensure exists(R:Recordvfloat32m1_t),hc_isa_max(R,A,b,vl) && (StructPredvfloat32m1_t(a,A) * StructPredvfloat32m1_t(&__return,R)) */;
++vfloat32m1_t hc_isa_merge_view(const vfloat32m1_t *a,const vfloat32m1_t *b,const vbool32_t *m,size_t vl)
++/*@ With (A:Recordvfloat32m1_t) (B:Recordvfloat32m1_t) (Mask:Recordvbool32_t) Require 0<=vl && vl<=4 && hc_legal_mask(Mask,vl) && (StructPredvfloat32m1_t(a,A) * StructPredvfloat32m1_t(b,B) * StructPredvbool32_t(m,Mask)) Ensure exists(R:Recordvfloat32m1_t),hc_isa_merge(R,A,B,Mask,vl) && (StructPredvfloat32m1_t(a,A) * StructPredvfloat32m1_t(b,B) * StructPredvbool32_t(m,Mask) * StructPredvfloat32m1_t(&__return,R)) */;
++#define __riscv_vmv_v_x_u32m1(x,vl) hc_isa_splat_u32(x,vl)
++#define __riscv_vreinterpret_v_u32m1_f32m1(a) hc_isa_bits_to_float(&(a))
++/* Source-call guard: both operands must be the same side-effect-free local a. */
++#define __riscv_vmfne_vv_f32m1_b32(a,b,vl) hc_isa_self_ne(&(a),vl)
++#define __riscv_vfmin_vf_f32m1(a,b,vl) hc_isa_min_view(&(a),b,vl)
++#define __riscv_vfmax_vf_f32m1(a,b,vl) hc_isa_max_view(&(a),b,vl)
++#define __riscv_vmerge_vvm_f32m1(a,b,m,vl) hc_isa_merge_view(&(a),&(b),&(m),vl)
++#endif
+--- /dev/null
++++ b/shim/copy_float.c
+@@ -0,0 +1,4 @@
++#include "copy_float.h"
++float hc_copy_float(float x)
++/*@ Require emp Ensure hc_same_bits(__return,x) && emp */
++{ return x; }
+--- /dev/null
++++ b/shim/copy_float.h
+@@ -0,0 +1,11 @@
++#ifndef HWC_COPY_FLOAT_H
++#define HWC_COPY_FLOAT_H
++#ifdef HWC_FORMAL
++#include "types.h"
++/*@ Import Coq Require Import HwcConv.FloatCopyModel */
++/*@ Extern Coq (hc_same_bits : fp32 -> fp32 -> Prop) */
++#endif
++float hc_copy_float(float x)
++/*@ Require emp Ensure hc_same_bits(__return,x) && emp */
++;
++#endif
+--- /dev/null
++++ b/shim/hc_rvv_pixel9.c
+@@ -0,0 +1,28 @@
++/* UNVERIFIED SOURCE DRAFT. Not part of the public implementation. */
++#include "hc_rvv_pixel9.h"
++vfloat32m1_t hc_rvv_pixel9_raw(const float *p0,const float *p1,const float *p2,const float *w,size_t width,size_t x,unsigned int lane,size_t vl)
++/*@ With(F:HwcROMap) Require 0<width && 0<=x && x<(width+1)/2 && 0<=lane && lane<4 && 0<=vl && vl<=4 && vl<=(width+1)/2-x && hc_footprint(p0,3*width+3) && hc_footprint(p1,3*width+3) && hc_footprint(p2,3*width+3) && hc_footprint(w,112) && hc_window(F,p0,3*width+3) && hc_window(F,p1,3*width+3) && hc_window(F,p2,3*width+3) && hc_window(F,w,112) && hc_data(F) Ensure exists(R:Recordvfloat32m1_t),hc_rvv_pixel9_prefix(R,F,p0,p1,p2,w,width,x,lane,9,vl) && (hc_data(F)*StructPredvfloat32m1_t(&__return,R)) */
++{
++ float bias=hc_read_scalar(w+lane) /*@ where F=F */;
++ vfloat32m1_t a=__riscv_vfmv_v_f_f32m1(bias,vl);
++ /*@ Assert exists(A:Recordvfloat32m1_t),p0==p0@pre && p1==p1@pre && p2==p2@pre && w==w@pre && width==width@pre && x==x@pre && lane==lane@pre && vl==vl@pre && 0<width && 0<=x && x<(width+1)/2 && 0<=lane && lane<4 && 0<=vl && vl<=4 && vl<=(width+1)/2-x && hc_footprint(p0,3*width+3) && hc_footprint(p1,3*width+3) && hc_footprint(p2,3*width+3) && hc_footprint(w,112) && hc_window(F,p0,3*width+3) && hc_window(F,p1,3*width+3) && hc_window(F,p2,3*width+3) && hc_window(F,w,112) && hc_same_bits(bias,hc_rvv_pixel9_bias(F,w,lane)) && hc_rvv_pixel9_prefix(A,F,p0,p1,p2,w,width,x,lane,0,vl) && (hc_data(F)*StructPredvfloat32m1_t(&a,A)) */
++ a=hc_rvv_rows_fma3(&a,p0,p1,p2,w,width,x,0u,0u,lane,vl) /*@ where F=F */;
++ /*@ Assert exists(A:Recordvfloat32m1_t),p0==p0@pre && p1==p1@pre && p2==p2@pre && w==w@pre && width==width@pre && x==x@pre && lane==lane@pre && vl==vl@pre && 0<width && 0<=x && x<(width+1)/2 && 0<=lane && lane<4 && 0<=vl && vl<=4 && vl<=(width+1)/2-x && hc_footprint(p0,3*width+3) && hc_footprint(p1,3*width+3) && hc_footprint(p2,3*width+3) && hc_footprint(w,112) && hc_window(F,p0,3*width+3) && hc_window(F,p1,3*width+3) && hc_window(F,p2,3*width+3) && hc_window(F,w,112) && hc_same_bits(bias,hc_rvv_pixel9_bias(F,w,lane)) && hc_rvv_pixel9_prefix(A,F,p0,p1,p2,w,width,x,lane,1,vl) && (hc_data(F)*StructPredvfloat32m1_t(&a,A)) */
++ a=hc_rvv_rows_fma3(&a,p0,p1,p2,w,width,x,0u,1u,lane,vl) /*@ where F=F */;
++ /*@ Assert exists(A:Recordvfloat32m1_t),p0==p0@pre && p1==p1@pre && p2==p2@pre && w==w@pre && width==width@pre && x==x@pre && lane==lane@pre && vl==vl@pre && 0<width && 0<=x && x<(width+1)/2 && 0<=lane && lane<4 && 0<=vl && vl<=4 && vl<=(width+1)/2-x && hc_footprint(p0,3*width+3) && hc_footprint(p1,3*width+3) && hc_footprint(p2,3*width+3) && hc_footprint(w,112) && hc_window(F,p0,3*width+3) && hc_window(F,p1,3*width+3) && hc_window(F,p2,3*width+3) && hc_window(F,w,112) && hc_same_bits(bias,hc_rvv_pixel9_bias(F,w,lane)) && hc_rvv_pixel9_prefix(A,F,p0,p1,p2,w,width,x,lane,2,vl) && (hc_data(F)*StructPredvfloat32m1_t(&a,A)) */
++ a=hc_rvv_rows_fma3(&a,p0,p1,p2,w,width,x,0u,2u,lane,vl) /*@ where F=F */;
++ /*@ Assert exists(A:Recordvfloat32m1_t),p0==p0@pre && p1==p1@pre && p2==p2@pre && w==w@pre && width==width@pre && x==x@pre && lane==lane@pre && vl==vl@pre && 0<width && 0<=x && x<(width+1)/2 && 0<=lane && lane<4 && 0<=vl && vl<=4 && vl<=(width+1)/2-x && hc_footprint(p0,3*width+3) && hc_footprint(p1,3*width+3) && hc_footprint(p2,3*width+3) && hc_footprint(w,112) && hc_window(F,p0,3*width+3) && hc_window(F,p1,3*width+3) && hc_window(F,p2,3*width+3) && hc_window(F,w,112) && hc_same_bits(bias,hc_rvv_pixel9_bias(F,w,lane)) && hc_rvv_pixel9_prefix(A,F,p0,p1,p2,w,width,x,lane,3,vl) && (hc_data(F)*StructPredvfloat32m1_t(&a,A)) */
++ a=hc_rvv_rows_fma3(&a,p0,p1,p2,w,width,x,1u,0u,lane,vl) /*@ where F=F */;
++ /*@ Assert exists(A:Recordvfloat32m1_t),p0==p0@pre && p1==p1@pre && p2==p2@pre && w==w@pre && width==width@pre && x==x@pre && lane==lane@pre && vl==vl@pre && 0<width && 0<=x && x<(width+1)/2 && 0<=lane && lane<4 && 0<=vl && vl<=4 && vl<=(width+1)/2-x && hc_footprint(p0,3*width+3) && hc_footprint(p1,3*width+3) && hc_footprint(p2,3*width+3) && hc_footprint(w,112) && hc_window(F,p0,3*width+3) && hc_window(F,p1,3*width+3) && hc_window(F,p2,3*width+3) && hc_window(F,w,112) && hc_same_bits(bias,hc_rvv_pixel9_bias(F,w,lane)) && hc_rvv_pixel9_prefix(A,F,p0,p1,p2,w,width,x,lane,4,vl) && (hc_data(F)*StructPredvfloat32m1_t(&a,A)) */
++ a=hc_rvv_rows_fma3(&a,p0,p1,p2,w,width,x,1u,1u,lane,vl) /*@ where F=F */;
++ /*@ Assert exists(A:Recordvfloat32m1_t),p0==p0@pre && p1==p1@pre && p2==p2@pre && w==w@pre && width==width@pre && x==x@pre && lane==lane@pre && vl==vl@pre && 0<width && 0<=x && x<(width+1)/2 && 0<=lane && lane<4 && 0<=vl && vl<=4 && vl<=(width+1)/2-x && hc_footprint(p0,3*width+3) && hc_footprint(p1,3*width+3) && hc_footprint(p2,3*width+3) && hc_footprint(w,112) && hc_window(F,p0,3*width+3) && hc_window(F,p1,3*width+3) && hc_window(F,p2,3*width+3) && hc_window(F,w,112) && hc_same_bits(bias,hc_rvv_pixel9_bias(F,w,lane)) && hc_rvv_pixel9_prefix(A,F,p0,p1,p2,w,width,x,lane,5,vl) && (hc_data(F)*StructPredvfloat32m1_t(&a,A)) */
++ a=hc_rvv_rows_fma3(&a,p0,p1,p2,w,width,x,1u,2u,lane,vl) /*@ where F=F */;
++ /*@ Assert exists(A:Recordvfloat32m1_t),p0==p0@pre && p1==p1@pre && p2==p2@pre && w==w@pre && width==width@pre && x==x@pre && lane==lane@pre && vl==vl@pre && 0<width && 0<=x && x<(width+1)/2 && 0<=lane && lane<4 && 0<=vl && vl<=4 && vl<=(width+1)/2-x && hc_footprint(p0,3*width+3) && hc_footprint(p1,3*width+3) && hc_footprint(p2,3*width+3) && hc_footprint(w,112) && hc_window(F,p0,3*width+3) && hc_window(F,p1,3*width+3) && hc_window(F,p2,3*width+3) && hc_window(F,w,112) && hc_same_bits(bias,hc_rvv_pixel9_bias(F,w,lane)) && hc_rvv_pixel9_prefix(A,F,p0,p1,p2,w,width,x,lane,6,vl) && (hc_data(F)*StructPredvfloat32m1_t(&a,A)) */
++ a=hc_rvv_rows_fma3(&a,p0,p1,p2,w,width,x,2u,0u,lane,vl) /*@ where F=F */;
++ /*@ Assert exists(A:Recordvfloat32m1_t),p0==p0@pre && p1==p1@pre && p2==p2@pre && w==w@pre && width==width@pre && x==x@pre && lane==lane@pre && vl==vl@pre && 0<width && 0<=x && x<(width+1)/2 && 0<=lane && lane<4 && 0<=vl && vl<=4 && vl<=(width+1)/2-x && hc_footprint(p0,3*width+3) && hc_footprint(p1,3*width+3) && hc_footprint(p2,3*width+3) && hc_footprint(w,112) && hc_window(F,p0,3*width+3) && hc_window(F,p1,3*width+3) && hc_window(F,p2,3*width+3) && hc_window(F,w,112) && hc_same_bits(bias,hc_rvv_pixel9_bias(F,w,lane)) && hc_rvv_pixel9_prefix(A,F,p0,p1,p2,w,width,x,lane,7,vl) && (hc_data(F)*StructPredvfloat32m1_t(&a,A)) */
++ a=hc_rvv_rows_fma3(&a,p0,p1,p2,w,width,x,2u,1u,lane,vl) /*@ where F=F */;
++ /*@ Assert exists(A:Recordvfloat32m1_t),p0==p0@pre && p1==p1@pre && p2==p2@pre && w==w@pre && width==width@pre && x==x@pre && lane==lane@pre && vl==vl@pre && 0<width && 0<=x && x<(width+1)/2 && 0<=lane && lane<4 && 0<=vl && vl<=4 && vl<=(width+1)/2-x && hc_footprint(p0,3*width+3) && hc_footprint(p1,3*width+3) && hc_footprint(p2,3*width+3) && hc_footprint(w,112) && hc_window(F,p0,3*width+3) && hc_window(F,p1,3*width+3) && hc_window(F,p2,3*width+3) && hc_window(F,w,112) && hc_same_bits(bias,hc_rvv_pixel9_bias(F,w,lane)) && hc_rvv_pixel9_prefix(A,F,p0,p1,p2,w,width,x,lane,8,vl) && (hc_data(F)*StructPredvfloat32m1_t(&a,A)) */
++ a=hc_rvv_rows_fma3(&a,p0,p1,p2,w,width,x,2u,2u,lane,vl) /*@ where F=F */;
++ /*@ Assert exists(A:Recordvfloat32m1_t),p0==p0@pre && p1==p1@pre && p2==p2@pre && w==w@pre && width==width@pre && x==x@pre && lane==lane@pre && vl==vl@pre && 0<width && 0<=x && x<(width+1)/2 && 0<=lane && lane<4 && 0<=vl && vl<=4 && vl<=(width+1)/2-x && hc_footprint(p0,3*width+3) && hc_footprint(p1,3*width+3) && hc_footprint(p2,3*width+3) && hc_footprint(w,112) && hc_window(F,p0,3*width+3) && hc_window(F,p1,3*width+3) && hc_window(F,p2,3*width+3) && hc_window(F,w,112) && hc_same_bits(bias,hc_rvv_pixel9_bias(F,w,lane)) && hc_rvv_pixel9_prefix(A,F,p0,p1,p2,w,width,x,lane,9,vl) && (hc_data(F)*StructPredvfloat32m1_t(&a,A)) */
++ return a;
++}
+--- /dev/null
++++ b/shim/hc_rvv_pixel9.h
+@@ -0,0 +1,16 @@
++#ifndef HWC_RVV_PIXEL9_PLAN_H
++#define HWC_RVV_PIXEL9_PLAN_H
++#ifndef HWC_FORMAL
++#include <stddef.h>
++#include <stdint.h>
++#include <riscv_vector.h>
++#endif
++#include "rvv_rows_fma3.h"
++#ifdef HWC_FORMAL
++/*@ Import Coq Require Import HwcConv.HwcRvvPixel9Model */
++/*@ Extern Coq (hc_rvv_pixel9_bias:HwcROMap->Z->Z->fp32)
++ (hc_rvv_pixel9_prefix:Recordvfloat32m1_t->HwcROMap->Z->Z->Z->Z->Z->Z->Z->Z->Z->Prop) */
++#endif
++vfloat32m1_t hc_rvv_pixel9_raw(const float *p0,const float *p1,const float *p2,const float *w,size_t width,size_t x,unsigned int lane,size_t vl)
++/*@ With(F:HwcROMap) Require 0<width && 0<=x && x<(width+1)/2 && 0<=lane && lane<4 && 0<=vl && vl<=4 && vl<=(width+1)/2-x && hc_footprint(p0,3*width+3) && hc_footprint(p1,3*width+3) && hc_footprint(p2,3*width+3) && hc_footprint(w,112) && hc_window(F,p0,3*width+3) && hc_window(F,p1,3*width+3) && hc_window(F,p2,3*width+3) && hc_window(F,w,112) && hc_data(F) Ensure exists(R:Recordvfloat32m1_t),hc_rvv_pixel9_prefix(R,F,p0,p1,p2,w,width,x,lane,9,vl) && (hc_data(F)*StructPredvfloat32m1_t(&__return,R)) */;
++#endif
+--- /dev/null
++++ b/shim/kernel_program.h
+@@ -0,0 +1,36 @@
++#ifndef HWC_KERNEL_PROGRAM_H
++#define HWC_KERNEL_PROGRAM_H
++#include "kernel_types.h"
++#include "rvv_views.h"
++#include "read_api.h"
++#include "support.h"
++#include "assert_api.h"
++/*@ include strategies "hc_maps.strategies" */
++/*@ Import Coq Require Import HwcConv.KernelPointers HwcConv.RvvMaskBounds */
++/*@ Extern Coq (hc_zero:fp32) (hc_mask_start:Z->Z->Z) (hc_mask_end:Z->Z->Z->Z->Z) */
++/*@ Extern Coq (HwcRawPixels :: *) (HwcPixels :: *) */
++/*@ Extern Coq
++ (hc_input_domain:HwcROMap->Z->Z->Z->Z->Z->Z->Z->Z->Z->Z->Prop)
++ (hc_output_layout:Z->Z->Z->Z->Z->Z->Z->Prop)
++ (hc_output_owned:list Z->Z->Z->Z->Z->Z->Z->Z->Prop)
++ (hc_row_base:Z->Z->Z->Z->Z->Z)
++ (hc_addr64:Z->Z)
++ (hc_store_row:Z->Z->Z->Z)
++ (hc_store_channel:Z->Z->Z->Z)
++ (hc_rows_pending:Z->Z->Z->Z->Z->Z->Z->Z->Z->Z->Z->Z->Prop)
++ (hc_outer_input:Z->Z->Z->Z->Z->Z->Z->Z->Z->Z->Z->Prop)
++ (hc_pending_outputs:Z->Z->Z->Z->Z->Z->Prop)
++ (hc_channel_pending:Z->Z->Z->Z->Z->Z->Z->Z->Z->Z->Z->Z->Z->Z->Z->Prop)
++ (hc_channel_output:Z->Z->Z->Z->Z->Z->Z->Z->Z->Z->Z->Z->Z->Z->Z->Prop)
++ (hc_rvv_raw:HwcROMap->Z->Z->Z->Z->Z->Z->fp32->fp32->HwcRawPixels)
++ (hc_visible:HwcRawPixels->Z->HwcPixels)
++ (hc_progress:HwcPixels->HwcOutput->Z->Z->Z->Z->Z->Z->Z->Z->Z->Z->HwcOutput)
++ (hc_final:HwcPixels->HwcOutput->Z->Z->Z->Z->Z->Z->Z->HwcOutput)
++ (hc_acc_prefix:Recordvfloat32m1_t->HwcROMap->Z->Z->Z->Z->Z->Z->Z->Z->Z->Z->Z->Z->Prop)
++ (hc_source_mask:Recordvbool32_t->Z->Z->Z->Z->Prop)
++ (hc_source_input:Recordvfloat32m1_t->HwcROMap->Z->Z->Z->Z->Z->Z->Z->Z->Z->Z->Z->Prop)
++ (make_record_vfloat32m1_t:fp32->fp32->fp32->fp32->Recordvfloat32m1_t)
++ (make_record_vuint32m1_t:Z->Z->Z->Z->Recordvuint32m1_t)
++ (make_record_vbool32_t:Z->Z->Z->Z->Recordvbool32_t)
++ */
++#endif
+--- /dev/null
++++ b/shim/kernel_types.h
+@@ -0,0 +1,13 @@
++#ifndef HWC_KERNEL_TYPES_H
++#define HWC_KERNEL_TYPES_H
++#include "vector_types.h"
++typedef unsigned int uint32_t;
++typedef int int32_t;
++struct xnn_f32_minmax_scalar {float min;float max;};
++struct xnn_f32_minmax_params {struct xnn_f32_minmax_scalar scalar;};
++#define restrict
++#define XNN_OOB_READS
++#define XNN_UNPREDICTABLE(x) (x)
++#define XNN_UNLIKELY(x) (x)
++#define XNN_LIKELY(x) (x)
++#endif
+--- /dev/null
++++ b/shim/maps_model.h
+@@ -0,0 +1,9 @@
++#ifndef HWC_MAPS_MODEL_H
++#define HWC_MAPS_MODEL_H
++#include "types.h"
++/*@ Import Coq Require Import HwcConv.MemoryFacts HwcConv.FloatCopyModel */
++/*@ Extern Coq (HwcROMap :: *) */
++/*@ Extern Coq (hc_data:HwcROMap->Assertion) (hc_get:HwcROMap->Z->fp32)
++ (hc_present:HwcROMap->Z->Prop) (hc_pop:HwcROMap->Z->HwcROMap)
++ (hc_same_bits:fp32->fp32->Prop) */
++#endif
+--- /dev/null
++++ b/shim/nan_helpers.c
+@@ -0,0 +1,25 @@
++#include "nan_helpers.h"
++vfloat32m1_t hc_min_f32m1(const vfloat32m1_t *pa,float b,size_t vl)
++/*@ With (A:Recordvfloat32m1_t) Require 0<=vl && vl<=4 && StructPredvfloat32m1_t(pa,A) Ensure exists(R:Recordvfloat32m1_t),hc_clamp_min(R,A,b,vl) && (StructPredvfloat32m1_t(pa,A) * StructPredvfloat32m1_t(&__return,R)) */
++{
++  vfloat32m1_t a=*pa;
++  vuint32m1_t qbits=__riscv_vmv_v_x_u32m1(0x7FC00000u,vl);
++  vfloat32m1_t qnan=__riscv_vreinterpret_v_u32m1_f32m1(qbits);
++  float bc=hc_copy_float(b);
++  if (b!=bc) return qnan;
++  vbool32_t nan=__riscv_vmfne_vv_f32m1_b32(a,a,vl);
++  vfloat32m1_t r=__riscv_vfmin_vf_f32m1(a,b,vl);
++  return __riscv_vmerge_vvm_f32m1(r,qnan,nan,vl);
++}
++vfloat32m1_t hc_max_f32m1(const vfloat32m1_t *pa,float b,size_t vl)
++/*@ With (A:Recordvfloat32m1_t) Require 0<=vl && vl<=4 && StructPredvfloat32m1_t(pa,A) Ensure exists(R:Recordvfloat32m1_t),hc_clamp_max(R,A,b,vl) && (StructPredvfloat32m1_t(pa,A) * StructPredvfloat32m1_t(&__return,R)) */
++{
++  vfloat32m1_t a=*pa;
++  vuint32m1_t qbits=__riscv_vmv_v_x_u32m1(0x7FC00000u,vl);
++  vfloat32m1_t qnan=__riscv_vreinterpret_v_u32m1_f32m1(qbits);
++  float bc=hc_copy_float(b);
++  if (b!=bc) return qnan;
++  vbool32_t nan=__riscv_vmfne_vv_f32m1_b32(a,a,vl);
++  vfloat32m1_t r=__riscv_vfmax_vf_f32m1(a,b,vl);
++  return __riscv_vmerge_vvm_f32m1(r,qnan,nan,vl);
++}
+--- /dev/null
++++ b/shim/nan_helpers.h
+@@ -0,0 +1,15 @@
++#ifndef HWC_NAN_HELPERS_H
++#define HWC_NAN_HELPERS_H
++#ifdef HWC_FORMAL
++#include "clamp_views.h"
++/*@ Extern Coq (hc_clamp_min : Recordvfloat32m1_t -> Recordvfloat32m1_t -> fp32 -> Z -> Prop) (hc_clamp_max : Recordvfloat32m1_t -> Recordvfloat32m1_t -> fp32 -> Z -> Prop) */
++#else
++#include "copy_float.h"
++#endif
++vfloat32m1_t hc_min_f32m1(const vfloat32m1_t *pa,float b,size_t vl)
++/*@ With (A:Recordvfloat32m1_t) Require 0<=vl && vl<=4 && StructPredvfloat32m1_t(pa,A) Ensure exists(R:Recordvfloat32m1_t),hc_clamp_min(R,A,b,vl) && (StructPredvfloat32m1_t(pa,A) * StructPredvfloat32m1_t(&__return,R)) */
++;
++vfloat32m1_t hc_max_f32m1(const vfloat32m1_t *pa,float b,size_t vl)
++/*@ With (A:Recordvfloat32m1_t) Require 0<=vl && vl<=4 && StructPredvfloat32m1_t(pa,A) Ensure exists(R:Recordvfloat32m1_t),hc_clamp_max(R,A,b,vl) && (StructPredvfloat32m1_t(pa,A) * StructPredvfloat32m1_t(&__return,R)) */
++;
++#endif
+--- /dev/null
++++ b/shim/neon3_helpers.c
+@@ -0,0 +1,61 @@
++#include "neon3_helpers.h"
++float32x4_t hc_neon_fma3_lane0(const float32x4_t *pa,const float32x4_t *pw0,const float32x4_t *pw1,const float32x4_t *pw2,const float32x4_t *px0,const float32x4_t *px1,const float32x4_t *px2)
++/*@ With (A:Recordfloat32x4_t) (W0:Recordfloat32x4_t) (W1:Recordfloat32x4_t) (W2:Recordfloat32x4_t) (X0:Recordfloat32x4_t) (X1:Recordfloat32x4_t) (X2:Recordfloat32x4_t) Require StructPredfloat32x4_t(pa,A) * StructPredfloat32x4_t(pw0,W0) * StructPredfloat32x4_t(pw1,W1) * StructPredfloat32x4_t(pw2,W2) * StructPredfloat32x4_t(px0,X0) * StructPredfloat32x4_t(px1,X1) * StructPredfloat32x4_t(px2,X2) Ensure exists(R:Recordfloat32x4_t), hc_neon3(R,A,W0,W1,W2,X0,X1,X2,0) && (StructPredfloat32x4_t(pa,A) * StructPredfloat32x4_t(pw0,W0) * StructPredfloat32x4_t(pw1,W1) * StructPredfloat32x4_t(pw2,W2) * StructPredfloat32x4_t(px0,X0) * StructPredfloat32x4_t(px1,X1) * StructPredfloat32x4_t(px2,X2) * StructPredfloat32x4_t(&__return,R)) */
++{
++ float32x4_t a=*pa;
++ float32x4_t w0=*pw0;
++ float32x4_t w1=*pw1;
++ float32x4_t w2=*pw2;
++ float32x4_t x0=*px0;
++ float32x4_t x1=*px1;
++ float32x4_t x2=*px2;
++ a=vfmaq_laneq_f32(a,w0,x0,0);
++ a=vfmaq_laneq_f32(a,w1,x1,0);
++ a=vfmaq_laneq_f32(a,w2,x2,0);
++ return a;
++}
++float32x4_t hc_neon_fma3_lane1(const float32x4_t *pa,const float32x4_t *pw0,const float32x4_t *pw1,const float32x4_t *pw2,const float32x4_t *px0,const float32x4_t *px1,const float32x4_t *px2)
++/*@ With (A:Recordfloat32x4_t) (W0:Recordfloat32x4_t) (W1:Recordfloat32x4_t) (W2:Recordfloat32x4_t) (X0:Recordfloat32x4_t) (X1:Recordfloat32x4_t) (X2:Recordfloat32x4_t) Require StructPredfloat32x4_t(pa,A) * StructPredfloat32x4_t(pw0,W0) * StructPredfloat32x4_t(pw1,W1) * StructPredfloat32x4_t(pw2,W2) * StructPredfloat32x4_t(px0,X0) * StructPredfloat32x4_t(px1,X1) * StructPredfloat32x4_t(px2,X2) Ensure exists(R:Recordfloat32x4_t), hc_neon3(R,A,W0,W1,W2,X0,X1,X2,1) && (StructPredfloat32x4_t(pa,A) * StructPredfloat32x4_t(pw0,W0) * StructPredfloat32x4_t(pw1,W1) * StructPredfloat32x4_t(pw2,W2) * StructPredfloat32x4_t(px0,X0) * StructPredfloat32x4_t(px1,X1) * StructPredfloat32x4_t(px2,X2) * StructPredfloat32x4_t(&__return,R)) */
++{
++ float32x4_t a=*pa;
++ float32x4_t w0=*pw0;
++ float32x4_t w1=*pw1;
++ float32x4_t w2=*pw2;
++ float32x4_t x0=*px0;
++ float32x4_t x1=*px1;
++ float32x4_t x2=*px2;
++ a=vfmaq_laneq_f32(a,w0,x0,1);
++ a=vfmaq_laneq_f32(a,w1,x1,1);
++ a=vfmaq_laneq_f32(a,w2,x2,1);
++ return a;
++}
++float32x4_t hc_neon_fma3_lane2(const float32x4_t *pa,const float32x4_t *pw0,const float32x4_t *pw1,const float32x4_t *pw2,const float32x4_t *px0,const float32x4_t *px1,const float32x4_t *px2)
++/*@ With (A:Recordfloat32x4_t) (W0:Recordfloat32x4_t) (W1:Recordfloat32x4_t) (W2:Recordfloat32x4_t) (X0:Recordfloat32x4_t) (X1:Recordfloat32x4_t) (X2:Recordfloat32x4_t) Require StructPredfloat32x4_t(pa,A) * StructPredfloat32x4_t(pw0,W0) * StructPredfloat32x4_t(pw1,W1) * StructPredfloat32x4_t(pw2,W2) * StructPredfloat32x4_t(px0,X0) * StructPredfloat32x4_t(px1,X1) * StructPredfloat32x4_t(px2,X2) Ensure exists(R:Recordfloat32x4_t), hc_neon3(R,A,W0,W1,W2,X0,X1,X2,2) && (StructPredfloat32x4_t(pa,A) * StructPredfloat32x4_t(pw0,W0) * StructPredfloat32x4_t(pw1,W1) * StructPredfloat32x4_t(pw2,W2) * StructPredfloat32x4_t(px0,X0) * StructPredfloat32x4_t(px1,X1) * StructPredfloat32x4_t(px2,X2) * StructPredfloat32x4_t(&__return,R)) */
++{
++ float32x4_t a=*pa;
++ float32x4_t w0=*pw0;
++ float32x4_t w1=*pw1;
++ float32x4_t w2=*pw2;
++ float32x4_t x0=*px0;
++ float32x4_t x1=*px1;
++ float32x4_t x2=*px2;
++ a=vfmaq_laneq_f32(a,w0,x0,2);
++ a=vfmaq_laneq_f32(a,w1,x1,2);
++ a=vfmaq_laneq_f32(a,w2,x2,2);
++ return a;
++}
++float32x4_t hc_neon_fma3_lane3(const float32x4_t *pa,const float32x4_t *pw0,const float32x4_t *pw1,const float32x4_t *pw2,const float32x4_t *px0,const float32x4_t *px1,const float32x4_t *px2)
++/*@ With (A:Recordfloat32x4_t) (W0:Recordfloat32x4_t) (W1:Recordfloat32x4_t) (W2:Recordfloat32x4_t) (X0:Recordfloat32x4_t) (X1:Recordfloat32x4_t) (X2:Recordfloat32x4_t) Require StructPredfloat32x4_t(pa,A) * StructPredfloat32x4_t(pw0,W0) * StructPredfloat32x4_t(pw1,W1) * StructPredfloat32x4_t(pw2,W2) * StructPredfloat32x4_t(px0,X0) * StructPredfloat32x4_t(px1,X1) * StructPredfloat32x4_t(px2,X2) Ensure exists(R:Recordfloat32x4_t), hc_neon3(R,A,W0,W1,W2,X0,X1,X2,3) && (StructPredfloat32x4_t(pa,A) * StructPredfloat32x4_t(pw0,W0) * StructPredfloat32x4_t(pw1,W1) * StructPredfloat32x4_t(pw2,W2) * StructPredfloat32x4_t(px0,X0) * StructPredfloat32x4_t(px1,X1) * StructPredfloat32x4_t(px2,X2) * StructPredfloat32x4_t(&__return,R)) */
++{
++ float32x4_t a=*pa;
++ float32x4_t w0=*pw0;
++ float32x4_t w1=*pw1;
++ float32x4_t w2=*pw2;
++ float32x4_t x0=*px0;
++ float32x4_t x1=*px1;
++ float32x4_t x2=*px2;
++ a=vfmaq_laneq_f32(a,w0,x0,3);
++ a=vfmaq_laneq_f32(a,w1,x1,3);
++ a=vfmaq_laneq_f32(a,w2,x2,3);
++ return a;
++}
+--- /dev/null
++++ b/shim/neon3_helpers.h
+@@ -0,0 +1,19 @@
++#ifndef HWC_NEON3_HELPERS_H
++#define HWC_NEON3_HELPERS_H
++#ifdef HWC_FORMAL
++#include "neon3_views.h"
++/*@ Extern Coq (hc_neon3 : Recordfloat32x4_t -> Recordfloat32x4_t -> Recordfloat32x4_t -> Recordfloat32x4_t -> Recordfloat32x4_t -> Recordfloat32x4_t -> Recordfloat32x4_t -> Recordfloat32x4_t -> Z -> Prop) */
++#endif
++float32x4_t hc_neon_fma3_lane0(const float32x4_t *pa,const float32x4_t *pw0,const float32x4_t *pw1,const float32x4_t *pw2,const float32x4_t *px0,const float32x4_t *px1,const float32x4_t *px2)
++/*@ With (A:Recordfloat32x4_t) (W0:Recordfloat32x4_t) (W1:Recordfloat32x4_t) (W2:Recordfloat32x4_t) (X0:Recordfloat32x4_t) (X1:Recordfloat32x4_t) (X2:Recordfloat32x4_t) Require StructPredfloat32x4_t(pa,A) * StructPredfloat32x4_t(pw0,W0) * StructPredfloat32x4_t(pw1,W1) * StructPredfloat32x4_t(pw2,W2) * StructPredfloat32x4_t(px0,X0) * StructPredfloat32x4_t(px1,X1) * StructPredfloat32x4_t(px2,X2) Ensure exists(R:Recordfloat32x4_t), hc_neon3(R,A,W0,W1,W2,X0,X1,X2,0) && (StructPredfloat32x4_t(pa,A) * StructPredfloat32x4_t(pw0,W0) * StructPredfloat32x4_t(pw1,W1) * StructPredfloat32x4_t(pw2,W2) * StructPredfloat32x4_t(px0,X0) * StructPredfloat32x4_t(px1,X1) * StructPredfloat32x4_t(px2,X2) * StructPredfloat32x4_t(&__return,R)) */
++;
++float32x4_t hc_neon_fma3_lane1(const float32x4_t *pa,const float32x4_t *pw0,const float32x4_t *pw1,const float32x4_t *pw2,const float32x4_t *px0,const float32x4_t *px1,const float32x4_t *px2)
++/*@ With (A:Recordfloat32x4_t) (W0:Recordfloat32x4_t) (W1:Recordfloat32x4_t) (W2:Recordfloat32x4_t) (X0:Recordfloat32x4_t) (X1:Recordfloat32x4_t) (X2:Recordfloat32x4_t) Require StructPredfloat32x4_t(pa,A) * StructPredfloat32x4_t(pw0,W0) * StructPredfloat32x4_t(pw1,W1) * StructPredfloat32x4_t(pw2,W2) * StructPredfloat32x4_t(px0,X0) * StructPredfloat32x4_t(px1,X1) * StructPredfloat32x4_t(px2,X2) Ensure exists(R:Recordfloat32x4_t), hc_neon3(R,A,W0,W1,W2,X0,X1,X2,1) && (StructPredfloat32x4_t(pa,A) * StructPredfloat32x4_t(pw0,W0) * StructPredfloat32x4_t(pw1,W1) * StructPredfloat32x4_t(pw2,W2) * StructPredfloat32x4_t(px0,X0) * StructPredfloat32x4_t(px1,X1) * StructPredfloat32x4_t(px2,X2) * StructPredfloat32x4_t(&__return,R)) */
++;
++float32x4_t hc_neon_fma3_lane2(const float32x4_t *pa,const float32x4_t *pw0,const float32x4_t *pw1,const float32x4_t *pw2,const float32x4_t *px0,const float32x4_t *px1,const float32x4_t *px2)
++/*@ With (A:Recordfloat32x4_t) (W0:Recordfloat32x4_t) (W1:Recordfloat32x4_t) (W2:Recordfloat32x4_t) (X0:Recordfloat32x4_t) (X1:Recordfloat32x4_t) (X2:Recordfloat32x4_t) Require StructPredfloat32x4_t(pa,A) * StructPredfloat32x4_t(pw0,W0) * StructPredfloat32x4_t(pw1,W1) * StructPredfloat32x4_t(pw2,W2) * StructPredfloat32x4_t(px0,X0) * StructPredfloat32x4_t(px1,X1) * StructPredfloat32x4_t(px2,X2) Ensure exists(R:Recordfloat32x4_t), hc_neon3(R,A,W0,W1,W2,X0,X1,X2,2) && (StructPredfloat32x4_t(pa,A) * StructPredfloat32x4_t(pw0,W0) * StructPredfloat32x4_t(pw1,W1) * StructPredfloat32x4_t(pw2,W2) * StructPredfloat32x4_t(px0,X0) * StructPredfloat32x4_t(px1,X1) * StructPredfloat32x4_t(px2,X2) * StructPredfloat32x4_t(&__return,R)) */
++;
++float32x4_t hc_neon_fma3_lane3(const float32x4_t *pa,const float32x4_t *pw0,const float32x4_t *pw1,const float32x4_t *pw2,const float32x4_t *px0,const float32x4_t *px1,const float32x4_t *px2)
++/*@ With (A:Recordfloat32x4_t) (W0:Recordfloat32x4_t) (W1:Recordfloat32x4_t) (W2:Recordfloat32x4_t) (X0:Recordfloat32x4_t) (X1:Recordfloat32x4_t) (X2:Recordfloat32x4_t) Require StructPredfloat32x4_t(pa,A) * StructPredfloat32x4_t(pw0,W0) * StructPredfloat32x4_t(pw1,W1) * StructPredfloat32x4_t(pw2,W2) * StructPredfloat32x4_t(px0,X0) * StructPredfloat32x4_t(px1,X1) * StructPredfloat32x4_t(px2,X2) Ensure exists(R:Recordfloat32x4_t), hc_neon3(R,A,W0,W1,W2,X0,X1,X2,3) && (StructPredfloat32x4_t(pa,A) * StructPredfloat32x4_t(pw0,W0) * StructPredfloat32x4_t(pw1,W1) * StructPredfloat32x4_t(pw2,W2) * StructPredfloat32x4_t(px0,X0) * StructPredfloat32x4_t(px1,X1) * StructPredfloat32x4_t(px2,X2) * StructPredfloat32x4_t(&__return,R)) */
++;
++#endif
+--- /dev/null
++++ b/shim/neon3_views.h
+@@ -0,0 +1,15 @@
++#ifndef HWC_NEON3_VIEWS_H
++#define HWC_NEON3_VIEWS_H
++#include "vector_types.h"
++/*@ Import Coq Require Import HwcConv.Neon3Model */
++/*@ Extern Coq (hc_neon_fma4 : Recordfloat32x4_t -> Recordfloat32x4_t -> Recordfloat32x4_t -> Recordfloat32x4_t -> Z -> Prop) */
++float32x4_t hc_isa_neon_fma0(const float32x4_t *pa,const float32x4_t *pw,const float32x4_t *px)
++/*@ With (A:Recordfloat32x4_t) (W:Recordfloat32x4_t) (X:Recordfloat32x4_t) Require StructPredfloat32x4_t(pa,A)*StructPredfloat32x4_t(pw,W)*StructPredfloat32x4_t(px,X) Ensure exists(R:Recordfloat32x4_t), hc_neon_fma4(R,A,W,X,0) && (StructPredfloat32x4_t(pa,A)*StructPredfloat32x4_t(pw,W)*StructPredfloat32x4_t(px,X)*StructPredfloat32x4_t(&__return,R)) */;
++float32x4_t hc_isa_neon_fma1(const float32x4_t *pa,const float32x4_t *pw,const float32x4_t *px)
++/*@ With (A:Recordfloat32x4_t) (W:Recordfloat32x4_t) (X:Recordfloat32x4_t) Require StructPredfloat32x4_t(pa,A)*StructPredfloat32x4_t(pw,W)*StructPredfloat32x4_t(px,X) Ensure exists(R:Recordfloat32x4_t), hc_neon_fma4(R,A,W,X,1) && (StructPredfloat32x4_t(pa,A)*StructPredfloat32x4_t(pw,W)*StructPredfloat32x4_t(px,X)*StructPredfloat32x4_t(&__return,R)) */;
++float32x4_t hc_isa_neon_fma2(const float32x4_t *pa,const float32x4_t *pw,const float32x4_t *px)
++/*@ With (A:Recordfloat32x4_t) (W:Recordfloat32x4_t) (X:Recordfloat32x4_t) Require StructPredfloat32x4_t(pa,A)*StructPredfloat32x4_t(pw,W)*StructPredfloat32x4_t(px,X) Ensure exists(R:Recordfloat32x4_t), hc_neon_fma4(R,A,W,X,2) && (StructPredfloat32x4_t(pa,A)*StructPredfloat32x4_t(pw,W)*StructPredfloat32x4_t(px,X)*StructPredfloat32x4_t(&__return,R)) */;
++float32x4_t hc_isa_neon_fma3(const float32x4_t *pa,const float32x4_t *pw,const float32x4_t *px)
++/*@ With (A:Recordfloat32x4_t) (W:Recordfloat32x4_t) (X:Recordfloat32x4_t) Require StructPredfloat32x4_t(pa,A)*StructPredfloat32x4_t(pw,W)*StructPredfloat32x4_t(px,X) Ensure exists(R:Recordfloat32x4_t), hc_neon_fma4(R,A,W,X,3) && (StructPredfloat32x4_t(pa,A)*StructPredfloat32x4_t(pw,W)*StructPredfloat32x4_t(px,X)*StructPredfloat32x4_t(&__return,R)) */;
++#define vfmaq_laneq_f32(a,w,x,k) hc_isa_neon_fma##k(&(a),&(w),&(x))
++#endif
+--- /dev/null
++++ b/shim/neon_kernel_program.h
+@@ -0,0 +1,14 @@
++#ifndef HWC_NEON_KERNEL_PROGRAM_H
++#define HWC_NEON_KERNEL_PROGRAM_H
++#include "kernel_program.h"
++#include "neon_views.h"
++#include "store_half.h"
++/*@ Import Coq Require Import HwcConv.NeonKernelModel */
++/*@ Extern Coq
++ (hc_neon_raw:HwcROMap->Z->Z->Z->Z->Z->Z->fp32->fp32->HwcRawPixels)
++ (hc_neon_previous:Recordfloat32x4_t->HwcROMap->Z->Z->Z->Z->Z->Z->Z->Z->Prop)
++ */
++/* Formal domain guards each actual source call q is the literal4. */
++#define round_down_po2(n,q) hc_round_down4(n)
++#define doz(a,b) hc_doz((a),(b))
++#endif
+--- /dev/null
++++ b/shim/neon_rows_pixel.c
+@@ -0,0 +1,137 @@
++#include "neon_rows_pixel.h"
++float32x4_t hc_neon_rows_pixel27(const float *p0,const float *p1,const float *p2,const float *w,size_t width,size_t x)
++/*@ With(F:HwcROMap) Require 0<width && 0<=x && x<(width+1)/2 && hc_footprint(p0,3*width+3) && hc_footprint(p1,3*width+3) && hc_footprint(p2,3*width+3) && hc_footprint(w,112) && hc_window(F,p0,3*width+3) && hc_window(F,p1,3*width+3) && hc_window(F,p2,3*width+3) && hc_window(F,w,112) && hc_data(F) Ensure exists(R:Recordfloat32x4_t),hc_neon_rows_acc(R,F,p0,p1,p2,w,width,x,9) && (hc_data(F)*StructPredfloat32x4_t(&__return,R)) */
++{
++ float32x4_t a=vld1q_f32(w) /*@ where F=F */;
++ /*@ Assert exists(A:Recordfloat32x4_t),p0==p0@pre && p1==p1@pre && p2==p2@pre && w==w@pre && width==width@pre && x==x@pre && 0<width && 0<=x && x<(width+1)/2 && hc_footprint(p0,3*width+3) && hc_footprint(p1,3*width+3) && hc_footprint(p2,3*width+3) && hc_footprint(w,112) && hc_window(F,p0,3*width+3) && hc_window(F,p1,3*width+3) && hc_window(F,p2,3*width+3) && hc_window(F,w,112) && hc_neon_rows_acc(A,F,p0,p1,p2,w,width,x,0) && hc_data(F)*StructPredfloat32x4_t(&a,A) */
++ {
++  const float32x4_t w0=vld1q_f32(w+4) /*@ where F=F */;
++  const float32x4_t w1=vld1q_f32(w+8) /*@ where F=F */;
++  const float32x4_t w2=vld1q_f32(w+12) /*@ where F=F */;
++  float32x4_t x0=vmovq_n_f32(0.0f);
++  float32x4_t x1=vmovq_n_f32(0.0f);
++  float32x4_t x2=vmovq_n_f32(0.0f);
++  if (x!=0) {
++  x0=vld1q_dup_f32(p0+3*(2*x-1)+0) /*@ where F=F */;
++  x1=vld1q_dup_f32(p1+3*(2*x-1)+0) /*@ where F=F */;
++  x2=vld1q_dup_f32(p2+3*(2*x-1)+0) /*@ where F=F */;
++  }
++  a=hc_neon_fma3_lane0(&a,&w0,&w1,&w2,&x0,&x1,&x2);
++ }
++ /*@ Assert exists(A:Recordfloat32x4_t),p0==p0@pre && p1==p1@pre && p2==p2@pre && w==w@pre && width==width@pre && x==x@pre && 0<width && 0<=x && x<(width+1)/2 && hc_footprint(p0,3*width+3) && hc_footprint(p1,3*width+3) && hc_footprint(p2,3*width+3) && hc_footprint(w,112) && hc_window(F,p0,3*width+3) && hc_window(F,p1,3*width+3) && hc_window(F,p2,3*width+3) && hc_window(F,w,112) && hc_neon_rows_acc(A,F,p0,p1,p2,w,width,x,1) && hc_data(F)*StructPredfloat32x4_t(&a,A) */
++ {
++  const float32x4_t w0=vld1q_f32(w+16) /*@ where F=F */;
++  const float32x4_t w1=vld1q_f32(w+20) /*@ where F=F */;
++  const float32x4_t w2=vld1q_f32(w+24) /*@ where F=F */;
++  float32x4_t x0=vmovq_n_f32(0.0f);
++  float32x4_t x1=vmovq_n_f32(0.0f);
++  float32x4_t x2=vmovq_n_f32(0.0f);
++  if (x!=0) {
++  x0=vld1q_dup_f32(p0+3*(2*x-1)+1) /*@ where F=F */;
++  x1=vld1q_dup_f32(p1+3*(2*x-1)+1) /*@ where F=F */;
++  x2=vld1q_dup_f32(p2+3*(2*x-1)+1) /*@ where F=F */;
++  }
++  a=hc_neon_fma3_lane0(&a,&w0,&w1,&w2,&x0,&x1,&x2);
++ }
++ /*@ Assert exists(A:Recordfloat32x4_t),p0==p0@pre && p1==p1@pre && p2==p2@pre && w==w@pre && width==width@pre && x==x@pre && 0<width && 0<=x && x<(width+1)/2 && hc_footprint(p0,3*width+3) && hc_footprint(p1,3*width+3) && hc_footprint(p2,3*width+3) && hc_footprint(w,112) && hc_window(F,p0,3*width+3) && hc_window(F,p1,3*width+3) && hc_window(F,p2,3*width+3) && hc_window(F,w,112) && hc_neon_rows_acc(A,F,p0,p1,p2,w,width,x,2) && hc_data(F)*StructPredfloat32x4_t(&a,A) */
++ {
++  const float32x4_t w0=vld1q_f32(w+28) /*@ where F=F */;
++  const float32x4_t w1=vld1q_f32(w+32) /*@ where F=F */;
++  const float32x4_t w2=vld1q_f32(w+36) /*@ where F=F */;
++  float32x4_t x0=vmovq_n_f32(0.0f);
++  float32x4_t x1=vmovq_n_f32(0.0f);
++  float32x4_t x2=vmovq_n_f32(0.0f);
++  if (x!=0) {
++  x0=vld1q_dup_f32(p0+3*(2*x-1)+2) /*@ where F=F */;
++  x1=vld1q_dup_f32(p1+3*(2*x-1)+2) /*@ where F=F */;
++  x2=vld1q_dup_f32(p2+3*(2*x-1)+2) /*@ where F=F */;
++  }
++  a=hc_neon_fma3_lane0(&a,&w0,&w1,&w2,&x0,&x1,&x2);
++ }
++ /*@ Assert exists(A:Recordfloat32x4_t),p0==p0@pre && p1==p1@pre && p2==p2@pre && w==w@pre && width==width@pre && x==x@pre && 0<width && 0<=x && x<(width+1)/2 && hc_footprint(p0,3*width+3) && hc_footprint(p1,3*width+3) && hc_footprint(p2,3*width+3) && hc_footprint(w,112) && hc_window(F,p0,3*width+3) && hc_window(F,p1,3*width+3) && hc_window(F,p2,3*width+3) && hc_window(F,w,112) && hc_neon_rows_acc(A,F,p0,p1,p2,w,width,x,3) && hc_data(F)*StructPredfloat32x4_t(&a,A) */
++ {
++  const float32x4_t w0=vld1q_f32(w+40) /*@ where F=F */;
++  const float32x4_t w1=vld1q_f32(w+44) /*@ where F=F */;
++  const float32x4_t w2=vld1q_f32(w+48) /*@ where F=F */;
++  float32x4_t x0=vmovq_n_f32(0.0f);
++  float32x4_t x1=vmovq_n_f32(0.0f);
++  float32x4_t x2=vmovq_n_f32(0.0f);
++  x0=vld1q_dup_f32(p0+3*(2*x)+0) /*@ where F=F */;
++  x1=vld1q_dup_f32(p1+3*(2*x)+0) /*@ where F=F */;
++  x2=vld1q_dup_f32(p2+3*(2*x)+0) /*@ where F=F */;
++  a=hc_neon_fma3_lane0(&a,&w0,&w1,&w2,&x0,&x1,&x2);
++ }
++ /*@ Assert exists(A:Recordfloat32x4_t),p0==p0@pre && p1==p1@pre && p2==p2@pre && w==w@pre && width==width@pre && x==x@pre && 0<width && 0<=x && x<(width+1)/2 && hc_footprint(p0,3*width+3) && hc_footprint(p1,3*width+3) && hc_footprint(p2,3*width+3) && hc_footprint(w,112) && hc_window(F,p0,3*width+3) && hc_window(F,p1,3*width+3) && hc_window(F,p2,3*width+3) && hc_window(F,w,112) && hc_neon_rows_acc(A,F,p0,p1,p2,w,width,x,4) && hc_data(F)*StructPredfloat32x4_t(&a,A) */
++ {
++  const float32x4_t w0=vld1q_f32(w+52) /*@ where F=F */;
++  const float32x4_t w1=vld1q_f32(w+56) /*@ where F=F */;
++  const float32x4_t w2=vld1q_f32(w+60) /*@ where F=F */;
++  float32x4_t x0=vmovq_n_f32(0.0f);
++  float32x4_t x1=vmovq_n_f32(0.0f);
++  float32x4_t x2=vmovq_n_f32(0.0f);
++  x0=vld1q_dup_f32(p0+3*(2*x)+1) /*@ where F=F */;
++  x1=vld1q_dup_f32(p1+3*(2*x)+1) /*@ where F=F */;
++  x2=vld1q_dup_f32(p2+3*(2*x)+1) /*@ where F=F */;
++  a=hc_neon_fma3_lane0(&a,&w0,&w1,&w2,&x0,&x1,&x2);
++ }
++ /*@ Assert exists(A:Recordfloat32x4_t),p0==p0@pre && p1==p1@pre && p2==p2@pre && w==w@pre && width==width@pre && x==x@pre && 0<width && 0<=x && x<(width+1)/2 && hc_footprint(p0,3*width+3) && hc_footprint(p1,3*width+3) && hc_footprint(p2,3*width+3) && hc_footprint(w,112) && hc_window(F,p0,3*width+3) && hc_window(F,p1,3*width+3) && hc_window(F,p2,3*width+3) && hc_window(F,w,112) && hc_neon_rows_acc(A,F,p0,p1,p2,w,width,x,5) && hc_data(F)*StructPredfloat32x4_t(&a,A) */
++ {
++  const float32x4_t w0=vld1q_f32(w+64) /*@ where F=F */;
++  const float32x4_t w1=vld1q_f32(w+68) /*@ where F=F */;
++  const float32x4_t w2=vld1q_f32(w+72) /*@ where F=F */;
++  float32x4_t x0=vmovq_n_f32(0.0f);
++  float32x4_t x1=vmovq_n_f32(0.0f);
++  float32x4_t x2=vmovq_n_f32(0.0f);
++  x0=vld1q_dup_f32(p0+3*(2*x)+2) /*@ where F=F */;
++  x1=vld1q_dup_f32(p1+3*(2*x)+2) /*@ where F=F */;
++  x2=vld1q_dup_f32(p2+3*(2*x)+2) /*@ where F=F */;
++  a=hc_neon_fma3_lane0(&a,&w0,&w1,&w2,&x0,&x1,&x2);
++ }
++ /*@ Assert exists(A:Recordfloat32x4_t),p0==p0@pre && p1==p1@pre && p2==p2@pre && w==w@pre && width==width@pre && x==x@pre && 0<width && 0<=x && x<(width+1)/2 && hc_footprint(p0,3*width+3) && hc_footprint(p1,3*width+3) && hc_footprint(p2,3*width+3) && hc_footprint(w,112) && hc_window(F,p0,3*width+3) && hc_window(F,p1,3*width+3) && hc_window(F,p2,3*width+3) && hc_window(F,w,112) && hc_neon_rows_acc(A,F,p0,p1,p2,w,width,x,6) && hc_data(F)*StructPredfloat32x4_t(&a,A) */
++ {
++  if (2*x+1<width) {
++  const float32x4_t w0=vld1q_f32(w+76) /*@ where F=F */;
++  const float32x4_t w1=vld1q_f32(w+80) /*@ where F=F */;
++  const float32x4_t w2=vld1q_f32(w+84) /*@ where F=F */;
++  float32x4_t x0=vmovq_n_f32(0.0f);
++  float32x4_t x1=vmovq_n_f32(0.0f);
++  float32x4_t x2=vmovq_n_f32(0.0f);
++  x0=vld1q_dup_f32(p0+3*(2*x+1)+0) /*@ where F=F */;
++  x1=vld1q_dup_f32(p1+3*(2*x+1)+0) /*@ where F=F */;
++  x2=vld1q_dup_f32(p2+3*(2*x+1)+0) /*@ where F=F */;
++  a=hc_neon_fma3_lane0(&a,&w0,&w1,&w2,&x0,&x1,&x2);
++  }
++ }
++ /*@ Assert exists(A:Recordfloat32x4_t),p0==p0@pre && p1==p1@pre && p2==p2@pre && w==w@pre && width==width@pre && x==x@pre && 0<width && 0<=x && x<(width+1)/2 && hc_footprint(p0,3*width+3) && hc_footprint(p1,3*width+3) && hc_footprint(p2,3*width+3) && hc_footprint(w,112) && hc_window(F,p0,3*width+3) && hc_window(F,p1,3*width+3) && hc_window(F,p2,3*width+3) && hc_window(F,w,112) && hc_neon_rows_acc(A,F,p0,p1,p2,w,width,x,7) && hc_data(F)*StructPredfloat32x4_t(&a,A) */
++ {
++  if (2*x+1<width) {
++  const float32x4_t w0=vld1q_f32(w+88) /*@ where F=F */;
++  const float32x4_t w1=vld1q_f32(w+92) /*@ where F=F */;
++  const float32x4_t w2=vld1q_f32(w+96) /*@ where F=F */;
++  float32x4_t x0=vmovq_n_f32(0.0f);
++  float32x4_t x1=vmovq_n_f32(0.0f);
++  float32x4_t x2=vmovq_n_f32(0.0f);
++  x0=vld1q_dup_f32(p0+3*(2*x+1)+1) /*@ where F=F */;
++  x1=vld1q_dup_f32(p1+3*(2*x+1)+1) /*@ where F=F */;
++  x2=vld1q_dup_f32(p2+3*(2*x+1)+1) /*@ where F=F */;
++  a=hc_neon_fma3_lane0(&a,&w0,&w1,&w2,&x0,&x1,&x2);
++  }
++ }
++ /*@ Assert exists(A:Recordfloat32x4_t),p0==p0@pre && p1==p1@pre && p2==p2@pre && w==w@pre && width==width@pre && x==x@pre && 0<width && 0<=x && x<(width+1)/2 && hc_footprint(p0,3*width+3) && hc_footprint(p1,3*width+3) && hc_footprint(p2,3*width+3) && hc_footprint(w,112) && hc_window(F,p0,3*width+3) && hc_window(F,p1,3*width+3) && hc_window(F,p2,3*width+3) && hc_window(F,w,112) && hc_neon_rows_acc(A,F,p0,p1,p2,w,width,x,8) && hc_data(F)*StructPredfloat32x4_t(&a,A) */
++ {
++  if (2*x+1<width) {
++  const float32x4_t w0=vld1q_f32(w+100) /*@ where F=F */;
++  const float32x4_t w1=vld1q_f32(w+104) /*@ where F=F */;
++  const float32x4_t w2=vld1q_f32(w+108) /*@ where F=F */;
++  float32x4_t x0=vmovq_n_f32(0.0f);
++  float32x4_t x1=vmovq_n_f32(0.0f);
++  float32x4_t x2=vmovq_n_f32(0.0f);
++  x0=vld1q_dup_f32(p0+3*(2*x+1)+2) /*@ where F=F */;
++  x1=vld1q_dup_f32(p1+3*(2*x+1)+2) /*@ where F=F */;
++  x2=vld1q_dup_f32(p2+3*(2*x+1)+2) /*@ where F=F */;
++  a=hc_neon_fma3_lane0(&a,&w0,&w1,&w2,&x0,&x1,&x2);
++  }
++ }
++ /*@ Assert exists(A:Recordfloat32x4_t),p0==p0@pre && p1==p1@pre && p2==p2@pre && w==w@pre && width==width@pre && x==x@pre && 0<width && 0<=x && x<(width+1)/2 && hc_footprint(p0,3*width+3) && hc_footprint(p1,3*width+3) && hc_footprint(p2,3*width+3) && hc_footprint(w,112) && hc_window(F,p0,3*width+3) && hc_window(F,p1,3*width+3) && hc_window(F,p2,3*width+3) && hc_window(F,w,112) && hc_neon_rows_acc(A,F,p0,p1,p2,w,width,x,9) && hc_data(F)*StructPredfloat32x4_t(&a,A) */
++ return a;
++}
+--- /dev/null
++++ b/shim/neon_rows_pixel.h
+@@ -0,0 +1,11 @@
++#ifndef HWC_NEON_ROWS_PIXEL_H
++#define HWC_NEON_ROWS_PIXEL_H
++#ifdef HWC_FORMAL
++#include "neon_views.h"
++#include "neon3_helpers.h"
++/*@ Import Coq Require Import HwcConv.NeonRowsPixelModel */
++/*@ Extern Coq (hc_footprint:Z->Z->Prop) (hc_neon_rows_acc:Recordfloat32x4_t->HwcROMap->Z->Z->Z->Z->Z->Z->Z->Prop) */
++#endif
++float32x4_t hc_neon_rows_pixel27(const float *p0,const float *p1,const float *p2,const float *w,size_t width,size_t x)
++/*@ With(F:HwcROMap) Require 0<width && 0<=x && x<(width+1)/2 && hc_footprint(p0,3*width+3) && hc_footprint(p1,3*width+3) && hc_footprint(p2,3*width+3) && hc_footprint(w,112) && hc_window(F,p0,3*width+3) && hc_window(F,p1,3*width+3) && hc_window(F,p2,3*width+3) && hc_window(F,w,112) && hc_data(F) Ensure exists(R:Recordfloat32x4_t),hc_neon_rows_acc(R,F,p0,p1,p2,w,width,x,9) && (hc_data(F)*StructPredfloat32x4_t(&__return,R)) */;
++#endif
+--- /dev/null
++++ b/shim/neon_views.h
+@@ -0,0 +1,34 @@
++#ifndef HWC_NEON_VIEWS_H
++#define HWC_NEON_VIEWS_H
++#include "store_views.h"
++#include "maps_model.h"
++/*@ Import Coq Require Import HwcConv.NeonViewsModel */
++/*@ Extern Coq (hc_window:HwcROMap->Z->Z->Prop) (hc_neon_load4:Recordfloat32x4_t->HwcROMap->Z->Prop) (hc_neon_dup4:Recordfloat32x4_t->fp32->Prop) (hc_neon_lane_load:Recordfloat32x4_t->Recordfloat32x4_t->HwcROMap->Z->Z->Prop) (hc_neon_min4:Recordfloat32x4_t->Recordfloat32x4_t->Recordfloat32x4_t->Prop) (hc_neon_max4:Recordfloat32x4_t->Recordfloat32x4_t->Recordfloat32x4_t->Prop) (hc_neon_zip1:Recordfloat32x4_t->Recordfloat32x4_t->Recordfloat32x4_t->Prop) (hc_neon_zip2:Recordfloat32x4_t->Recordfloat32x4_t->Recordfloat32x4_t->Prop) (hc_neon_store_lane:HwcOutput->Z->Recordfloat32x4_t->Z->HwcOutput) */
++float32x4_t hc_isa_load4(const float *p)
++/*@ With (F:HwcROMap) Require hc_window(F,p,4) && hc_data(F) Ensure exists(R:Recordfloat32x4_t),hc_neon_load4(R,F,p) && (hc_data(F)*StructPredfloat32x4_t(&__return,R)) */;
++float32x4_t hc_isa_dup_load4(const float *p)
++/*@ With (F:HwcROMap) Require hc_present(F,p) && hc_data(F) Ensure exists(R:Recordfloat32x4_t),hc_neon_dup4(R,hc_get(F,p)) && (hc_data(F)*StructPredfloat32x4_t(&__return,R)) */;
++float32x4_t hc_isa_dup4(float x)
++/*@ Require emp Ensure exists(R:Recordfloat32x4_t),hc_neon_dup4(R,x) && StructPredfloat32x4_t(&__return,R) */;
++float32x4_t hc_isa_neon_min(const float32x4_t *pa,const float32x4_t *pb)
++/*@ With (A:Recordfloat32x4_t) (B:Recordfloat32x4_t) Require StructPredfloat32x4_t(pa,A)*StructPredfloat32x4_t(pb,B) Ensure exists(R:Recordfloat32x4_t),hc_neon_min4(R,A,B) && (StructPredfloat32x4_t(pa,A)*StructPredfloat32x4_t(pb,B)*StructPredfloat32x4_t(&__return,R)) */;
++float32x4_t hc_isa_neon_max(const float32x4_t *pa,const float32x4_t *pb)
++/*@ With (A:Recordfloat32x4_t) (B:Recordfloat32x4_t) Require StructPredfloat32x4_t(pa,A)*StructPredfloat32x4_t(pb,B) Ensure exists(R:Recordfloat32x4_t),hc_neon_max4(R,A,B) && (StructPredfloat32x4_t(pa,A)*StructPredfloat32x4_t(pb,B)*StructPredfloat32x4_t(&__return,R)) */;
++float32x4_t hc_isa_neon_zip1(const float32x4_t *pa,const float32x4_t *pb)
++/*@ With (A:Recordfloat32x4_t) (B:Recordfloat32x4_t) Require StructPredfloat32x4_t(pa,A)*StructPredfloat32x4_t(pb,B) Ensure exists(R:Recordfloat32x4_t),hc_neon_zip1(R,A,B) && (StructPredfloat32x4_t(pa,A)*StructPredfloat32x4_t(pb,B)*StructPredfloat32x4_t(&__return,R)) */;
++float32x4_t hc_isa_neon_zip2(const float32x4_t *pa,const float32x4_t *pb)
++/*@ With (A:Recordfloat32x4_t) (B:Recordfloat32x4_t) Require StructPredfloat32x4_t(pa,A)*StructPredfloat32x4_t(pb,B) Ensure exists(R:Recordfloat32x4_t),hc_neon_zip2(R,A,B) && (StructPredfloat32x4_t(pa,A)*StructPredfloat32x4_t(pb,B)*StructPredfloat32x4_t(&__return,R)) */;
++float32x4_t hc_isa_load_lane4(const float *p,const float32x4_t *pa,int k)
++/*@ With (F:HwcROMap) (A:Recordfloat32x4_t) Require 0<=k && k<4 && hc_present(F,p) && (hc_data(F)*StructPredfloat32x4_t(pa,A)) Ensure exists(R:Recordfloat32x4_t),hc_neon_lane_load(R,A,F,p,k) && (hc_data(F)*StructPredfloat32x4_t(pa,A)*StructPredfloat32x4_t(&__return,R)) */;
++void hc_isa_store_lane4(float *p,const float32x4_t *pa,int k)
++/*@ With (W:list Z) (O:HwcOutput) (A:Recordfloat32x4_t) Require 0<=k && k<4 && hc_write_window(W,p,1) && (hc_output(W,O)*StructPredfloat32x4_t(pa,A)) Ensure hc_output(W,hc_neon_store_lane(O,p,A,k))*StructPredfloat32x4_t(pa,A) */;
++#define vld1q_f32(p) hc_isa_load4(p)
++#define vld1q_dup_f32(p) hc_isa_dup_load4(p)
++#define vmovq_n_f32(x) hc_isa_dup4(x)
++#define vld1q_lane_f32(p,a,k) hc_isa_load_lane4((p),&(a),(k))
++#define vst1q_lane_f32(p,a,k) hc_isa_store_lane4((p),&(a),(k))
++#define vminq_f32(a,b) hc_isa_neon_min(&(a),&(b))
++#define vmaxq_f32(a,b) hc_isa_neon_max(&(a),&(b))
++#define vzip1q_f32(a,b) hc_isa_neon_zip1(&(a),&(b))
++#define vzip2q_f32(a,b) hc_isa_neon_zip2(&(a),&(b))
++#endif
+--- /dev/null
++++ b/shim/read_api.h
+@@ -0,0 +1,10 @@
++#ifndef HWC_READ_API_H
++#define HWC_READ_API_H
++#ifdef HWC_FORMAL
++#include "maps_model.h"
++/*@ include strategies "hc_maps.strategies" */
++#endif
++float hc_read_scalar(const float *p)
++/*@ With (F:HwcROMap) Require hc_present(F,p) && hc_data(F)
++ Ensure hc_same_bits(__return,hc_get(F,p)) && hc_data(F) */;
++#endif
+--- /dev/null
++++ b/shim/read_scalar.c
+@@ -0,0 +1,5 @@
++#include "read_api.h"
++float hc_read_scalar(const float *p)
++/*@ With (F:HwcROMap) Require hc_present(F,p) && hc_data(F)
++ Ensure hc_same_bits(__return,hc_get(F,p)) && hc_data(F) */
++{ return *p; }
+--- /dev/null
++++ b/shim/rvv_rows_fma3.c
+@@ -0,0 +1,37 @@
++#include "rvv_rows_fma3.h"
++vfloat32m1_t hc_rvv_rows_fma3(const vfloat32m1_t *pa,const float *p0,const float *p1,const float *p2,const float *w,size_t width,size_t x,unsigned int dx,unsigned int ci,unsigned int lane,size_t vl)
++/*@ With(F:HwcROMap) (A:Recordvfloat32m1_t) Require 0<width && 0<=x && x<(width+1)/2 && 0<=dx && dx<3 && 0<=ci && ci<3 && 0<=lane && lane<4 && 0<=vl && vl<=4 && vl<=(width+1)/2-x && hc_footprint(p0,3*width+3) && hc_footprint(p1,3*width+3) && hc_footprint(p2,3*width+3) && hc_footprint(w,112) && hc_window(F,p0,3*width+3) && hc_window(F,p1,3*width+3) && hc_window(F,p2,3*width+3) && hc_window(F,w,112) && (hc_data(F)*StructPredvfloat32m1_t(pa,A)) Ensure exists(R:Recordvfloat32m1_t),hc_rvv_rows_group(R,A,F,p0,p1,p2,w,width,x,dx,ci,lane,vl) && (hc_data(F)*StructPredvfloat32m1_t(pa,A)*StructPredvfloat32m1_t(&__return,R)) */
++{
++ vfloat32m1_t a=*pa;
++ vfloat32m1_t z=__riscv_vfmv_v_f_f32m1(0.0f,vl);
++ vuint32m1_t id=__riscv_vid_v_u32m1(vl);
++ unsigned int start=(dx==0 && x==0)?1u:0u;
++ unsigned int end=(unsigned int)vl;
++ if(dx==2 && (width&1u)!=0 && (width+1)/2-x==vl)end-=1u;
++ vbool32_t ge=__riscv_vmsgeu_vx_u32m1_b32(id,start,vl);
++ vbool32_t lt=__riscv_vmsltu_vx_u32m1_b32(id,end,vl);
++ vbool32_t m=__riscv_vmand_mm_b32(ge,lt,vl);
++ uintptr_t off=x*24u+(dx*3u+ci)*4u;
++ {
++  vfloat32m1_t ld=__riscv_vlse32_v_f32m1_m(m,(const float*)((uintptr_t)p0-12u+off),24,vl) /*@ where F=F */;
++  vfloat32m1_t v=__riscv_vmerge_vvm_f32m1(z,ld,m,vl);
++  float wk=hc_read_scalar(w+4u+(dx*9u+ci*3u+0u)*4u+lane) /*@ where F=F */;
++  if(dx==2)a=__riscv_vfmacc_vf_f32m1_mu(m,a,wk,v,vl);
++  else a=__riscv_vfmacc_vf_f32m1(a,wk,v,vl);
++ }
++ {
++  vfloat32m1_t ld=__riscv_vlse32_v_f32m1_m(m,(const float*)((uintptr_t)p1-12u+off),24,vl) /*@ where F=F */;
++  vfloat32m1_t v=__riscv_vmerge_vvm_f32m1(z,ld,m,vl);
++  float wk=hc_read_scalar(w+4u+(dx*9u+ci*3u+1u)*4u+lane) /*@ where F=F */;
++  if(dx==2)a=__riscv_vfmacc_vf_f32m1_mu(m,a,wk,v,vl);
++  else a=__riscv_vfmacc_vf_f32m1(a,wk,v,vl);
++ }
++ {
++  vfloat32m1_t ld=__riscv_vlse32_v_f32m1_m(m,(const float*)((uintptr_t)p2-12u+off),24,vl) /*@ where F=F */;
++  vfloat32m1_t v=__riscv_vmerge_vvm_f32m1(z,ld,m,vl);
++  float wk=hc_read_scalar(w+4u+(dx*9u+ci*3u+2u)*4u+lane) /*@ where F=F */;
++  if(dx==2)a=__riscv_vfmacc_vf_f32m1_mu(m,a,wk,v,vl);
++  else a=__riscv_vfmacc_vf_f32m1(a,wk,v,vl);
++ }
++ return a;
++}
+--- /dev/null
++++ b/shim/rvv_rows_fma3.h
+@@ -0,0 +1,12 @@
++#ifndef HWC_RVV_ROWS_FMA3_H
++#define HWC_RVV_ROWS_FMA3_H
++#ifdef HWC_FORMAL
++#include "rvv_views.h"
++#include "read_api.h"
++/*@ Import Coq Require Import HwcConv.RvvRowsFma3Model */
++/*@ Extern Coq (hc_footprint:Z->Z->Prop) (hc_window:HwcROMap->Z->Z->Prop)
++ (hc_rvv_rows_group:Recordvfloat32m1_t->Recordvfloat32m1_t->HwcROMap->Z->Z->Z->Z->Z->Z->Z->Z->Z->Z->Prop) */
++#endif
++vfloat32m1_t hc_rvv_rows_fma3(const vfloat32m1_t *pa,const float *p0,const float *p1,const float *p2,const float *w,size_t width,size_t x,unsigned int dx,unsigned int ci,unsigned int lane,size_t vl)
++/*@ With(F:HwcROMap) (A:Recordvfloat32m1_t) Require 0<width && 0<=x && x<(width+1)/2 && 0<=dx && dx<3 && 0<=ci && ci<3 && 0<=lane && lane<4 && 0<=vl && vl<=4 && vl<=(width+1)/2-x && hc_footprint(p0,3*width+3) && hc_footprint(p1,3*width+3) && hc_footprint(p2,3*width+3) && hc_footprint(w,112) && hc_window(F,p0,3*width+3) && hc_window(F,p1,3*width+3) && hc_window(F,p2,3*width+3) && hc_window(F,w,112) && (hc_data(F)*StructPredvfloat32m1_t(pa,A)) Ensure exists(R:Recordvfloat32m1_t),hc_rvv_rows_group(R,A,F,p0,p1,p2,w,width,x,dx,ci,lane,vl) && (hc_data(F)*StructPredvfloat32m1_t(pa,A)*StructPredvfloat32m1_t(&__return,R)) */;
++#endif
+--- /dev/null
++++ b/shim/rvv_views.h
+@@ -0,0 +1,38 @@
++#ifndef HWC_RVV_VIEWS_H
++#define HWC_RVV_VIEWS_H
++#include "clamp_views.h"
++#include "maps_model.h"
++#include "store_views.h"
++/*@ Import Coq Require Import HwcConv.RvvViewsModel */
++/*@ Extern Coq (hc_rvv_vl:Z->Z->Prop) (hc_rvv_splat:Recordvfloat32m1_t->fp32->Z->Prop) (hc_rvv_id:Recordvuint32m1_t->Z->Prop) (hc_mask_ge:Recordvbool32_t->Recordvuint32m1_t->Z->Z->Prop) (hc_mask_lt:Recordvbool32_t->Recordvuint32m1_t->Z->Z->Prop) (hc_mask_and:Recordvbool32_t->Recordvbool32_t->Recordvbool32_t->Z->Prop) (hc_masked_window:HwcROMap->Z->Z->Recordvbool32_t->Z->Prop) (hc_masked_load:Recordvfloat32m1_t->HwcROMap->Z->Z->Recordvbool32_t->Z->Prop) (hc_rvv_fma:Recordvfloat32m1_t->Recordvfloat32m1_t->Recordvfloat32m1_t->fp32->Z->Prop) (hc_rvv_fma_mu:Recordvfloat32m1_t->Recordvfloat32m1_t->Recordvfloat32m1_t->fp32->Recordvbool32_t->Z->Prop) (hc_store_rvv:HwcOutput->Z->Recordvfloat32m1_t->Z->HwcOutput) */
++size_t hc_isa_vsetvl(size_t avl)
++/*@ Require emp Ensure hc_rvv_vl(avl,__return) && emp */;
++vfloat32m1_t hc_isa_rvv_splat(float x,size_t vl)
++/*@ Require 0<=vl && vl<=4 && emp Ensure exists(R:Recordvfloat32m1_t),hc_rvv_splat(R,x,vl) && (StructPredvfloat32m1_t(&__return,R)) */;
++vuint32m1_t hc_isa_rvv_id(size_t vl)
++/*@ Require 0<=vl && vl<=4 && emp Ensure exists(R:Recordvuint32m1_t),hc_rvv_id(R,vl) && (StructPredvuint32m1_t(&__return,R)) */;
++vbool32_t hc_isa_mask_ge(const vuint32m1_t *pa,unsigned int x,size_t vl)
++/*@ With (A:Recordvuint32m1_t) Require 0<=vl && vl<=4 && StructPredvuint32m1_t(pa,A) Ensure exists(R:Recordvbool32_t),hc_mask_ge(R,A,x,vl) && hc_legal_mask(R,vl) && (StructPredvuint32m1_t(pa,A)*StructPredvbool32_t(&__return,R)) */;
++vbool32_t hc_isa_mask_lt(const vuint32m1_t *pa,unsigned int x,size_t vl)
++/*@ With (A:Recordvuint32m1_t) Require 0<=vl && vl<=4 && StructPredvuint32m1_t(pa,A) Ensure exists(R:Recordvbool32_t),hc_mask_lt(R,A,x,vl) && hc_legal_mask(R,vl) && (StructPredvuint32m1_t(pa,A)*StructPredvbool32_t(&__return,R)) */;
++vbool32_t hc_isa_mask_and(const vbool32_t *pa,const vbool32_t *pb,size_t vl)
++/*@ With (A:Recordvbool32_t) (B:Recordvbool32_t) Require 0<=vl && vl<=4 && hc_legal_mask(A,vl) && hc_legal_mask(B,vl) && (StructPredvbool32_t(pa,A)*StructPredvbool32_t(pb,B)) Ensure exists(R:Recordvbool32_t),hc_mask_and(R,A,B,vl) && hc_legal_mask(R,vl) && (StructPredvbool32_t(pa,A)*StructPredvbool32_t(pb,B)*StructPredvbool32_t(&__return,R)) */;
++vfloat32m1_t hc_isa_masked_strided_load(const vbool32_t *pm,const float *p,ptrdiff_t stride,size_t vl)
++/*@ With (F:HwcROMap) (M:Recordvbool32_t) Require 0<=vl && vl<=4 && hc_legal_mask(M,vl) && hc_masked_window(F,p,stride,M,vl) && (hc_data(F)*StructPredvbool32_t(pm,M)) Ensure exists(R:Recordvfloat32m1_t),hc_masked_load(R,F,p,stride,M,vl) && (hc_data(F)*StructPredvbool32_t(pm,M)*StructPredvfloat32m1_t(&__return,R)) */;
++vfloat32m1_t hc_isa_rvv_fma(const vfloat32m1_t *pa,float w,const vfloat32m1_t *px,size_t vl)
++/*@ With (A:Recordvfloat32m1_t) (X:Recordvfloat32m1_t) Require 0<=vl && vl<=4 && (StructPredvfloat32m1_t(pa,A)*StructPredvfloat32m1_t(px,X)) Ensure exists(R:Recordvfloat32m1_t),hc_rvv_fma(R,A,X,w,vl) && (StructPredvfloat32m1_t(pa,A)*StructPredvfloat32m1_t(px,X)*StructPredvfloat32m1_t(&__return,R)) */;
++vfloat32m1_t hc_isa_rvv_fma_mu(const vbool32_t *pm,const vfloat32m1_t *pa,float w,const vfloat32m1_t *px,size_t vl)
++/*@ With (M:Recordvbool32_t) (A:Recordvfloat32m1_t) (X:Recordvfloat32m1_t) Require 0<=vl && vl<=4 && hc_legal_mask(M,vl) && (StructPredvbool32_t(pm,M)*StructPredvfloat32m1_t(pa,A)*StructPredvfloat32m1_t(px,X)) Ensure exists(R:Recordvfloat32m1_t),hc_rvv_fma_mu(R,A,X,w,M,vl) && (StructPredvbool32_t(pm,M)*StructPredvfloat32m1_t(pa,A)*StructPredvfloat32m1_t(px,X)*StructPredvfloat32m1_t(&__return,R)) */;
++void hc_isa_rvv_store(float *p,const vfloat32m1_t *pa,size_t vl)
++/*@ With (W:list Z) (O:HwcOutput) (A:Recordvfloat32m1_t) Require 0<=vl && vl<=4 && hc_write_window(W,p,vl) && (hc_output(W,O)*StructPredvfloat32m1_t(pa,A)) Ensure hc_output(W,hc_store_rvv(O,p,A,vl))*StructPredvfloat32m1_t(pa,A) */;
++#define __riscv_vsetvl_e32m1(avl) hc_isa_vsetvl(avl)
++#define __riscv_vfmv_v_f_f32m1(x,vl) hc_isa_rvv_splat((x),(vl))
++#define __riscv_vid_v_u32m1(vl) hc_isa_rvv_id(vl)
++#define __riscv_vmsgeu_vx_u32m1_b32(a,x,vl) hc_isa_mask_ge(&(a),(x),(vl))
++#define __riscv_vmsltu_vx_u32m1_b32(a,x,vl) hc_isa_mask_lt(&(a),(x),(vl))
++#define __riscv_vmand_mm_b32(a,b,vl) hc_isa_mask_and(&(a),&(b),(vl))
++#define __riscv_vlse32_v_f32m1_m(m,p,s,vl) hc_isa_masked_strided_load(&(m),(p),(s),(vl))
++#define __riscv_vfmacc_vf_f32m1(a,w,x,vl) hc_isa_rvv_fma(&(a),(w),&(x),(vl))
++#define __riscv_vfmacc_vf_f32m1_mu(m,a,w,x,vl) hc_isa_rvv_fma_mu(&(m),&(a),(w),&(x),(vl))
++#define __riscv_vse32_v_f32m1(p,a,vl) hc_isa_rvv_store((p),&(a),(vl))
++#endif
+--- /dev/null
++++ b/shim/store_half.c
+@@ -0,0 +1,19 @@
++#include "store_half.h"
++void hc_store_low_half(float *p,const float32x4_t *pa)
++/*@ With (A:Recordfloat32x4_t) (O:HwcOutput) (W:list Z)
++ Require hc_write_window(W,p,2) && hc_output(W,O)*StructPredfloat32x4_t(pa,A)
++ Ensure hc_output(W,hc_store_low2(O,p,A))*StructPredfloat32x4_t(pa,A) */
++{
++ float32x4_t a=*pa;
++ float32x2_t low=vget_low_f32(a);
++ vst1_f32(p,low) /*@ where O=O,W=W */;
++}
++void hc_store_high_half(float *p,const float32x4_t *pa)
++/*@ With (A:Recordfloat32x4_t) (O:HwcOutput) (W:list Z)
++ Require hc_write_window(W,p,2) && hc_output(W,O)*StructPredfloat32x4_t(pa,A)
++ Ensure hc_output(W,hc_store_high2(O,p,A))*StructPredfloat32x4_t(pa,A) */
++{
++ float32x4_t a=*pa;
++ float32x2_t high=vget_high_f32(a);
++ vst1_f32(p,high) /*@ where O=O,W=W */;
++}
+--- /dev/null
++++ b/shim/store_half.h
+@@ -0,0 +1,14 @@
++#ifndef HWC_STORE_HALF_H
++#define HWC_STORE_HALF_H
++#ifdef HWC_FORMAL
++#include "store_views.h"
++#endif
++void hc_store_low_half(float *p,const float32x4_t *pa)
++/*@ With (A:Recordfloat32x4_t) (O:HwcOutput) (W:list Z)
++ Require hc_write_window(W,p,2) && hc_output(W,O)*StructPredfloat32x4_t(pa,A)
++ Ensure hc_output(W,hc_store_low2(O,p,A))*StructPredfloat32x4_t(pa,A) */;
++void hc_store_high_half(float *p,const float32x4_t *pa)
++/*@ With (A:Recordfloat32x4_t) (O:HwcOutput) (W:list Z)
++ Require hc_write_window(W,p,2) && hc_output(W,O)*StructPredfloat32x4_t(pa,A)
++ Ensure hc_output(W,hc_store_high2(O,p,A))*StructPredfloat32x4_t(pa,A) */;
++#endif
+--- /dev/null
++++ b/shim/store_views.h
+@@ -0,0 +1,28 @@
++#ifndef HWC_STORE_VIEWS_H
++#define HWC_STORE_VIEWS_H
++#include "vector_types.h"
++/*@ Import Coq Require Import HwcConv.StoreViewsModel */
++/*@ Extern Coq (HwcOutput :: *) */
++/*@ Extern Coq (hc_output: list Z -> HwcOutput -> Assertion)
++ (hc_write_window: list Z -> Z -> Z -> Prop)
++ (hc_low2:Recordfloat32x2_t->Recordfloat32x4_t->Prop)
++ (hc_high2:Recordfloat32x2_t->Recordfloat32x4_t->Prop)
++ (hc_store2:HwcOutput->Z->Recordfloat32x2_t->HwcOutput)
++ (hc_store_low2:HwcOutput->Z->Recordfloat32x4_t->HwcOutput)
++ (hc_store_high2:HwcOutput->Z->Recordfloat32x4_t->HwcOutput) */
++float32x2_t hc_isa_get_low2(const float32x4_t *pa)
++/*@ With (A:Recordfloat32x4_t) Require StructPredfloat32x4_t(pa,A)
++ Ensure exists(R:Recordfloat32x2_t),hc_low2(R,A) &&
++ (StructPredfloat32x4_t(pa,A)*StructPredfloat32x2_t(&__return,R)) */;
++float32x2_t hc_isa_get_high2(const float32x4_t *pa)
++/*@ With (A:Recordfloat32x4_t) Require StructPredfloat32x4_t(pa,A)
++ Ensure exists(R:Recordfloat32x2_t),hc_high2(R,A) &&
++ (StructPredfloat32x4_t(pa,A)*StructPredfloat32x2_t(&__return,R)) */;
++void hc_isa_store2(float *p,const float32x2_t *pa)
++/*@ With (A:Recordfloat32x2_t) (O:HwcOutput) (W:list Z)
++ Require hc_write_window(W,p,2) && hc_output(W,O)*StructPredfloat32x2_t(pa,A)
++ Ensure hc_output(W,hc_store2(O,p,A))*StructPredfloat32x2_t(pa,A) */;
++#define vget_low_f32(a) hc_isa_get_low2(&(a))
++#define vget_high_f32(a) hc_isa_get_high2(&(a))
++#define vst1_f32(p,a) hc_isa_store2((p),&(a))
++#endif
+--- /dev/null
++++ b/shim/support.c
+@@ -0,0 +1,2 @@
++size_t hc_round_down4(size_t n){return n & ~(size_t)3;}
++size_t hc_doz(size_t a,size_t b){return a>b?a-b:0;}
+--- /dev/null
++++ b/shim/support.h
+@@ -0,0 +1,12 @@
++#ifndef HWC_SUPPORT_H
++#define HWC_SUPPORT_H
++#include "types.h"
++/*@ Import Coq Require Import HwcConv.SupportModel */
++/*@ Extern Coq (hc_doz_model : Z -> Z -> Z) (hc_round_model : Z -> Z) */
++size_t hc_round_down4(size_t n)
++/*@ Require emp Ensure __return == hc_round_model(n) && emp */
++;
++size_t hc_doz(size_t a,size_t b)
++/*@ Require emp Ensure __return == hc_doz_model(a,b) && emp */
++;
++#endif
+--- /dev/null
++++ b/shim/types.h
+@@ -0,0 +1,8 @@
++#ifndef HWC_FORMAL_TYPES_H
++#define HWC_FORMAL_TYPES_H
++/* Explicit formal LP64 frontend widths, audited with actual sizeof probes later. */
++typedef unsigned long long size_t;
++typedef unsigned long long uintptr_t;
++typedef long long ptrdiff_t;
++/*@ Import Coq Require Import HwcConv.Types */
++#endif
+--- /dev/null
++++ b/shim/vector_types.h
+@@ -0,0 +1,24 @@
++#ifndef HWC_VECTOR_TYPES_H
++#define HWC_VECTOR_TYPES_H
++#include "types.h"
++/* Faithful explicit scalar-field frontend views; physical SIMD ABI mapping remains source-reviewed. */
++typedef struct float32x2_t {float s0; float s1;} float32x2_t;
++typedef struct float32x4_t {float s0; float s1; float s2; float s3;} float32x4_t;
++typedef struct vfloat32m1_t {float s0; float s1; float s2; float s3;} vfloat32m1_t;
++typedef struct uint32x4_t {unsigned int s0; unsigned int s1; unsigned int s2; unsigned int s3;} uint32x4_t;
++typedef struct vuint32m1_t {unsigned int s0; unsigned int s1; unsigned int s2; unsigned int s3;} vuint32m1_t;
++typedef struct vbool32_t {unsigned int s0; unsigned int s1; unsigned int s2; unsigned int s3;} vbool32_t;
++/*@ Import Coq Require Import HwcConv.VectorRecords */
++/*@ Extern Coq (Recordfloat32x2_t :: *) */
++/*@ Extern Coq (StructPredfloat32x2_t : Z -> Recordfloat32x2_t -> Assertion) */
++/*@ Extern Coq (Recordfloat32x4_t :: *) */
++/*@ Extern Coq (StructPredfloat32x4_t : Z -> Recordfloat32x4_t -> Assertion) */
++/*@ Extern Coq (Recordvfloat32m1_t :: *) */
++/*@ Extern Coq (StructPredvfloat32m1_t : Z -> Recordvfloat32m1_t -> Assertion) */
++/*@ Extern Coq (Recorduint32x4_t :: *) */
++/*@ Extern Coq (StructPreduint32x4_t : Z -> Recorduint32x4_t -> Assertion) */
++/*@ Extern Coq (Recordvuint32m1_t :: *) */
++/*@ Extern Coq (StructPredvuint32m1_t : Z -> Recordvuint32m1_t -> Assertion) */
++/*@ Extern Coq (Recordvbool32_t :: *) */
++/*@ Extern Coq (StructPredvbool32_t : Z -> Recordvbool32_t -> Assertion) */
++#endif

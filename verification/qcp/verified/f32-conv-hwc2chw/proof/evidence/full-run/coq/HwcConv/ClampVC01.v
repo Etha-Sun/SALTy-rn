@@ -1,0 +1,5 @@
+From HwcConv Require Import ClampTactics.
+Import Snaive_C_Rules64. Local Open Scope sac.
+Lemma proof_of_hc_min_f32m1_return_wit_2:HwcConv.nan_helpers_unit_goal.hc_min_f32m1_return_wit_2.
+Proof. unfold HwcConv.nan_helpers_unit_goal.hc_min_f32m1_return_wit_2;right;hc_clamp_start;hc_clamp_return_math. Qed.
+Print Assumptions proof_of_hc_min_f32m1_return_wit_2.

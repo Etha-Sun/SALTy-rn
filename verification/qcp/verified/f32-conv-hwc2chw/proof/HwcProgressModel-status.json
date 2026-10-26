@@ -1,0 +1,192 @@
+{
+  "passed": true,
+  "whole_kernel_verified": false,
+  "scope": "Ordinary Coq named mathematical/actual-target modules; coherent core reuse explicit, not a whole-kernel gate",
+  "run_directory": "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-conv-hwc2chw/.build/module-proof-fq1p7f0r",
+  "core_run": "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-conv-hwc2chw/.build/coq-closure-0t8cc2d4",
+  "modules": [
+    "HwcProgressModel"
+  ],
+  "parallel_jobs": 32,
+  "per_process_memory_GiB": 16,
+  "source_sha256": {
+    "HwcProgressModel": "a6365f06a595acd10c4508a351387297bbc2ca35e2e05cbf2ae7ab4358c88306",
+    "HwcProgramModel": "095f0d64c6422efe7bc994f54658ccf9ca30088b45e1ad4c577a19949fe38b85",
+    "HwcArithmeticFacts": "d3254365ce678218133a92fcd8e6fde572637f10fed6184d0ecc9f54a408ff14",
+    "FmaSwap": "05aa9c3b06289457049309d1511f2a48e9be9c3b118a8c3a54c2cf69e8a1b64b",
+    "Model": "a546a73e085891e5856e902569ef928e02f236656d75ca9fff09cc48435b6524",
+    "FmaModel": "0ea0d05ea83bc1425551fc967f15f73cb2c5520df1a3abe63e6f2f6a78fc1153",
+    "HwcArithmeticModel": "a07d60d717170720d089591bf3bd5112baed9b091ac0cb75ae950c822fd26224",
+    "Observation": "4b125509e5208d3bf6c1351ff6765507430f2300af644ab1f67f176e90628bac",
+    "NanFacts": "aa3203a4abcd43662081e5a8953b3246cc3c6505b39c1a1e0fbc185abbd2f8b6",
+    "Bits": "8ba112ecf7fb62ea08f40d17c53c976c736604814a578d39884af291e8840ff5",
+    "MemoryModel": "ec0f556de9cee1be49c5c4f6f90fa34ba05fc8b47d39fdd3b5597e7aa040a822",
+    "OutputMemory": "b98c9430d6b32b0ae5bc04c274ff898c6ec4ccc86030305971c65dcc486ee833",
+    "MemoryFacts": "708cace63c446ef9d02750717ecd1cc342e67d8185183abb3612491b63a484d6"
+  },
+  "core_available_source_sha256": {
+    "HwcProgramModel": "095f0d64c6422efe7bc994f54658ccf9ca30088b45e1ad4c577a19949fe38b85",
+    "HwcArithmeticFacts": "d3254365ce678218133a92fcd8e6fde572637f10fed6184d0ecc9f54a408ff14",
+    "FmaSwap": "05aa9c3b06289457049309d1511f2a48e9be9c3b118a8c3a54c2cf69e8a1b64b",
+    "Model": "a546a73e085891e5856e902569ef928e02f236656d75ca9fff09cc48435b6524",
+    "FmaModel": "0ea0d05ea83bc1425551fc967f15f73cb2c5520df1a3abe63e6f2f6a78fc1153",
+    "HwcArithmeticModel": "a07d60d717170720d089591bf3bd5112baed9b091ac0cb75ae950c822fd26224",
+    "Observation": "4b125509e5208d3bf6c1351ff6765507430f2300af644ab1f67f176e90628bac",
+    "NanFacts": "aa3203a4abcd43662081e5a8953b3246cc3c6505b39c1a1e0fbc185abbd2f8b6",
+    "Bits": "8ba112ecf7fb62ea08f40d17c53c976c736604814a578d39884af291e8840ff5",
+    "MemoryModel": "ec0f556de9cee1be49c5c4f6f90fa34ba05fc8b47d39fdd3b5597e7aa040a822",
+    "OutputMemory": "b98c9430d6b32b0ae5bc04c274ff898c6ec4ccc86030305971c65dcc486ee833",
+    "MemoryFacts": "708cace63c446ef9d02750717ecd1cc342e67d8185183abb3612491b63a484d6"
+  },
+  "dag": {
+    "HwcProgressModel": [
+      "HwcProgramModel"
+    ],
+    "HwcProgramModel": [
+      "HwcArithmeticFacts",
+      "MemoryModel",
+      "OutputMemory"
+    ],
+    "HwcArithmeticFacts": [
+      "FmaSwap",
+      "HwcArithmeticModel",
+      "Observation"
+    ],
+    "FmaSwap": [
+      "Model"
+    ],
+    "Model": [
+      "FmaModel"
+    ],
+    "FmaModel": [],
+    "HwcArithmeticModel": [
+      "Model"
+    ],
+    "Observation": [
+      "Model",
+      "NanFacts"
+    ],
+    "NanFacts": [
+      "Bits",
+      "Model"
+    ],
+    "Bits": [],
+    "MemoryModel": [
+      "FmaModel"
+    ],
+    "OutputMemory": [
+      "MemoryFacts"
+    ],
+    "MemoryFacts": [
+      "MemoryModel"
+    ]
+  },
+  "records": [
+    {
+      "module": "HwcProgressModel",
+      "exit_code": 0,
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "qcp-env",
+        "coqc",
+        "-q",
+        "-R",
+        "/tmp/qcp214-src/Rocq/flocq/src",
+        "Flocq",
+        "-R",
+        "/tmp/qcp214-src/Rocq/SeparationLogic",
+        "SimpleC.SL",
+        "-R",
+        "/tmp/qcp214-src/Rocq/unifysl",
+        "Logic",
+        "-R",
+        "/tmp/qcp214-src/Rocq/sets",
+        "SetsClass",
+        "-R",
+        "/tmp/qcp214-src/Rocq/compcert_lib",
+        "compcert.lib",
+        "-R",
+        "/tmp/qcp214-src/Rocq/auxlibs",
+        "AUXLib",
+        "-R",
+        "/tmp/qcp214-src/Rocq/examples",
+        "SimpleC.EE",
+        "-R",
+        "/tmp/qcp214-src/Rocq/stdlib",
+        "SimpleC.StdLib",
+        "-R",
+        "/tmp/qcp214-src/Rocq/StrategyLib",
+        "SimpleC.StrategyLib",
+        "-R",
+        "/tmp/qcp214-src/Rocq/Common",
+        "SimpleC.Common",
+        "-R",
+        "/tmp/qcp214-src/Rocq/cdcllib",
+        "CDCLLib",
+        "-R",
+        "/tmp/qcp214-src/Rocq/fixedpoints",
+        "FP",
+        "-R",
+        "/tmp/qcp214-src/Rocq/MonadLib",
+        "MonadLib",
+        "-R",
+        "/tmp/qcp214-src/Rocq/listlib",
+        "ListLib",
+        "-R",
+        "/tmp/qcp214-src/Rocq/MaxMinLib",
+        "MaxMinLib",
+        "-R",
+        "/tmp/qcp214-src/Rocq/GraphLib",
+        "GraphLib",
+        "-R",
+        "/tmp/qcp214-src/Rocq/SumLib",
+        "SumLib",
+        "-R",
+        "/tmp/qcp214-src/Rocq/tracelib",
+        "TraceLib",
+        "-R",
+        "/tmp/qcp214-src/Rocq/coq-record-update/src",
+        "RecordUpdate",
+        "-Q",
+        "/tmp/qcp214-src/Rocq/algorithms",
+        "Algorithms",
+        "-Q",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-conv-hwc2chw/.build/module-proof-fq1p7f0r/coq",
+        "HwcConv",
+        "-time",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-conv-hwc2chw/.build/module-proof-fq1p7f0r/coq/HwcProgressModel.v"
+      ],
+      "seconds": 4.298468854976818,
+      "source_sha256": "a6365f06a595acd10c4508a351387297bbc2ca35e2e05cbf2ae7ab4358c88306",
+      "log_sha256": "ff26070fbec8a128c2a8a06484d4bf9b42019bbcc3a052d462ba76040025c857"
+    }
+  ],
+  "reused_core_modules": [
+    "HwcProgramModel",
+    "HwcArithmeticFacts",
+    "FmaSwap",
+    "Model",
+    "FmaModel",
+    "HwcArithmeticModel",
+    "Observation",
+    "NanFacts",
+    "Bits",
+    "MemoryModel",
+    "OutputMemory",
+    "MemoryFacts"
+  ],
+  "live_jobs_file": "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-conv-hwc2chw/.build/math-one-live.json",
+  "parallel_limit_history": [
+    {
+      "jobs": 1,
+      "time_monotonic": 1366792.735432568,
+      "reason": "Private execution budget only; same source DAG and complete target set"
+    }
+  ],
+  "peak_active_jobs": 1,
+  "continue_independent_after_failure": false,
+  "new_compiled_modules": 1,
+  "Print_reports": 2
+}

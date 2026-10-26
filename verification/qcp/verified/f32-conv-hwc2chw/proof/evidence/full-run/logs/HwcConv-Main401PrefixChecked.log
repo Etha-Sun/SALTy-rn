@@ -1,0 +1,35 @@
+Chars 0 - 48 [From~HwcConv~Require~Import~Ma...] 5.072 secs (3.748u,1.268s)
+Chars 49 - 79 [Module~Type~ExactPrefixAssert.] 0. secs (0.u,0.s)
+Chars 81 - 166 [Parameter~~~(proof_of_test_rvv...] 0. secs (0.u,0.s)
+Chars 167 - 189 [End~ExactPrefixAssert.] 0. secs (0.u,0.s)
+Chars 190 - 225 [Module~Checked:~ExactPrefixAss...] 0. secs (0.u,0.s)
+Chars 227 - 387 [Definition~proof_of_test_rvv_e...] 0. secs (0.u,0.s)
+Chars 388 - 400 [End~Checked.] 0. secs (0.u,0.s)
+Axioms:
+ClassicalDedekindReals.sig_not_dec : forall P : Prop, {~ ~ P} + {~ P}
+ClassicalDedekindReals.sig_forall_dec :
+  forall P : nat -> Prop,
+  (forall n : nat, {P n} + {~ P n}) ->
+  {n : nat | ~ P n} + {forall n : nat, P n}
+FunctionalExtensionality.functional_extensionality_dep :
+  forall (A : Type) (B : A -> Type) (f g : forall x : A, B x),
+  (forall x : A, f x = g x) -> f = g
+CNotation.eval_addr_expr_congr :
+  Morphisms.Proper (Morphisms.respectful CNotation.rvalue_expr_equiv eq)
+    CNotation.eval_addr_expr
+CNotation.eval_addr_expr : CNotation.rvalue_expr -> CNotation.addr
+SeparationLogic.Snaive_C_Rules64.eval_addr :
+  forall (R : CNotation.rvalue_expr) (t : CNotation.front_end_type),
+  CNotation.rvalue_expr_equiv
+    (CNotation.RE_const (CNotation.eval_addr_expr R) t) R
+Classical_Prop.classic : forall P : Prop, P \/ ~ P
+CNotation.RE_addr_of_congr :
+  Morphisms.Proper
+    (Morphisms.respectful CNotation.lvalue_expr_equiv
+       CNotation.rvalue_expr_equiv) CNotation.RE_addr_of
+CNotation.LE_arrow_field_congr :
+  Morphisms.Proper
+    (Morphisms.respectful CNotation.rvalue_expr_equiv
+       (Morphisms.respectful eq CNotation.lvalue_expr_equiv))
+    CNotation.LE_arrow_field
+Chars 401 - 458 [Print~Assumptions~Checked.proo...] 3.809 secs (2.967u,0.459s)

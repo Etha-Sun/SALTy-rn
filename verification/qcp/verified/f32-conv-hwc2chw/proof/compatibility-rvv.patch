@@ -1,0 +1,117 @@
+--- a/impl/testRVV.c
++++ b/impl/testRVV.c
+@@ -1,3 +1,4 @@
++#include "../shim/hc_rvv_pixel9.h"
+ #include "../shim/nan_helpers.h"
+ #include "../shim/read_api.h"
+ void test_rvv(
+@@ -80,13 +81,6 @@
+       size_t ow = output_width;
+       size_t ow_done = 0;
+       
+-      // Base pointers shifted back by 1 pixel (3 channels) to ensure all indexed offsets are non-negative
+-      const float* i0_base = (const float*)((uintptr_t)i0 - 3 * sizeof(float));
+-      const float* i1_base = (const float*)((uintptr_t)i1 - 3 * sizeof(float));
+-      const float* i2_base = (const float*)((uintptr_t)i2 - 3 * sizeof(float));
+-      const float* i3_base = (const float*)((uintptr_t)i3 - 3 * sizeof(float));
+-      const float* i4_base = (const float*)((uintptr_t)i4 - 3 * sizeof(float));
+-
+       float* current_o0c0 = o0c0;
+       float* current_o0c1 = o0c1;
+       float* current_o0c2 = o0c2;
+@@ -98,87 +92,14 @@
+ 
+       while (ow > 0) {
+         size_t vl = __riscv_vsetvl_e32m1(ow);
+-        vfloat32m1_t v_zero = __riscv_vfmv_v_f_f32m1(0.0f, vl);
+-
+-        vuint32m1_t vj = __riscv_vid_v_u32m1(vl);
+-        /* Only local lane numbers enter 32-bit vector comparisons. Global
+-           width and current column stay uint64; no input-size cut is made. */
+-        vfloat32m1_t v_o0c0 = __riscv_vfmv_v_f_f32m1(hc_read_scalar(&(w[0])), vl);
+-        vfloat32m1_t v_o0c1 = __riscv_vfmv_v_f_f32m1(hc_read_scalar(&(w[1])), vl);
+-        vfloat32m1_t v_o0c2 = __riscv_vfmv_v_f_f32m1(hc_read_scalar(&(w[2])), vl);
+-        vfloat32m1_t v_o0c3 = __riscv_vfmv_v_f_f32m1(hc_read_scalar(&(w[3])), vl);
+-
+-        vfloat32m1_t v_o1c0 = __riscv_vfmv_v_f_f32m1(hc_read_scalar(&(w[0])), vl);
+-        vfloat32m1_t v_o1c1 = __riscv_vfmv_v_f_f32m1(hc_read_scalar(&(w[1])), vl);
+-        vfloat32m1_t v_o1c2 = __riscv_vfmv_v_f_f32m1(hc_read_scalar(&(w[2])), vl);
+-        vfloat32m1_t v_o1c3 = __riscv_vfmv_v_f_f32m1(hc_read_scalar(&(w[3])), vl);
+-
+-        for (int dx = 0; dx < 3; dx++) {
+-          uint32_t valid_start=(dx==0 && ow_done==0)?1u:0u;
+-          uint32_t valid_end=(uint32_t)vl;
+-          if (dx==2 && (input_width & 1u)!=0 && ow==vl) valid_end-=1u;
+-          vbool32_t mask_ge=__riscv_vmsgeu_vx_u32m1_b32(vj,valid_start,vl);
+-          vbool32_t mask_lt=__riscv_vmsltu_vx_u32m1_b32(vj,valid_end,vl);
+-          vbool32_t mask=__riscv_vmand_mm_b32(mask_ge,mask_lt,vl);
+-
+-
+-          for (int c_in = 0; c_in < 3; c_in++) {
+-            int32_t scalar_offset = (dx * 3 + c_in) * 4;
+-            // Per-lane offset is (lane+ow_done)*24 + scalar_offset: a fixed 24-byte stride,
+-            // so a strided load + mask-merge replaces the indexed gather (same values).
+-            const uintptr_t v_off = (uintptr_t)ow_done * 24u + (uintptr_t)scalar_offset;
+-            const ptrdiff_t v_str = 24;
+-            vfloat32m1_t loaded0 = __riscv_vlse32_v_f32m1_m(mask, (const float*)((uintptr_t)i0_base + v_off), v_str, vl);
+-            vfloat32m1_t v_in0 = __riscv_vmerge_vvm_f32m1(v_zero, loaded0, mask, vl);
+-            vfloat32m1_t loaded1 = __riscv_vlse32_v_f32m1_m(mask, (const float*)((uintptr_t)i1_base + v_off), v_str, vl);
+-            vfloat32m1_t v_in1 = __riscv_vmerge_vvm_f32m1(v_zero, loaded1, mask, vl);
+-            vfloat32m1_t loaded2 = __riscv_vlse32_v_f32m1_m(mask, (const float*)((uintptr_t)i2_base + v_off), v_str, vl);
+-            vfloat32m1_t v_in2 = __riscv_vmerge_vvm_f32m1(v_zero, loaded2, mask, vl);
+-            vfloat32m1_t loaded3 = __riscv_vlse32_v_f32m1_m(mask, (const float*)((uintptr_t)i3_base + v_off), v_str, vl);
+-            vfloat32m1_t v_in3 = __riscv_vmerge_vvm_f32m1(v_zero, loaded3, mask, vl);
+-            vfloat32m1_t loaded4 = __riscv_vlse32_v_f32m1_m(mask, (const float*)((uintptr_t)i4_base + v_off), v_str, vl);
+-            vfloat32m1_t v_in4 = __riscv_vmerge_vvm_f32m1(v_zero, loaded4, mask, vl);
+-
+-            for (int ky = 0; ky < 3; ky++) {
+-              vfloat32m1_t v_in_row0 = (ky == 0) ? v_in0 : (ky == 1) ? v_in1 : v_in2;
+-              vfloat32m1_t v_in_row1 = (ky == 0) ? v_in2 : (ky == 1) ? v_in3 : v_in4;
+-
+-              // NEON c3x4 plane order = kc*9 + ch*3 + kr (= dx*9 + c_in*3 + ky); aligns weight
+-              // reads with the gold so the shared symbolic weight buffer matches on both sides.
+-              int w_idx = (dx * 9 + c_in * 3 + ky) * 4;
+-              float w0 = hc_read_scalar(&(w[4 + w_idx + 0]));
+-              float w1 = hc_read_scalar(&(w[4 + w_idx + 1]));
+-              float w2 = hc_read_scalar(&(w[4 + w_idx + 2]));
+-              float w3 = hc_read_scalar(&(w[4 + w_idx + 3]));
+-
+-              v_o0c0 = dx==2
+-                  ? __riscv_vfmacc_vf_f32m1_mu(mask, v_o0c0, w0, v_in_row0, vl)
+-                  : __riscv_vfmacc_vf_f32m1(v_o0c0, w0, v_in_row0, vl);
+-              v_o0c1 = dx==2
+-                  ? __riscv_vfmacc_vf_f32m1_mu(mask, v_o0c1, w1, v_in_row0, vl)
+-                  : __riscv_vfmacc_vf_f32m1(v_o0c1, w1, v_in_row0, vl);
+-              v_o0c2 = dx==2
+-                  ? __riscv_vfmacc_vf_f32m1_mu(mask, v_o0c2, w2, v_in_row0, vl)
+-                  : __riscv_vfmacc_vf_f32m1(v_o0c2, w2, v_in_row0, vl);
+-              v_o0c3 = dx==2
+-                  ? __riscv_vfmacc_vf_f32m1_mu(mask, v_o0c3, w3, v_in_row0, vl)
+-                  : __riscv_vfmacc_vf_f32m1(v_o0c3, w3, v_in_row0, vl);
+-
+-              v_o1c0 = dx==2
+-                  ? __riscv_vfmacc_vf_f32m1_mu(mask, v_o1c0, w0, v_in_row1, vl)
+-                  : __riscv_vfmacc_vf_f32m1(v_o1c0, w0, v_in_row1, vl);
+-              v_o1c1 = dx==2
+-                  ? __riscv_vfmacc_vf_f32m1_mu(mask, v_o1c1, w1, v_in_row1, vl)
+-                  : __riscv_vfmacc_vf_f32m1(v_o1c1, w1, v_in_row1, vl);
+-              v_o1c2 = dx==2
+-                  ? __riscv_vfmacc_vf_f32m1_mu(mask, v_o1c2, w2, v_in_row1, vl)
+-                  : __riscv_vfmacc_vf_f32m1(v_o1c2, w2, v_in_row1, vl);
+-              v_o1c3 = dx==2
+-                  ? __riscv_vfmacc_vf_f32m1_mu(mask, v_o1c3, w3, v_in_row1, vl)
+-                  : __riscv_vfmacc_vf_f32m1(v_o1c3, w3, v_in_row1, vl);
+-            }
+-          }
+-        }
++        vfloat32m1_t v_o0c0 = hc_rvv_pixel9_raw(i0,i1,i2,w,input_width,ow_done,0u,vl);
++        vfloat32m1_t v_o0c1 = hc_rvv_pixel9_raw(i0,i1,i2,w,input_width,ow_done,1u,vl);
++        vfloat32m1_t v_o0c2 = hc_rvv_pixel9_raw(i0,i1,i2,w,input_width,ow_done,2u,vl);
++        vfloat32m1_t v_o0c3 = hc_rvv_pixel9_raw(i0,i1,i2,w,input_width,ow_done,3u,vl);
++        vfloat32m1_t v_o1c0 = hc_rvv_pixel9_raw(i2,i3,i4,w,input_width,ow_done,0u,vl);
++        vfloat32m1_t v_o1c1 = hc_rvv_pixel9_raw(i2,i3,i4,w,input_width,ow_done,1u,vl);
++        vfloat32m1_t v_o1c2 = hc_rvv_pixel9_raw(i2,i3,i4,w,input_width,ow_done,2u,vl);
++        vfloat32m1_t v_o1c3 = hc_rvv_pixel9_raw(i2,i3,i4,w,input_width,ow_done,3u,vl);
+ 
+         v_o0c0 = hc_max_f32m1(&v_o0c0, hc_read_scalar(&(params->scalar.min)), vl);
+         v_o0c1 = hc_max_f32m1(&v_o0c1, hc_read_scalar(&(params->scalar.min)), vl);

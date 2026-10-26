@@ -1,0 +1,50 @@
+{
+  "scope": "Case-local actual C compatibility extraction, not a theorem that original physical SIMD ABI/C is refined. Each ordinary helper body is separately C-checked before use; main will be re-generated and proved against current source. IEEE flags/traps not observed.",
+  "history_directory": "proof/history/before-main-borrow-views",
+  "old_sha256": {
+    "impl/testNEON.c": "8c63b9a52b3cf62c32f4e6d755906fe53e1f413d702e99cb50de9a53876dde71",
+    "impl/testRVV.c": "eff47a755956b4606797402c3aec9c793490c3000524f99ccb4b054a004ceb63",
+    "proof/check_native.py": "7692885677b09e7a83f127c836b6846f9ed6c316c56033649dff94d587054280",
+    "proof/check_current_sdk.py": "f6404473b7d0cc24cd5d0bd8c9c0568442c2a2c6d691796dc5a475621c63f47e",
+    "proof/native/harness.c": "aca744e7ca1d50078d39c21ba4d3cd82b973eada89e90fe42240b94d5ef08235"
+  },
+  "current_sha256": {
+    "impl/testNEON.c": "bf4d00fb6e972ab8ce10fd5d1d1ebf1187dc71f9167f1115ffc19e4cafbb4307",
+    "impl/testRVV.c": "ef6bcc7679166fb52911e762f62ee7cdcb9d90f66aa11c81cb8ff958687dfc61",
+    "proof/check_native.py": "c22fac33286d98d0815790a042438a2144b38ed7e379e624e566740469a3d28a",
+    "proof/check_current_sdk.py": "01d0db488371f6c4f2c7a9cc613b8cade4875c1ca50526391ec01ee3bfd45691",
+    "proof/native/harness.c": "dbfc8b90a738cb8c03bd530a4577af3c0324fc7567d1cab2b581e06fc5b60c6c"
+  },
+  "changes": {
+    "RVV_mask_compare_split": 1,
+    "RVV_masked_load_split": 5,
+    "RVV_actual_scalar_read_helper_calls": 28,
+    "NEON_actual_store_half_helper_calls": 16
+  },
+  "original_intrinsic_operations_preserved": "Two readonly comparisons then mask-and; each masked load before merge; each NEON low/high selection immediately followed by its original2-lane store, in original row/channel store order. All FMA source operations and order unchanged by this extraction.",
+  "native_current_replay_pending": false,
+  "SDK_current_replay_pending": false,
+  "whole_kernel_verified": false,
+  "current_replay_receipts": {
+    "native-undefined-status.json": {
+      "sha256": "ef109fefb3374bd1f59258dddfb637af4d67077cd53651777c5ed1164e2768e4",
+      "passed": true,
+      "run_directory": "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-conv-hwc2chw/.build/native-current-undefined-xbmgq8pa"
+    },
+    "native-address-status.json": {
+      "sha256": "04cea1d00898ea59093f72afc6bd3590d0bfcc181c5239c3bcb6e0f233506fce",
+      "passed": true,
+      "run_directory": "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-conv-hwc2chw/.build/native-current-address-1mzm2zwu"
+    },
+    "rv64-buildability-status.json": {
+      "sha256": "cc05648d819cf2ddacb8831f1dbe50f6b439c03bbad1118efa43fda115a45ee6",
+      "passed": true,
+      "run_directory": "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-conv-hwc2chw/.build/current-sdk-both-ewb8hfge/rv64"
+    },
+    "neon-front-buildability-status.json": {
+      "sha256": "105e50e6476bbac12d30d6b6ce3eeebdc557c997826a6c8682c7416e4be0ba4e",
+      "passed": true,
+      "run_directory": "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-conv-hwc2chw/.build/current-sdk-both-ewb8hfge/neon"
+    }
+  }
+}

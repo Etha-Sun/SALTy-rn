@@ -1,3 +1,10 @@
+<!-- CURRENT_VERIFIED_40_f32_conv_hwc2chw -->
+当前完整已验证 **40/40**，目标 **40/40**。新增 f32-conv-hwc2chw：13实际C单元/1748实际C字段/19普通函数体/1429模块源码fresh；3514最终假设报告。修复/兼容版 repaired-neon219-rvv162-ordinary-pixel-helpers 在公开单输出模式 caller 契约下的 C-shim 模块化部分正确性及 NEON/RVV 完整输出观察等价性。13 个实际 C 单元、1748 条 C 义务、19 个普通函数体及4条共用策略均由统一 fresh Coq 门禁覆盖；原版文件、NaN 反例、精确正反补丁及兼容调整单独保留。RVV 固定 VLEN=128、SEW=32、LMUL=1、VLMAX=4、XLEN=64、小端，覆盖公开模型允许的全部合法VL选择；RNE、关闭 default-NaN/flush/traps，异常标志不观察。允许全部 binary32 值、任意给定 zero-row 内容、只读 input/zero/weights/params 的完整或部分别名；输出采用公开逻辑 CHW 窗口及帧条件，保留裁剪尾行和尾通道的实际最后写入效果、任意初始 Some/None 与精确未写入帧。每个累加器保持原27次融合运算次序；公开观察为数值相等或双方NaN，允许NaN payload及±0位模式差异。32项原始 intrinsic-spec 视图、合同、Coq定义和官方来源公开供最终人工审核；不把该边界、有限native/SDK或签发审计称为真实ISA/物理ABI/编译器精化或整程序终止性证明。一个完整 kernel，不将组件重复计数；原始未修复RVV不继承修复版结论。
+
+签发包保持原字节；发布副本按原proof-run做只读issuer审查，额外UBSan/ASan各615600次公开mode调用回归仅在私有副本执行，不是第二次形式证明。人工intrinsic规范审阅pending；未声称ISA、ABI、编译器精化或终止性。证书SHA a15e74eb68f322ffcd18e79289f3ae6e0996fd6c172fa9d4b9e7f4c688d40394。登记日期2026-10-26。
+
+以下保留先前阶段记录。
+
 <!-- CURRENT_VERIFIED_39_f32_argmaxpool -->
 当前完整已验证 **39/40**，目标 **40/40**。新增 f32-argmaxpool：10实际C单元/2362实际C字段/14普通函数体/647模块源码fresh；4950最终假设报告。修复后的实际 NEON/RVV 主核、普通读表/读旧值/块更新/适配器与顺序公开 caller，在 spec.c 的 app_arguments/app_valid 和显式所有权条件下给出 C-shim 部分正确性与结果等价。XLEN64、小端；RVV 固定 VLEN128/SEW32/LMUL8/VLMAX32、vstart=0，覆盖该配置全部合法 VL 选择。全部 binary32，写入结果按精确浮点位和 u32 索引观察，保留 NaN payload、符号零、严格大于更新、并列索引及索引模 2^32。共享只读指针表/输入允许内部别名；每行 channels+3 可读 padding 值任意；表内指针值零在无符号偏移后窗口合法时允许。输出/索引各自可选值所有权允许初值 None，未写帧和跨像素回绕/重复写按模型保留。原 size_t→int 计数问题与 NEON 有效尾读修复、原件、精确 patch 和 2^31 有效表反例保留。30 个原生 intrinsic 规范视图/28 个名称仅在所列规格边界使用，人工语义审阅 pending；普通 C helper 不豁免实际函数体证明。未证明真实 ISA、物理 ABI、编译器精化、浮点异常标志/陷阱或终止性。
 

@@ -1,0 +1,1080 @@
+{
+  "scope": "Current candidate32 original-instruction register/pointer/map views; not whole-kernel, not ISA refinement or physical ABI proof. Exact declarations/models are public for final manual audit.",
+  "whole_kernel_verified": false,
+  "official_sources": {
+    "ARM_ACLE": {
+      "url": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+      "version": "aef52c2",
+      "sha256": "2b59abf1bac44b609b4b003d36c70b380959b3fa8af1cf39b7c0dc140733cf62",
+      "bytes": 3587774,
+      "archived_source": "proof/reference/isa/arm-acle.html"
+    },
+    "RVV_V1.0": {
+      "url": "https://raw.githubusercontent.com/riscvarchive/riscv-v-spec/v1.0/v-spec.adoc",
+      "version": "1.0",
+      "sha256": "bfe42bd33dc6abeef5362f475605dda3d229e722257a613b0691cee760f04a19",
+      "bytes": 207611,
+      "archived_source": "proof/reference/isa/rvv-v1.0.adoc"
+    }
+  },
+  "original_intrinsics": {
+    "NEON": [
+      "vfmaq_laneq_f32",
+      "vget_high_f32",
+      "vget_low_f32",
+      "vld1q_dup_f32",
+      "vld1q_f32",
+      "vld1q_lane_f32",
+      "vmaxq_f32",
+      "vminq_f32",
+      "vmovq_n_f32",
+      "vst1_f32",
+      "vst1q_lane_f32",
+      "vzip1q_f32",
+      "vzip2q_f32"
+    ],
+    "RVV": [
+      "__riscv_vadd_vx_i32m1",
+      "__riscv_vadd_vx_u32m1",
+      "__riscv_vfmacc_vf_f32m1",
+      "__riscv_vfmax_vf_f32m1",
+      "__riscv_vfmin_vf_f32m1",
+      "__riscv_vfmv_v_f_f32m1",
+      "__riscv_vid_v_u32m1",
+      "__riscv_vlse32_v_f32m1",
+      "__riscv_vmand_mm_b32",
+      "__riscv_vmerge_vvm_f32m1",
+      "__riscv_vmsge_vx_i32m1_b32",
+      "__riscv_vmslt_vx_i32m1_b32",
+      "__riscv_vmul_vx_u32m1",
+      "__riscv_vreinterpret_v_u32m1_i32m1",
+      "__riscv_vse32_v_f32m1",
+      "__riscv_vsetvl_e32m1",
+      "__riscv_vsub_vx_i32m1"
+    ]
+  },
+  "entry_count": 32,
+  "entries": [
+    {
+      "name": "hc_isa_neon_fma0",
+      "original_intrinsic": "vfmaq_laneq_f32",
+      "side": "NEON",
+      "boundary": "source-reviewed-spec",
+      "formal_ISA_correspondence_proved": false,
+      "physical_SIMD_ABI_mapping_proved": false,
+      "human_review": "pending final manual review",
+      "official_source": {
+        "url": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+        "version": "aef52c2",
+        "sha256": "2b59abf1bac44b609b4b003d36c70b380959b3fa8af1cf39b7c0dc140733cf62",
+        "bytes": 3587774,
+        "archived_source": "proof/reference/isa/arm-acle.html"
+      },
+      "configuration": "binary32 NEON4/2 lanes,64bit little endian; valid immediate lane0..3",
+      "rounding_nan": "RNE, default-NaN/flush modes disabled, traps disabled; flags unobserved. Arm FMA operand priority/quieting and canonical RVV FMA NaN represented by frozen exact Flocq definitions; minNumber and NaN propagation distinguished.",
+      "header": "shim/neon3_views.h",
+      "header_sha256": "02e0d5b01196bb5470b697cee3711cb1b579f6f7bfcb27f31e1a06fd973909b5",
+      "contract": "hc_isa_neon_fma0(const float32x4_t *pa,const float32x4_t *pw,const float32x4_t *px)\n/*@ With (A:Recordfloat32x4_t) (W:Recordfloat32x4_t) (X:Recordfloat32x4_t) Require StructPredfloat32x4_t(pa,A)*StructPredfloat32x4_t(pw,W)*StructPredfloat32x4_t(px,X) Ensure exists(R:Recordfloat32x4_t), hc_neon_fma4(R,A,W,X,0) && (StructPredfloat32x4_t(pa,A)*StructPredfloat32x4_t(pw,W)*StructPredfloat32x4_t(px,X)*StructPredfloat32x4_t(&__return,R)) */;",
+      "contract_sha256": "e3136ada33ba05b8d1e5655e7dd68c762a6eeba045767b456b843301114c8c11",
+      "Coq_definitions": [
+        {
+          "FQ": "HwcConv.Neon3Model.hc_neon_fma4",
+          "source": "proof/coq/Neon3Model.v",
+          "source_sha256": "dc0886f89ff3fc3c884c23c2e4829889030d70b5e4aa394689fd17bc115e75ae"
+        },
+        {
+          "FQ": "HwcConv.Model.dw_arm_fma",
+          "source": "proof/coq/Model.v",
+          "source_sha256": "a546a73e085891e5856e902569ef928e02f236656d75ca9fff09cc48435b6524"
+        }
+      ],
+      "note": "Immediate lane=0;3 original FMA operations remain in each checked ordinary FMA3 wrapper, never one terminal."
+    },
+    {
+      "name": "hc_isa_neon_fma1",
+      "original_intrinsic": "vfmaq_laneq_f32",
+      "side": "NEON",
+      "boundary": "source-reviewed-spec",
+      "formal_ISA_correspondence_proved": false,
+      "physical_SIMD_ABI_mapping_proved": false,
+      "human_review": "pending final manual review",
+      "official_source": {
+        "url": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+        "version": "aef52c2",
+        "sha256": "2b59abf1bac44b609b4b003d36c70b380959b3fa8af1cf39b7c0dc140733cf62",
+        "bytes": 3587774,
+        "archived_source": "proof/reference/isa/arm-acle.html"
+      },
+      "configuration": "binary32 NEON4/2 lanes,64bit little endian; valid immediate lane0..3",
+      "rounding_nan": "RNE, default-NaN/flush modes disabled, traps disabled; flags unobserved. Arm FMA operand priority/quieting and canonical RVV FMA NaN represented by frozen exact Flocq definitions; minNumber and NaN propagation distinguished.",
+      "header": "shim/neon3_views.h",
+      "header_sha256": "02e0d5b01196bb5470b697cee3711cb1b579f6f7bfcb27f31e1a06fd973909b5",
+      "contract": "hc_isa_neon_fma1(const float32x4_t *pa,const float32x4_t *pw,const float32x4_t *px)\n/*@ With (A:Recordfloat32x4_t) (W:Recordfloat32x4_t) (X:Recordfloat32x4_t) Require StructPredfloat32x4_t(pa,A)*StructPredfloat32x4_t(pw,W)*StructPredfloat32x4_t(px,X) Ensure exists(R:Recordfloat32x4_t), hc_neon_fma4(R,A,W,X,1) && (StructPredfloat32x4_t(pa,A)*StructPredfloat32x4_t(pw,W)*StructPredfloat32x4_t(px,X)*StructPredfloat32x4_t(&__return,R)) */;",
+      "contract_sha256": "575090ca3d584f3c864a1f4bc1e8716df2a1c9cb8edfc0457682728327317806",
+      "Coq_definitions": [
+        {
+          "FQ": "HwcConv.Neon3Model.hc_neon_fma4",
+          "source": "proof/coq/Neon3Model.v",
+          "source_sha256": "dc0886f89ff3fc3c884c23c2e4829889030d70b5e4aa394689fd17bc115e75ae"
+        },
+        {
+          "FQ": "HwcConv.Model.dw_arm_fma",
+          "source": "proof/coq/Model.v",
+          "source_sha256": "a546a73e085891e5856e902569ef928e02f236656d75ca9fff09cc48435b6524"
+        }
+      ],
+      "note": "Immediate lane=1;3 original FMA operations remain in each checked ordinary FMA3 wrapper, never one terminal."
+    },
+    {
+      "name": "hc_isa_neon_fma2",
+      "original_intrinsic": "vfmaq_laneq_f32",
+      "side": "NEON",
+      "boundary": "source-reviewed-spec",
+      "formal_ISA_correspondence_proved": false,
+      "physical_SIMD_ABI_mapping_proved": false,
+      "human_review": "pending final manual review",
+      "official_source": {
+        "url": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+        "version": "aef52c2",
+        "sha256": "2b59abf1bac44b609b4b003d36c70b380959b3fa8af1cf39b7c0dc140733cf62",
+        "bytes": 3587774,
+        "archived_source": "proof/reference/isa/arm-acle.html"
+      },
+      "configuration": "binary32 NEON4/2 lanes,64bit little endian; valid immediate lane0..3",
+      "rounding_nan": "RNE, default-NaN/flush modes disabled, traps disabled; flags unobserved. Arm FMA operand priority/quieting and canonical RVV FMA NaN represented by frozen exact Flocq definitions; minNumber and NaN propagation distinguished.",
+      "header": "shim/neon3_views.h",
+      "header_sha256": "02e0d5b01196bb5470b697cee3711cb1b579f6f7bfcb27f31e1a06fd973909b5",
+      "contract": "hc_isa_neon_fma2(const float32x4_t *pa,const float32x4_t *pw,const float32x4_t *px)\n/*@ With (A:Recordfloat32x4_t) (W:Recordfloat32x4_t) (X:Recordfloat32x4_t) Require StructPredfloat32x4_t(pa,A)*StructPredfloat32x4_t(pw,W)*StructPredfloat32x4_t(px,X) Ensure exists(R:Recordfloat32x4_t), hc_neon_fma4(R,A,W,X,2) && (StructPredfloat32x4_t(pa,A)*StructPredfloat32x4_t(pw,W)*StructPredfloat32x4_t(px,X)*StructPredfloat32x4_t(&__return,R)) */;",
+      "contract_sha256": "94a1b43c29cf8b139455fd7e2c8e0d30d07bb303f3ee779d378d86f26da64fc1",
+      "Coq_definitions": [
+        {
+          "FQ": "HwcConv.Neon3Model.hc_neon_fma4",
+          "source": "proof/coq/Neon3Model.v",
+          "source_sha256": "dc0886f89ff3fc3c884c23c2e4829889030d70b5e4aa394689fd17bc115e75ae"
+        },
+        {
+          "FQ": "HwcConv.Model.dw_arm_fma",
+          "source": "proof/coq/Model.v",
+          "source_sha256": "a546a73e085891e5856e902569ef928e02f236656d75ca9fff09cc48435b6524"
+        }
+      ],
+      "note": "Immediate lane=2;3 original FMA operations remain in each checked ordinary FMA3 wrapper, never one terminal."
+    },
+    {
+      "name": "hc_isa_neon_fma3",
+      "original_intrinsic": "vfmaq_laneq_f32",
+      "side": "NEON",
+      "boundary": "source-reviewed-spec",
+      "formal_ISA_correspondence_proved": false,
+      "physical_SIMD_ABI_mapping_proved": false,
+      "human_review": "pending final manual review",
+      "official_source": {
+        "url": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+        "version": "aef52c2",
+        "sha256": "2b59abf1bac44b609b4b003d36c70b380959b3fa8af1cf39b7c0dc140733cf62",
+        "bytes": 3587774,
+        "archived_source": "proof/reference/isa/arm-acle.html"
+      },
+      "configuration": "binary32 NEON4/2 lanes,64bit little endian; valid immediate lane0..3",
+      "rounding_nan": "RNE, default-NaN/flush modes disabled, traps disabled; flags unobserved. Arm FMA operand priority/quieting and canonical RVV FMA NaN represented by frozen exact Flocq definitions; minNumber and NaN propagation distinguished.",
+      "header": "shim/neon3_views.h",
+      "header_sha256": "02e0d5b01196bb5470b697cee3711cb1b579f6f7bfcb27f31e1a06fd973909b5",
+      "contract": "hc_isa_neon_fma3(const float32x4_t *pa,const float32x4_t *pw,const float32x4_t *px)\n/*@ With (A:Recordfloat32x4_t) (W:Recordfloat32x4_t) (X:Recordfloat32x4_t) Require StructPredfloat32x4_t(pa,A)*StructPredfloat32x4_t(pw,W)*StructPredfloat32x4_t(px,X) Ensure exists(R:Recordfloat32x4_t), hc_neon_fma4(R,A,W,X,3) && (StructPredfloat32x4_t(pa,A)*StructPredfloat32x4_t(pw,W)*StructPredfloat32x4_t(px,X)*StructPredfloat32x4_t(&__return,R)) */;",
+      "contract_sha256": "eb1fc5aea08a6c4bf34c925709e4a34cf3e4b7527240f5b527fbacace325260f",
+      "Coq_definitions": [
+        {
+          "FQ": "HwcConv.Neon3Model.hc_neon_fma4",
+          "source": "proof/coq/Neon3Model.v",
+          "source_sha256": "dc0886f89ff3fc3c884c23c2e4829889030d70b5e4aa394689fd17bc115e75ae"
+        },
+        {
+          "FQ": "HwcConv.Model.dw_arm_fma",
+          "source": "proof/coq/Model.v",
+          "source_sha256": "a546a73e085891e5856e902569ef928e02f236656d75ca9fff09cc48435b6524"
+        }
+      ],
+      "note": "Immediate lane=3;3 original FMA operations remain in each checked ordinary FMA3 wrapper, never one terminal."
+    },
+    {
+      "name": "hc_isa_get_low2",
+      "original_intrinsic": "vget_low_f32",
+      "side": "NEON",
+      "boundary": "source-reviewed-spec",
+      "formal_ISA_correspondence_proved": false,
+      "physical_SIMD_ABI_mapping_proved": false,
+      "human_review": "pending final manual review",
+      "official_source": {
+        "url": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+        "version": "aef52c2",
+        "sha256": "2b59abf1bac44b609b4b003d36c70b380959b3fa8af1cf39b7c0dc140733cf62",
+        "bytes": 3587774,
+        "archived_source": "proof/reference/isa/arm-acle.html"
+      },
+      "configuration": "binary32 NEON4/2 lanes,64bit little endian; valid immediate lane0..3",
+      "rounding_nan": "RNE, default-NaN/flush modes disabled, traps disabled; flags unobserved. Arm FMA operand priority/quieting and canonical RVV FMA NaN represented by frozen exact Flocq definitions; minNumber and NaN propagation distinguished.",
+      "header": "shim/store_views.h",
+      "header_sha256": "112d35754ffb5be6dd665e28ea839fd82e5a11f50d99f61baac40972041d88f6",
+      "contract": "hc_isa_get_low2(const float32x4_t *pa)\n/*@ With (A:Recordfloat32x4_t) Require StructPredfloat32x4_t(pa,A)\n Ensure exists(R:Recordfloat32x2_t),hc_low2(R,A) &&\n (StructPredfloat32x4_t(pa,A)*StructPredfloat32x2_t(&__return,R)) */;",
+      "contract_sha256": "f3246f4dd5438c16381c53cb198af1f293b657bcdc69d275a3d5b686eee7673a",
+      "Coq_definitions": [
+        {
+          "FQ": "HwcConv.StoreViewsModel.hc_low2",
+          "source": "proof/coq/StoreViewsModel.v",
+          "source_sha256": "1416df63a7d22b9cf2e7cec35b6fe33ba7a10d586ea48d19b8b94c7cfa9a0b23"
+        }
+      ],
+      "note": "Two active lanes. Store writes lane0 then1; single output map with all other Some/None entries retained. Selector+store composition is an actual checked ordinary body."
+    },
+    {
+      "name": "hc_isa_get_high2",
+      "original_intrinsic": "vget_high_f32",
+      "side": "NEON",
+      "boundary": "source-reviewed-spec",
+      "formal_ISA_correspondence_proved": false,
+      "physical_SIMD_ABI_mapping_proved": false,
+      "human_review": "pending final manual review",
+      "official_source": {
+        "url": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+        "version": "aef52c2",
+        "sha256": "2b59abf1bac44b609b4b003d36c70b380959b3fa8af1cf39b7c0dc140733cf62",
+        "bytes": 3587774,
+        "archived_source": "proof/reference/isa/arm-acle.html"
+      },
+      "configuration": "binary32 NEON4/2 lanes,64bit little endian; valid immediate lane0..3",
+      "rounding_nan": "RNE, default-NaN/flush modes disabled, traps disabled; flags unobserved. Arm FMA operand priority/quieting and canonical RVV FMA NaN represented by frozen exact Flocq definitions; minNumber and NaN propagation distinguished.",
+      "header": "shim/store_views.h",
+      "header_sha256": "112d35754ffb5be6dd665e28ea839fd82e5a11f50d99f61baac40972041d88f6",
+      "contract": "hc_isa_get_high2(const float32x4_t *pa)\n/*@ With (A:Recordfloat32x4_t) Require StructPredfloat32x4_t(pa,A)\n Ensure exists(R:Recordfloat32x2_t),hc_high2(R,A) &&\n (StructPredfloat32x4_t(pa,A)*StructPredfloat32x2_t(&__return,R)) */;",
+      "contract_sha256": "04dbef5b0fb9a4f96581cfbcd3d98aa9faf07231cc05af761083f0a0ff69e5e4",
+      "Coq_definitions": [
+        {
+          "FQ": "HwcConv.StoreViewsModel.hc_high2",
+          "source": "proof/coq/StoreViewsModel.v",
+          "source_sha256": "1416df63a7d22b9cf2e7cec35b6fe33ba7a10d586ea48d19b8b94c7cfa9a0b23"
+        }
+      ],
+      "note": "Two active lanes. Store writes lane0 then1; single output map with all other Some/None entries retained. Selector+store composition is an actual checked ordinary body."
+    },
+    {
+      "name": "hc_isa_store2",
+      "original_intrinsic": "vst1_f32",
+      "side": "NEON",
+      "boundary": "source-reviewed-spec",
+      "formal_ISA_correspondence_proved": false,
+      "physical_SIMD_ABI_mapping_proved": false,
+      "human_review": "pending final manual review",
+      "official_source": {
+        "url": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+        "version": "aef52c2",
+        "sha256": "2b59abf1bac44b609b4b003d36c70b380959b3fa8af1cf39b7c0dc140733cf62",
+        "bytes": 3587774,
+        "archived_source": "proof/reference/isa/arm-acle.html"
+      },
+      "configuration": "binary32 NEON4/2 lanes,64bit little endian; valid immediate lane0..3",
+      "rounding_nan": "RNE, default-NaN/flush modes disabled, traps disabled; flags unobserved. Arm FMA operand priority/quieting and canonical RVV FMA NaN represented by frozen exact Flocq definitions; minNumber and NaN propagation distinguished.",
+      "header": "shim/store_views.h",
+      "header_sha256": "112d35754ffb5be6dd665e28ea839fd82e5a11f50d99f61baac40972041d88f6",
+      "contract": "hc_isa_store2(float *p,const float32x2_t *pa)\n/*@ With (A:Recordfloat32x2_t) (O:HwcOutput) (W:list Z)\n Require hc_write_window(W,p,2) && hc_output(W,O)*StructPredfloat32x2_t(pa,A)\n Ensure hc_output(W,hc_store2(O,p,A))*StructPredfloat32x2_t(pa,A) */;",
+      "contract_sha256": "ec58e0ad794bf1aaff066446b46e49a89b468551757e997f8bb0b8b28ea36a6e",
+      "Coq_definitions": [
+        {
+          "FQ": "HwcConv.StoreViewsModel.hc_store2",
+          "source": "proof/coq/StoreViewsModel.v",
+          "source_sha256": "1416df63a7d22b9cf2e7cec35b6fe33ba7a10d586ea48d19b8b94c7cfa9a0b23"
+        }
+      ],
+      "note": "Two active lanes. Store writes lane0 then1; single output map with all other Some/None entries retained. Selector+store composition is an actual checked ordinary body."
+    },
+    {
+      "name": "hc_isa_load4",
+      "original_intrinsic": "vld1q_f32",
+      "side": "NEON",
+      "boundary": "source-reviewed-spec",
+      "formal_ISA_correspondence_proved": false,
+      "physical_SIMD_ABI_mapping_proved": false,
+      "human_review": "pending final manual review",
+      "official_source": {
+        "url": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+        "version": "aef52c2",
+        "sha256": "2b59abf1bac44b609b4b003d36c70b380959b3fa8af1cf39b7c0dc140733cf62",
+        "bytes": 3587774,
+        "archived_source": "proof/reference/isa/arm-acle.html"
+      },
+      "configuration": "binary32 NEON4/2 lanes,64bit little endian; valid immediate lane0..3",
+      "rounding_nan": "RNE, default-NaN/flush modes disabled, traps disabled; flags unobserved. Arm FMA operand priority/quieting and canonical RVV FMA NaN represented by frozen exact Flocq definitions; minNumber and NaN propagation distinguished.",
+      "header": "shim/neon_views.h",
+      "header_sha256": "2168782864493ef4d3b67b2c40c12fcc554282c505be6cb5a2b496293dafece1",
+      "contract": "hc_isa_load4(const float *p)\n/*@ With (F:HwcROMap) Require hc_window(F,p,4) && hc_data(F) Ensure exists(R:Recordfloat32x4_t),hc_neon_load4(R,F,p) && (hc_data(F)*StructPredfloat32x4_t(&__return,R)) */;",
+      "contract_sha256": "2fc50dc332655c0d31b8382eb97daa531e183a3c8509e6032a3e0836332984d4",
+      "Coq_definitions": [
+        {
+          "FQ": "HwcConv.NeonViewsModel.hc_neon_load4",
+          "source": "proof/coq/NeonViewsModel.v",
+          "source_sha256": "a0f13d3e87838cc47547230eaa903480db9af9300053d16fb908a2fdaf6e7e32"
+        }
+      ],
+      "note": "Input/load addresses and map indices are mathematical BYTE addresses; original float* C arithmetic is scaled only once by the actual frontend. Lane immediate0..3 (actual load lane0), 4-wide register preserved outside selected lane."
+    },
+    {
+      "name": "hc_isa_dup_load4",
+      "original_intrinsic": "vld1q_dup_f32",
+      "side": "NEON",
+      "boundary": "source-reviewed-spec",
+      "formal_ISA_correspondence_proved": false,
+      "physical_SIMD_ABI_mapping_proved": false,
+      "human_review": "pending final manual review",
+      "official_source": {
+        "url": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+        "version": "aef52c2",
+        "sha256": "2b59abf1bac44b609b4b003d36c70b380959b3fa8af1cf39b7c0dc140733cf62",
+        "bytes": 3587774,
+        "archived_source": "proof/reference/isa/arm-acle.html"
+      },
+      "configuration": "binary32 NEON4/2 lanes,64bit little endian; valid immediate lane0..3",
+      "rounding_nan": "RNE, default-NaN/flush modes disabled, traps disabled; flags unobserved. Arm FMA operand priority/quieting and canonical RVV FMA NaN represented by frozen exact Flocq definitions; minNumber and NaN propagation distinguished.",
+      "header": "shim/neon_views.h",
+      "header_sha256": "2168782864493ef4d3b67b2c40c12fcc554282c505be6cb5a2b496293dafece1",
+      "contract": "hc_isa_dup_load4(const float *p)\n/*@ With (F:HwcROMap) Require hc_present(F,p) && hc_data(F) Ensure exists(R:Recordfloat32x4_t),hc_neon_dup4(R,hc_get(F,p)) && (hc_data(F)*StructPredfloat32x4_t(&__return,R)) */;",
+      "contract_sha256": "4bcd691f938b12ed5e2df234e70afbd2c8e6258c286d0fbeb09d58531dc2029e",
+      "Coq_definitions": [
+        {
+          "FQ": "HwcConv.NeonViewsModel.hc_neon_dup4",
+          "source": "proof/coq/NeonViewsModel.v",
+          "source_sha256": "a0f13d3e87838cc47547230eaa903480db9af9300053d16fb908a2fdaf6e7e32"
+        }
+      ],
+      "note": "Input/load addresses and map indices are mathematical BYTE addresses; original float* C arithmetic is scaled only once by the actual frontend. Lane immediate0..3 (actual load lane0), 4-wide register preserved outside selected lane."
+    },
+    {
+      "name": "hc_isa_dup4",
+      "original_intrinsic": "vmovq_n_f32",
+      "side": "NEON",
+      "boundary": "source-reviewed-spec",
+      "formal_ISA_correspondence_proved": false,
+      "physical_SIMD_ABI_mapping_proved": false,
+      "human_review": "pending final manual review",
+      "official_source": {
+        "url": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+        "version": "aef52c2",
+        "sha256": "2b59abf1bac44b609b4b003d36c70b380959b3fa8af1cf39b7c0dc140733cf62",
+        "bytes": 3587774,
+        "archived_source": "proof/reference/isa/arm-acle.html"
+      },
+      "configuration": "binary32 NEON4/2 lanes,64bit little endian; valid immediate lane0..3",
+      "rounding_nan": "RNE, default-NaN/flush modes disabled, traps disabled; flags unobserved. Arm FMA operand priority/quieting and canonical RVV FMA NaN represented by frozen exact Flocq definitions; minNumber and NaN propagation distinguished.",
+      "header": "shim/neon_views.h",
+      "header_sha256": "2168782864493ef4d3b67b2c40c12fcc554282c505be6cb5a2b496293dafece1",
+      "contract": "hc_isa_dup4(float x)\n/*@ Require emp Ensure exists(R:Recordfloat32x4_t),hc_neon_dup4(R,x) && StructPredfloat32x4_t(&__return,R) */;",
+      "contract_sha256": "8156fbf65bd162bed474bff7fbc7a38a536bc3f8b313906d41d72f9da2772ccf",
+      "Coq_definitions": [
+        {
+          "FQ": "HwcConv.NeonViewsModel.hc_neon_dup4",
+          "source": "proof/coq/NeonViewsModel.v",
+          "source_sha256": "a0f13d3e87838cc47547230eaa903480db9af9300053d16fb908a2fdaf6e7e32"
+        }
+      ],
+      "note": "Input/load addresses and map indices are mathematical BYTE addresses; original float* C arithmetic is scaled only once by the actual frontend. Lane immediate0..3 (actual load lane0), 4-wide register preserved outside selected lane."
+    },
+    {
+      "name": "hc_isa_neon_min",
+      "original_intrinsic": "vminq_f32",
+      "side": "NEON",
+      "boundary": "source-reviewed-spec",
+      "formal_ISA_correspondence_proved": false,
+      "physical_SIMD_ABI_mapping_proved": false,
+      "human_review": "pending final manual review",
+      "official_source": {
+        "url": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+        "version": "aef52c2",
+        "sha256": "2b59abf1bac44b609b4b003d36c70b380959b3fa8af1cf39b7c0dc140733cf62",
+        "bytes": 3587774,
+        "archived_source": "proof/reference/isa/arm-acle.html"
+      },
+      "configuration": "binary32 NEON4/2 lanes,64bit little endian; valid immediate lane0..3",
+      "rounding_nan": "RNE, default-NaN/flush modes disabled, traps disabled; flags unobserved. Arm FMA operand priority/quieting and canonical RVV FMA NaN represented by frozen exact Flocq definitions; minNumber and NaN propagation distinguished.",
+      "header": "shim/neon_views.h",
+      "header_sha256": "2168782864493ef4d3b67b2c40c12fcc554282c505be6cb5a2b496293dafece1",
+      "contract": "hc_isa_neon_min(const float32x4_t *pa,const float32x4_t *pb)\n/*@ With (A:Recordfloat32x4_t) (B:Recordfloat32x4_t) Require StructPredfloat32x4_t(pa,A)*StructPredfloat32x4_t(pb,B) Ensure exists(R:Recordfloat32x4_t),hc_neon_min4(R,A,B) && (StructPredfloat32x4_t(pa,A)*StructPredfloat32x4_t(pb,B)*StructPredfloat32x4_t(&__return,R)) */;",
+      "contract_sha256": "c710b976e84a343589facae9e760845b2a75bf551e5ab2466e78fbf4c8cd2454",
+      "Coq_definitions": [
+        {
+          "FQ": "HwcConv.NeonViewsModel.hc_neon_min4",
+          "source": "proof/coq/NeonViewsModel.v",
+          "source_sha256": "a0f13d3e87838cc47547230eaa903480db9af9300053d16fb908a2fdaf6e7e32"
+        }
+      ],
+      "note": "Input/load addresses and map indices are mathematical BYTE addresses; original float* C arithmetic is scaled only once by the actual frontend. Lane immediate0..3 (actual load lane0), 4-wide register preserved outside selected lane."
+    },
+    {
+      "name": "hc_isa_neon_max",
+      "original_intrinsic": "vmaxq_f32",
+      "side": "NEON",
+      "boundary": "source-reviewed-spec",
+      "formal_ISA_correspondence_proved": false,
+      "physical_SIMD_ABI_mapping_proved": false,
+      "human_review": "pending final manual review",
+      "official_source": {
+        "url": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+        "version": "aef52c2",
+        "sha256": "2b59abf1bac44b609b4b003d36c70b380959b3fa8af1cf39b7c0dc140733cf62",
+        "bytes": 3587774,
+        "archived_source": "proof/reference/isa/arm-acle.html"
+      },
+      "configuration": "binary32 NEON4/2 lanes,64bit little endian; valid immediate lane0..3",
+      "rounding_nan": "RNE, default-NaN/flush modes disabled, traps disabled; flags unobserved. Arm FMA operand priority/quieting and canonical RVV FMA NaN represented by frozen exact Flocq definitions; minNumber and NaN propagation distinguished.",
+      "header": "shim/neon_views.h",
+      "header_sha256": "2168782864493ef4d3b67b2c40c12fcc554282c505be6cb5a2b496293dafece1",
+      "contract": "hc_isa_neon_max(const float32x4_t *pa,const float32x4_t *pb)\n/*@ With (A:Recordfloat32x4_t) (B:Recordfloat32x4_t) Require StructPredfloat32x4_t(pa,A)*StructPredfloat32x4_t(pb,B) Ensure exists(R:Recordfloat32x4_t),hc_neon_max4(R,A,B) && (StructPredfloat32x4_t(pa,A)*StructPredfloat32x4_t(pb,B)*StructPredfloat32x4_t(&__return,R)) */;",
+      "contract_sha256": "ea6a2e08f269232b28546b829d8985f8a9f666f28d1505004811189e73fadcd4",
+      "Coq_definitions": [
+        {
+          "FQ": "HwcConv.NeonViewsModel.hc_neon_max4",
+          "source": "proof/coq/NeonViewsModel.v",
+          "source_sha256": "a0f13d3e87838cc47547230eaa903480db9af9300053d16fb908a2fdaf6e7e32"
+        }
+      ],
+      "note": "Input/load addresses and map indices are mathematical BYTE addresses; original float* C arithmetic is scaled only once by the actual frontend. Lane immediate0..3 (actual load lane0), 4-wide register preserved outside selected lane."
+    },
+    {
+      "name": "hc_isa_neon_zip1",
+      "original_intrinsic": "vzip1q_f32",
+      "side": "NEON",
+      "boundary": "source-reviewed-spec",
+      "formal_ISA_correspondence_proved": false,
+      "physical_SIMD_ABI_mapping_proved": false,
+      "human_review": "pending final manual review",
+      "official_source": {
+        "url": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+        "version": "aef52c2",
+        "sha256": "2b59abf1bac44b609b4b003d36c70b380959b3fa8af1cf39b7c0dc140733cf62",
+        "bytes": 3587774,
+        "archived_source": "proof/reference/isa/arm-acle.html"
+      },
+      "configuration": "binary32 NEON4/2 lanes,64bit little endian; valid immediate lane0..3",
+      "rounding_nan": "RNE, default-NaN/flush modes disabled, traps disabled; flags unobserved. Arm FMA operand priority/quieting and canonical RVV FMA NaN represented by frozen exact Flocq definitions; minNumber and NaN propagation distinguished.",
+      "header": "shim/neon_views.h",
+      "header_sha256": "2168782864493ef4d3b67b2c40c12fcc554282c505be6cb5a2b496293dafece1",
+      "contract": "hc_isa_neon_zip1(const float32x4_t *pa,const float32x4_t *pb)\n/*@ With (A:Recordfloat32x4_t) (B:Recordfloat32x4_t) Require StructPredfloat32x4_t(pa,A)*StructPredfloat32x4_t(pb,B) Ensure exists(R:Recordfloat32x4_t),hc_neon_zip1(R,A,B) && (StructPredfloat32x4_t(pa,A)*StructPredfloat32x4_t(pb,B)*StructPredfloat32x4_t(&__return,R)) */;",
+      "contract_sha256": "8d2e49103b0822037a18467695f04b0b3430c42714c4c3332ff03c26c211004b",
+      "Coq_definitions": [
+        {
+          "FQ": "HwcConv.NeonViewsModel.hc_neon_zip1",
+          "source": "proof/coq/NeonViewsModel.v",
+          "source_sha256": "a0f13d3e87838cc47547230eaa903480db9af9300053d16fb908a2fdaf6e7e32"
+        }
+      ],
+      "note": "Input/load addresses and map indices are mathematical BYTE addresses; original float* C arithmetic is scaled only once by the actual frontend. Lane immediate0..3 (actual load lane0), 4-wide register preserved outside selected lane."
+    },
+    {
+      "name": "hc_isa_neon_zip2",
+      "original_intrinsic": "vzip2q_f32",
+      "side": "NEON",
+      "boundary": "source-reviewed-spec",
+      "formal_ISA_correspondence_proved": false,
+      "physical_SIMD_ABI_mapping_proved": false,
+      "human_review": "pending final manual review",
+      "official_source": {
+        "url": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+        "version": "aef52c2",
+        "sha256": "2b59abf1bac44b609b4b003d36c70b380959b3fa8af1cf39b7c0dc140733cf62",
+        "bytes": 3587774,
+        "archived_source": "proof/reference/isa/arm-acle.html"
+      },
+      "configuration": "binary32 NEON4/2 lanes,64bit little endian; valid immediate lane0..3",
+      "rounding_nan": "RNE, default-NaN/flush modes disabled, traps disabled; flags unobserved. Arm FMA operand priority/quieting and canonical RVV FMA NaN represented by frozen exact Flocq definitions; minNumber and NaN propagation distinguished.",
+      "header": "shim/neon_views.h",
+      "header_sha256": "2168782864493ef4d3b67b2c40c12fcc554282c505be6cb5a2b496293dafece1",
+      "contract": "hc_isa_neon_zip2(const float32x4_t *pa,const float32x4_t *pb)\n/*@ With (A:Recordfloat32x4_t) (B:Recordfloat32x4_t) Require StructPredfloat32x4_t(pa,A)*StructPredfloat32x4_t(pb,B) Ensure exists(R:Recordfloat32x4_t),hc_neon_zip2(R,A,B) && (StructPredfloat32x4_t(pa,A)*StructPredfloat32x4_t(pb,B)*StructPredfloat32x4_t(&__return,R)) */;",
+      "contract_sha256": "97938e99b5df6dc6b697f260fdea6fcf21d51368554fdcdf4d4c6112f7136705",
+      "Coq_definitions": [
+        {
+          "FQ": "HwcConv.NeonViewsModel.hc_neon_zip2",
+          "source": "proof/coq/NeonViewsModel.v",
+          "source_sha256": "a0f13d3e87838cc47547230eaa903480db9af9300053d16fb908a2fdaf6e7e32"
+        }
+      ],
+      "note": "Input/load addresses and map indices are mathematical BYTE addresses; original float* C arithmetic is scaled only once by the actual frontend. Lane immediate0..3 (actual load lane0), 4-wide register preserved outside selected lane."
+    },
+    {
+      "name": "hc_isa_load_lane4",
+      "original_intrinsic": "vld1q_lane_f32",
+      "side": "NEON",
+      "boundary": "source-reviewed-spec",
+      "formal_ISA_correspondence_proved": false,
+      "physical_SIMD_ABI_mapping_proved": false,
+      "human_review": "pending final manual review",
+      "official_source": {
+        "url": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+        "version": "aef52c2",
+        "sha256": "2b59abf1bac44b609b4b003d36c70b380959b3fa8af1cf39b7c0dc140733cf62",
+        "bytes": 3587774,
+        "archived_source": "proof/reference/isa/arm-acle.html"
+      },
+      "configuration": "binary32 NEON4/2 lanes,64bit little endian; valid immediate lane0..3",
+      "rounding_nan": "RNE, default-NaN/flush modes disabled, traps disabled; flags unobserved. Arm FMA operand priority/quieting and canonical RVV FMA NaN represented by frozen exact Flocq definitions; minNumber and NaN propagation distinguished.",
+      "header": "shim/neon_views.h",
+      "header_sha256": "2168782864493ef4d3b67b2c40c12fcc554282c505be6cb5a2b496293dafece1",
+      "contract": "hc_isa_load_lane4(const float *p,const float32x4_t *pa,int k)\n/*@ With (F:HwcROMap) (A:Recordfloat32x4_t) Require 0<=k && k<4 && hc_present(F,p) && (hc_data(F)*StructPredfloat32x4_t(pa,A)) Ensure exists(R:Recordfloat32x4_t),hc_neon_lane_load(R,A,F,p,k) && (hc_data(F)*StructPredfloat32x4_t(pa,A)*StructPredfloat32x4_t(&__return,R)) */;",
+      "contract_sha256": "84073133161f37c2f52f9ae4a1f0e78b145717448fd8acef0240319ea5220828",
+      "Coq_definitions": [
+        {
+          "FQ": "HwcConv.NeonViewsModel.hc_neon_lane_load",
+          "source": "proof/coq/NeonViewsModel.v",
+          "source_sha256": "a0f13d3e87838cc47547230eaa903480db9af9300053d16fb908a2fdaf6e7e32"
+        }
+      ],
+      "note": "Input/load addresses and map indices are mathematical BYTE addresses; original float* C arithmetic is scaled only once by the actual frontend. Lane immediate0..3 (actual load lane0), 4-wide register preserved outside selected lane."
+    },
+    {
+      "name": "hc_isa_store_lane4",
+      "original_intrinsic": "vst1q_lane_f32",
+      "side": "NEON",
+      "boundary": "source-reviewed-spec",
+      "formal_ISA_correspondence_proved": false,
+      "physical_SIMD_ABI_mapping_proved": false,
+      "human_review": "pending final manual review",
+      "official_source": {
+        "url": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+        "version": "aef52c2",
+        "sha256": "2b59abf1bac44b609b4b003d36c70b380959b3fa8af1cf39b7c0dc140733cf62",
+        "bytes": 3587774,
+        "archived_source": "proof/reference/isa/arm-acle.html"
+      },
+      "configuration": "binary32 NEON4/2 lanes,64bit little endian; valid immediate lane0..3",
+      "rounding_nan": "RNE, default-NaN/flush modes disabled, traps disabled; flags unobserved. Arm FMA operand priority/quieting and canonical RVV FMA NaN represented by frozen exact Flocq definitions; minNumber and NaN propagation distinguished.",
+      "header": "shim/neon_views.h",
+      "header_sha256": "2168782864493ef4d3b67b2c40c12fcc554282c505be6cb5a2b496293dafece1",
+      "contract": "hc_isa_store_lane4(float *p,const float32x4_t *pa,int k)\n/*@ With (W:list Z) (O:HwcOutput) (A:Recordfloat32x4_t) Require 0<=k && k<4 && hc_write_window(W,p,1) && (hc_output(W,O)*StructPredfloat32x4_t(pa,A)) Ensure hc_output(W,hc_neon_store_lane(O,p,A,k))*StructPredfloat32x4_t(pa,A) */;",
+      "contract_sha256": "c46ee0fc36be7b1d0de50a8e6314cc4ddb8279dcee9a3d2604791957737c0026",
+      "Coq_definitions": [
+        {
+          "FQ": "HwcConv.NeonViewsModel.hc_neon_store_lane",
+          "source": "proof/coq/NeonViewsModel.v",
+          "source_sha256": "a0f13d3e87838cc47547230eaa903480db9af9300053d16fb908a2fdaf6e7e32"
+        }
+      ],
+      "note": "Input/load addresses and map indices are mathematical BYTE addresses; original float* C arithmetic is scaled only once by the actual frontend. Lane immediate0..3 (actual load lane0), 4-wide register preserved outside selected lane."
+    },
+    {
+      "name": "hc_isa_splat_u32",
+      "original_intrinsic": "__riscv_vmv_v_x_u32m1",
+      "side": "RVV",
+      "boundary": "source-reviewed-spec",
+      "formal_ISA_correspondence_proved": false,
+      "physical_SIMD_ABI_mapping_proved": false,
+      "human_review": "pending final manual review",
+      "official_source": {
+        "url": "https://raw.githubusercontent.com/riscvarchive/riscv-v-spec/v1.0/v-spec.adoc",
+        "version": "1.0",
+        "sha256": "bfe42bd33dc6abeef5362f475605dda3d229e722257a613b0691cee760f04a19",
+        "bytes": 207611,
+        "archived_source": "proof/reference/isa/rvv-v1.0.adoc"
+      },
+      "configuration": "RVV1.0 VLEN128 SEW32 LMUL1 VLMAX4 XLEN64; all legal activeVL0..4, mask bits0/1; inactive fields arbitrary typed values",
+      "rounding_nan": "RNE, default-NaN/flush modes disabled, traps disabled; flags unobserved. Arm FMA operand priority/quieting and canonical RVV FMA NaN represented by frozen exact Flocq definitions; minNumber and NaN propagation distinguished.",
+      "header": "shim/clamp_views.h",
+      "header_sha256": "481004127094d6d20c332ba7f0c75bc05cf9a943551f5be449cd57b869e59180",
+      "contract": "hc_isa_splat_u32(unsigned int x,size_t vl)\n/*@ Require 0<=vl && vl<=4 && emp Ensure exists(R:Recordvuint32m1_t), hc_uconstant(R,x,vl) && StructPredvuint32m1_t(&__return,R) */;",
+      "contract_sha256": "51a192414fa4e53f36b08a6e2a42250df5c74eba966f0d2db5ff8661e1aad6dd",
+      "Coq_definitions": [
+        {
+          "FQ": "HwcConv.ClampModel.hc_uconstant",
+          "source": "proof/coq/ClampModel.v",
+          "source_sha256": "349ae87873ca422116aea9e0f2f066ba5cfec912748ded60b1d5b5e295484da6"
+        }
+      ],
+      "note": "self-ne reads one owner for identical side-effect-free a,a operands; source guard enforced by prepare_nan_helpers.py. Active masks encode0/1. Reinterpret has no vl parameter and preserves all register bits. NaN canonicalization algorithm itself remains actual checked ordinary C, not an intrinsic."
+    },
+    {
+      "name": "hc_isa_bits_to_float",
+      "original_intrinsic": "__riscv_vreinterpret_v_u32m1_f32m1",
+      "side": "RVV",
+      "boundary": "source-reviewed-spec",
+      "formal_ISA_correspondence_proved": false,
+      "physical_SIMD_ABI_mapping_proved": false,
+      "human_review": "pending final manual review",
+      "official_source": {
+        "url": "https://raw.githubusercontent.com/riscvarchive/riscv-v-spec/v1.0/v-spec.adoc",
+        "version": "1.0",
+        "sha256": "bfe42bd33dc6abeef5362f475605dda3d229e722257a613b0691cee760f04a19",
+        "bytes": 207611,
+        "archived_source": "proof/reference/isa/rvv-v1.0.adoc"
+      },
+      "configuration": "RVV1.0 VLEN128 SEW32 LMUL1 VLMAX4 XLEN64; all legal activeVL0..4, mask bits0/1; inactive fields arbitrary typed values",
+      "rounding_nan": "RNE, default-NaN/flush modes disabled, traps disabled; flags unobserved. Arm FMA operand priority/quieting and canonical RVV FMA NaN represented by frozen exact Flocq definitions; minNumber and NaN propagation distinguished.",
+      "header": "shim/clamp_views.h",
+      "header_sha256": "481004127094d6d20c332ba7f0c75bc05cf9a943551f5be449cd57b869e59180",
+      "contract": "hc_isa_bits_to_float(const vuint32m1_t *a)\n/*@ With (A:Recordvuint32m1_t) Require StructPredvuint32m1_t(a,A) Ensure exists(R:Recordvfloat32m1_t),hc_reinterpret(R,A) && (StructPredvuint32m1_t(a,A) * StructPredvfloat32m1_t(&__return,R)) */;",
+      "contract_sha256": "14af4d1df11cb3ac89158786d6e1fe075cb0cf8fecf44820f6ae810f9faf8d6b",
+      "Coq_definitions": [
+        {
+          "FQ": "HwcConv.ClampModel.hc_reinterpret",
+          "source": "proof/coq/ClampModel.v",
+          "source_sha256": "349ae87873ca422116aea9e0f2f066ba5cfec912748ded60b1d5b5e295484da6"
+        }
+      ],
+      "note": "self-ne reads one owner for identical side-effect-free a,a operands; source guard enforced by prepare_nan_helpers.py. Active masks encode0/1. Reinterpret has no vl parameter and preserves all register bits. NaN canonicalization algorithm itself remains actual checked ordinary C, not an intrinsic."
+    },
+    {
+      "name": "hc_isa_self_ne",
+      "original_intrinsic": "__riscv_vmfne_vv_f32m1_b32",
+      "side": "RVV",
+      "boundary": "source-reviewed-spec",
+      "formal_ISA_correspondence_proved": false,
+      "physical_SIMD_ABI_mapping_proved": false,
+      "human_review": "pending final manual review",
+      "official_source": {
+        "url": "https://raw.githubusercontent.com/riscvarchive/riscv-v-spec/v1.0/v-spec.adoc",
+        "version": "1.0",
+        "sha256": "bfe42bd33dc6abeef5362f475605dda3d229e722257a613b0691cee760f04a19",
+        "bytes": 207611,
+        "archived_source": "proof/reference/isa/rvv-v1.0.adoc"
+      },
+      "configuration": "RVV1.0 VLEN128 SEW32 LMUL1 VLMAX4 XLEN64; all legal activeVL0..4, mask bits0/1; inactive fields arbitrary typed values",
+      "rounding_nan": "RNE, default-NaN/flush modes disabled, traps disabled; flags unobserved. Arm FMA operand priority/quieting and canonical RVV FMA NaN represented by frozen exact Flocq definitions; minNumber and NaN propagation distinguished.",
+      "header": "shim/clamp_views.h",
+      "header_sha256": "481004127094d6d20c332ba7f0c75bc05cf9a943551f5be449cd57b869e59180",
+      "contract": "hc_isa_self_ne(const vfloat32m1_t *a,size_t vl)\n/*@ With (A:Recordvfloat32m1_t) Require 0<=vl && vl<=4 && StructPredvfloat32m1_t(a,A) Ensure exists(R:Recordvbool32_t),hc_selfmask(R,A,vl) && hc_legal_mask(R,vl) && (StructPredvfloat32m1_t(a,A) * StructPredvbool32_t(&__return,R)) */;",
+      "contract_sha256": "236dd3d36029d3c38c7b85782ef6e6e1547e7b22b82588092d575a4b789ade27",
+      "Coq_definitions": [
+        {
+          "FQ": "HwcConv.ClampModel.hc_selfmask",
+          "source": "proof/coq/ClampModel.v",
+          "source_sha256": "349ae87873ca422116aea9e0f2f066ba5cfec912748ded60b1d5b5e295484da6"
+        },
+        {
+          "FQ": "HwcConv.MaskModel.hc_legal_mask",
+          "source": "proof/coq/MaskModel.v",
+          "source_sha256": "7dde204bc8f05337aded983f331830fa553a9c601e7fc64f0a6ea9a9f22ca7bd"
+        }
+      ],
+      "note": "self-ne reads one owner for identical side-effect-free a,a operands; source guard enforced by prepare_nan_helpers.py. Active masks encode0/1. Reinterpret has no vl parameter and preserves all register bits. NaN canonicalization algorithm itself remains actual checked ordinary C, not an intrinsic."
+    },
+    {
+      "name": "hc_isa_min_view",
+      "original_intrinsic": "__riscv_vfmin_vf_f32m1",
+      "side": "RVV",
+      "boundary": "source-reviewed-spec",
+      "formal_ISA_correspondence_proved": false,
+      "physical_SIMD_ABI_mapping_proved": false,
+      "human_review": "pending final manual review",
+      "official_source": {
+        "url": "https://raw.githubusercontent.com/riscvarchive/riscv-v-spec/v1.0/v-spec.adoc",
+        "version": "1.0",
+        "sha256": "bfe42bd33dc6abeef5362f475605dda3d229e722257a613b0691cee760f04a19",
+        "bytes": 207611,
+        "archived_source": "proof/reference/isa/rvv-v1.0.adoc"
+      },
+      "configuration": "RVV1.0 VLEN128 SEW32 LMUL1 VLMAX4 XLEN64; all legal activeVL0..4, mask bits0/1; inactive fields arbitrary typed values",
+      "rounding_nan": "RNE, default-NaN/flush modes disabled, traps disabled; flags unobserved. Arm FMA operand priority/quieting and canonical RVV FMA NaN represented by frozen exact Flocq definitions; minNumber and NaN propagation distinguished.",
+      "header": "shim/clamp_views.h",
+      "header_sha256": "481004127094d6d20c332ba7f0c75bc05cf9a943551f5be449cd57b869e59180",
+      "contract": "hc_isa_min_view(const vfloat32m1_t *a,float b,size_t vl)\n/*@ With (A:Recordvfloat32m1_t) Require 0<=vl && vl<=4 && StructPredvfloat32m1_t(a,A) Ensure exists(R:Recordvfloat32m1_t),hc_isa_min(R,A,b,vl) && (StructPredvfloat32m1_t(a,A) * StructPredvfloat32m1_t(&__return,R)) */;",
+      "contract_sha256": "5363964e52dc14be677427768a7ffe8e5f5a685873c3ae678baffab19e2872bb",
+      "Coq_definitions": [
+        {
+          "FQ": "HwcConv.ClampModel.hc_isa_min",
+          "source": "proof/coq/ClampModel.v",
+          "source_sha256": "349ae87873ca422116aea9e0f2f066ba5cfec912748ded60b1d5b5e295484da6"
+        }
+      ],
+      "note": "self-ne reads one owner for identical side-effect-free a,a operands; source guard enforced by prepare_nan_helpers.py. Active masks encode0/1. Reinterpret has no vl parameter and preserves all register bits. NaN canonicalization algorithm itself remains actual checked ordinary C, not an intrinsic."
+    },
+    {
+      "name": "hc_isa_max_view",
+      "original_intrinsic": "__riscv_vfmax_vf_f32m1",
+      "side": "RVV",
+      "boundary": "source-reviewed-spec",
+      "formal_ISA_correspondence_proved": false,
+      "physical_SIMD_ABI_mapping_proved": false,
+      "human_review": "pending final manual review",
+      "official_source": {
+        "url": "https://raw.githubusercontent.com/riscvarchive/riscv-v-spec/v1.0/v-spec.adoc",
+        "version": "1.0",
+        "sha256": "bfe42bd33dc6abeef5362f475605dda3d229e722257a613b0691cee760f04a19",
+        "bytes": 207611,
+        "archived_source": "proof/reference/isa/rvv-v1.0.adoc"
+      },
+      "configuration": "RVV1.0 VLEN128 SEW32 LMUL1 VLMAX4 XLEN64; all legal activeVL0..4, mask bits0/1; inactive fields arbitrary typed values",
+      "rounding_nan": "RNE, default-NaN/flush modes disabled, traps disabled; flags unobserved. Arm FMA operand priority/quieting and canonical RVV FMA NaN represented by frozen exact Flocq definitions; minNumber and NaN propagation distinguished.",
+      "header": "shim/clamp_views.h",
+      "header_sha256": "481004127094d6d20c332ba7f0c75bc05cf9a943551f5be449cd57b869e59180",
+      "contract": "hc_isa_max_view(const vfloat32m1_t *a,float b,size_t vl)\n/*@ With (A:Recordvfloat32m1_t) Require 0<=vl && vl<=4 && StructPredvfloat32m1_t(a,A) Ensure exists(R:Recordvfloat32m1_t),hc_isa_max(R,A,b,vl) && (StructPredvfloat32m1_t(a,A) * StructPredvfloat32m1_t(&__return,R)) */;",
+      "contract_sha256": "064f5d461f36167837fb1c5dedc6be8295752ec4b9a76679ec96a1af7706a4df",
+      "Coq_definitions": [
+        {
+          "FQ": "HwcConv.ClampModel.hc_isa_max",
+          "source": "proof/coq/ClampModel.v",
+          "source_sha256": "349ae87873ca422116aea9e0f2f066ba5cfec912748ded60b1d5b5e295484da6"
+        }
+      ],
+      "note": "self-ne reads one owner for identical side-effect-free a,a operands; source guard enforced by prepare_nan_helpers.py. Active masks encode0/1. Reinterpret has no vl parameter and preserves all register bits. NaN canonicalization algorithm itself remains actual checked ordinary C, not an intrinsic."
+    },
+    {
+      "name": "hc_isa_merge_view",
+      "original_intrinsic": "__riscv_vmerge_vvm_f32m1",
+      "side": "RVV",
+      "boundary": "source-reviewed-spec",
+      "formal_ISA_correspondence_proved": false,
+      "physical_SIMD_ABI_mapping_proved": false,
+      "human_review": "pending final manual review",
+      "official_source": {
+        "url": "https://raw.githubusercontent.com/riscvarchive/riscv-v-spec/v1.0/v-spec.adoc",
+        "version": "1.0",
+        "sha256": "bfe42bd33dc6abeef5362f475605dda3d229e722257a613b0691cee760f04a19",
+        "bytes": 207611,
+        "archived_source": "proof/reference/isa/rvv-v1.0.adoc"
+      },
+      "configuration": "RVV1.0 VLEN128 SEW32 LMUL1 VLMAX4 XLEN64; all legal activeVL0..4, mask bits0/1; inactive fields arbitrary typed values",
+      "rounding_nan": "RNE, default-NaN/flush modes disabled, traps disabled; flags unobserved. Arm FMA operand priority/quieting and canonical RVV FMA NaN represented by frozen exact Flocq definitions; minNumber and NaN propagation distinguished.",
+      "header": "shim/clamp_views.h",
+      "header_sha256": "481004127094d6d20c332ba7f0c75bc05cf9a943551f5be449cd57b869e59180",
+      "contract": "hc_isa_merge_view(const vfloat32m1_t *a,const vfloat32m1_t *b,const vbool32_t *m,size_t vl)\n/*@ With (A:Recordvfloat32m1_t) (B:Recordvfloat32m1_t) (Mask:Recordvbool32_t) Require 0<=vl && vl<=4 && hc_legal_mask(Mask,vl) && (StructPredvfloat32m1_t(a,A) * StructPredvfloat32m1_t(b,B) * StructPredvbool32_t(m,Mask)) Ensure exists(R:Recordvfloat32m1_t),hc_isa_merge(R,A,B,Mask,vl) && (StructPredvfloat32m1_t(a,A) * StructPredvfloat32m1_t(b,B) * StructPredvbool32_t(m,Mask) * StructPredvfloat32m1_t(&__return,R)) */;",
+      "contract_sha256": "ee2ca90d7b88f6ccccef6a67cbe886b32f3f3e72367d1f5d40a428f2adb65061",
+      "Coq_definitions": [
+        {
+          "FQ": "HwcConv.ClampModel.hc_isa_merge",
+          "source": "proof/coq/ClampModel.v",
+          "source_sha256": "349ae87873ca422116aea9e0f2f066ba5cfec912748ded60b1d5b5e295484da6"
+        },
+        {
+          "FQ": "HwcConv.MaskModel.hc_legal_mask",
+          "source": "proof/coq/MaskModel.v",
+          "source_sha256": "7dde204bc8f05337aded983f331830fa553a9c601e7fc64f0a6ea9a9f22ca7bd"
+        }
+      ],
+      "note": "self-ne reads one owner for identical side-effect-free a,a operands; source guard enforced by prepare_nan_helpers.py. Active masks encode0/1. Reinterpret has no vl parameter and preserves all register bits. NaN canonicalization algorithm itself remains actual checked ordinary C, not an intrinsic."
+    },
+    {
+      "name": "hc_isa_vsetvl",
+      "original_intrinsic": "__riscv_vsetvl_e32m1",
+      "side": "RVV",
+      "boundary": "source-reviewed-spec",
+      "formal_ISA_correspondence_proved": false,
+      "physical_SIMD_ABI_mapping_proved": false,
+      "human_review": "pending final manual review",
+      "official_source": {
+        "url": "https://raw.githubusercontent.com/riscvarchive/riscv-v-spec/v1.0/v-spec.adoc",
+        "version": "1.0",
+        "sha256": "bfe42bd33dc6abeef5362f475605dda3d229e722257a613b0691cee760f04a19",
+        "bytes": 207611,
+        "archived_source": "proof/reference/isa/rvv-v1.0.adoc"
+      },
+      "configuration": "RVV1.0 VLEN128 SEW32 LMUL1 VLMAX4 XLEN64; all legal activeVL0..4, mask bits0/1; inactive fields arbitrary typed values",
+      "rounding_nan": "RNE, default-NaN/flush modes disabled, traps disabled; flags unobserved. Arm FMA operand priority/quieting and canonical RVV FMA NaN represented by frozen exact Flocq definitions; minNumber and NaN propagation distinguished.",
+      "header": "shim/rvv_views.h",
+      "header_sha256": "ab6f881e99ff0ecd32a442297cdf3dc6a59e9d49787f35e8c67099b4d46ef9ee",
+      "contract": "hc_isa_vsetvl(size_t avl)\n/*@ Require emp Ensure hc_rvv_vl(avl,__return) && emp */;",
+      "contract_sha256": "e8f634895cdcc8dd9f4f3d108368c8a57a562011ab700f6e1618ea982750a884",
+      "Coq_definitions": [
+        {
+          "FQ": "HwcConv.RvvViewsModel.hc_rvv_vl",
+          "source": "proof/coq/RvvViewsModel.v",
+          "source_sha256": "621c0ba4132ce35f58883bd802808e3ec296ea6ea277ed86e4e1c4265c33cc25"
+        }
+      ],
+      "note": "VLMAX4, all legal VL retained including non-min choices for4<AVL<8; inactive lanes unconstrained. _m masked load imposes read permission only for mask-true active addresses modulo2^64 and leaves mask-false/tail fields arbitrary. _mu FMA preserves mask-false active accumulator bits, tails arbitrary; it skips FMA entirely for missing odd-right taps."
+    },
+    {
+      "name": "hc_isa_rvv_splat",
+      "original_intrinsic": "__riscv_vfmv_v_f_f32m1",
+      "side": "RVV",
+      "boundary": "source-reviewed-spec",
+      "formal_ISA_correspondence_proved": false,
+      "physical_SIMD_ABI_mapping_proved": false,
+      "human_review": "pending final manual review",
+      "official_source": {
+        "url": "https://raw.githubusercontent.com/riscvarchive/riscv-v-spec/v1.0/v-spec.adoc",
+        "version": "1.0",
+        "sha256": "bfe42bd33dc6abeef5362f475605dda3d229e722257a613b0691cee760f04a19",
+        "bytes": 207611,
+        "archived_source": "proof/reference/isa/rvv-v1.0.adoc"
+      },
+      "configuration": "RVV1.0 VLEN128 SEW32 LMUL1 VLMAX4 XLEN64; all legal activeVL0..4, mask bits0/1; inactive fields arbitrary typed values",
+      "rounding_nan": "RNE, default-NaN/flush modes disabled, traps disabled; flags unobserved. Arm FMA operand priority/quieting and canonical RVV FMA NaN represented by frozen exact Flocq definitions; minNumber and NaN propagation distinguished.",
+      "header": "shim/rvv_views.h",
+      "header_sha256": "ab6f881e99ff0ecd32a442297cdf3dc6a59e9d49787f35e8c67099b4d46ef9ee",
+      "contract": "hc_isa_rvv_splat(float x,size_t vl)\n/*@ Require 0<=vl && vl<=4 && emp Ensure exists(R:Recordvfloat32m1_t),hc_rvv_splat(R,x,vl) && (StructPredvfloat32m1_t(&__return,R)) */;",
+      "contract_sha256": "d7fced0ef920a73565d28aed88eac52666137ae405ef4e0002f8841fdd3248f0",
+      "Coq_definitions": [
+        {
+          "FQ": "HwcConv.RvvViewsModel.hc_rvv_splat",
+          "source": "proof/coq/RvvViewsModel.v",
+          "source_sha256": "621c0ba4132ce35f58883bd802808e3ec296ea6ea277ed86e4e1c4265c33cc25"
+        }
+      ],
+      "note": "VLMAX4, all legal VL retained including non-min choices for4<AVL<8; inactive lanes unconstrained. _m masked load imposes read permission only for mask-true active addresses modulo2^64 and leaves mask-false/tail fields arbitrary. _mu FMA preserves mask-false active accumulator bits, tails arbitrary; it skips FMA entirely for missing odd-right taps."
+    },
+    {
+      "name": "hc_isa_rvv_id",
+      "original_intrinsic": "__riscv_vid_v_u32m1",
+      "side": "RVV",
+      "boundary": "source-reviewed-spec",
+      "formal_ISA_correspondence_proved": false,
+      "physical_SIMD_ABI_mapping_proved": false,
+      "human_review": "pending final manual review",
+      "official_source": {
+        "url": "https://raw.githubusercontent.com/riscvarchive/riscv-v-spec/v1.0/v-spec.adoc",
+        "version": "1.0",
+        "sha256": "bfe42bd33dc6abeef5362f475605dda3d229e722257a613b0691cee760f04a19",
+        "bytes": 207611,
+        "archived_source": "proof/reference/isa/rvv-v1.0.adoc"
+      },
+      "configuration": "RVV1.0 VLEN128 SEW32 LMUL1 VLMAX4 XLEN64; all legal activeVL0..4, mask bits0/1; inactive fields arbitrary typed values",
+      "rounding_nan": "RNE, default-NaN/flush modes disabled, traps disabled; flags unobserved. Arm FMA operand priority/quieting and canonical RVV FMA NaN represented by frozen exact Flocq definitions; minNumber and NaN propagation distinguished.",
+      "header": "shim/rvv_views.h",
+      "header_sha256": "ab6f881e99ff0ecd32a442297cdf3dc6a59e9d49787f35e8c67099b4d46ef9ee",
+      "contract": "hc_isa_rvv_id(size_t vl)\n/*@ Require 0<=vl && vl<=4 && emp Ensure exists(R:Recordvuint32m1_t),hc_rvv_id(R,vl) && (StructPredvuint32m1_t(&__return,R)) */;",
+      "contract_sha256": "bb17c3c659d12f25bd287de8ea231d4287fc7269a97a6c6fef5e9529a8124315",
+      "Coq_definitions": [
+        {
+          "FQ": "HwcConv.RvvViewsModel.hc_rvv_id",
+          "source": "proof/coq/RvvViewsModel.v",
+          "source_sha256": "621c0ba4132ce35f58883bd802808e3ec296ea6ea277ed86e4e1c4265c33cc25"
+        }
+      ],
+      "note": "VLMAX4, all legal VL retained including non-min choices for4<AVL<8; inactive lanes unconstrained. _m masked load imposes read permission only for mask-true active addresses modulo2^64 and leaves mask-false/tail fields arbitrary. _mu FMA preserves mask-false active accumulator bits, tails arbitrary; it skips FMA entirely for missing odd-right taps."
+    },
+    {
+      "name": "hc_isa_mask_ge",
+      "original_intrinsic": "__riscv_vmsgeu_vx_u32m1_b32",
+      "side": "RVV",
+      "boundary": "source-reviewed-spec",
+      "formal_ISA_correspondence_proved": false,
+      "physical_SIMD_ABI_mapping_proved": false,
+      "human_review": "pending final manual review",
+      "official_source": {
+        "url": "https://raw.githubusercontent.com/riscvarchive/riscv-v-spec/v1.0/v-spec.adoc",
+        "version": "1.0",
+        "sha256": "bfe42bd33dc6abeef5362f475605dda3d229e722257a613b0691cee760f04a19",
+        "bytes": 207611,
+        "archived_source": "proof/reference/isa/rvv-v1.0.adoc"
+      },
+      "configuration": "RVV1.0 VLEN128 SEW32 LMUL1 VLMAX4 XLEN64; all legal activeVL0..4, mask bits0/1; inactive fields arbitrary typed values",
+      "rounding_nan": "RNE, default-NaN/flush modes disabled, traps disabled; flags unobserved. Arm FMA operand priority/quieting and canonical RVV FMA NaN represented by frozen exact Flocq definitions; minNumber and NaN propagation distinguished.",
+      "header": "shim/rvv_views.h",
+      "header_sha256": "ab6f881e99ff0ecd32a442297cdf3dc6a59e9d49787f35e8c67099b4d46ef9ee",
+      "contract": "hc_isa_mask_ge(const vuint32m1_t *pa,unsigned int x,size_t vl)\n/*@ With (A:Recordvuint32m1_t) Require 0<=vl && vl<=4 && StructPredvuint32m1_t(pa,A) Ensure exists(R:Recordvbool32_t),hc_mask_ge(R,A,x,vl) && hc_legal_mask(R,vl) && (StructPredvuint32m1_t(pa,A)*StructPredvbool32_t(&__return,R)) */;",
+      "contract_sha256": "1ab3745b7ac4fbe471881e3dd9fb15102224c94d6c27ea6d5c7a57ffbac8a9e7",
+      "Coq_definitions": [
+        {
+          "FQ": "HwcConv.RvvViewsModel.hc_mask_ge",
+          "source": "proof/coq/RvvViewsModel.v",
+          "source_sha256": "621c0ba4132ce35f58883bd802808e3ec296ea6ea277ed86e4e1c4265c33cc25"
+        }
+      ],
+      "note": "VLMAX4, all legal VL retained including non-min choices for4<AVL<8; inactive lanes unconstrained. _m masked load imposes read permission only for mask-true active addresses modulo2^64 and leaves mask-false/tail fields arbitrary. _mu FMA preserves mask-false active accumulator bits, tails arbitrary; it skips FMA entirely for missing odd-right taps."
+    },
+    {
+      "name": "hc_isa_mask_lt",
+      "original_intrinsic": "__riscv_vmsltu_vx_u32m1_b32",
+      "side": "RVV",
+      "boundary": "source-reviewed-spec",
+      "formal_ISA_correspondence_proved": false,
+      "physical_SIMD_ABI_mapping_proved": false,
+      "human_review": "pending final manual review",
+      "official_source": {
+        "url": "https://raw.githubusercontent.com/riscvarchive/riscv-v-spec/v1.0/v-spec.adoc",
+        "version": "1.0",
+        "sha256": "bfe42bd33dc6abeef5362f475605dda3d229e722257a613b0691cee760f04a19",
+        "bytes": 207611,
+        "archived_source": "proof/reference/isa/rvv-v1.0.adoc"
+      },
+      "configuration": "RVV1.0 VLEN128 SEW32 LMUL1 VLMAX4 XLEN64; all legal activeVL0..4, mask bits0/1; inactive fields arbitrary typed values",
+      "rounding_nan": "RNE, default-NaN/flush modes disabled, traps disabled; flags unobserved. Arm FMA operand priority/quieting and canonical RVV FMA NaN represented by frozen exact Flocq definitions; minNumber and NaN propagation distinguished.",
+      "header": "shim/rvv_views.h",
+      "header_sha256": "ab6f881e99ff0ecd32a442297cdf3dc6a59e9d49787f35e8c67099b4d46ef9ee",
+      "contract": "hc_isa_mask_lt(const vuint32m1_t *pa,unsigned int x,size_t vl)\n/*@ With (A:Recordvuint32m1_t) Require 0<=vl && vl<=4 && StructPredvuint32m1_t(pa,A) Ensure exists(R:Recordvbool32_t),hc_mask_lt(R,A,x,vl) && hc_legal_mask(R,vl) && (StructPredvuint32m1_t(pa,A)*StructPredvbool32_t(&__return,R)) */;",
+      "contract_sha256": "bb4339a243bc9ed42301fb4474371786b2cd2133945db25aeb6a2811412caf7d",
+      "Coq_definitions": [
+        {
+          "FQ": "HwcConv.RvvViewsModel.hc_mask_lt",
+          "source": "proof/coq/RvvViewsModel.v",
+          "source_sha256": "621c0ba4132ce35f58883bd802808e3ec296ea6ea277ed86e4e1c4265c33cc25"
+        }
+      ],
+      "note": "VLMAX4, all legal VL retained including non-min choices for4<AVL<8; inactive lanes unconstrained. _m masked load imposes read permission only for mask-true active addresses modulo2^64 and leaves mask-false/tail fields arbitrary. _mu FMA preserves mask-false active accumulator bits, tails arbitrary; it skips FMA entirely for missing odd-right taps."
+    },
+    {
+      "name": "hc_isa_mask_and",
+      "original_intrinsic": "__riscv_vmand_mm_b32",
+      "side": "RVV",
+      "boundary": "source-reviewed-spec",
+      "formal_ISA_correspondence_proved": false,
+      "physical_SIMD_ABI_mapping_proved": false,
+      "human_review": "pending final manual review",
+      "official_source": {
+        "url": "https://raw.githubusercontent.com/riscvarchive/riscv-v-spec/v1.0/v-spec.adoc",
+        "version": "1.0",
+        "sha256": "bfe42bd33dc6abeef5362f475605dda3d229e722257a613b0691cee760f04a19",
+        "bytes": 207611,
+        "archived_source": "proof/reference/isa/rvv-v1.0.adoc"
+      },
+      "configuration": "RVV1.0 VLEN128 SEW32 LMUL1 VLMAX4 XLEN64; all legal activeVL0..4, mask bits0/1; inactive fields arbitrary typed values",
+      "rounding_nan": "RNE, default-NaN/flush modes disabled, traps disabled; flags unobserved. Arm FMA operand priority/quieting and canonical RVV FMA NaN represented by frozen exact Flocq definitions; minNumber and NaN propagation distinguished.",
+      "header": "shim/rvv_views.h",
+      "header_sha256": "ab6f881e99ff0ecd32a442297cdf3dc6a59e9d49787f35e8c67099b4d46ef9ee",
+      "contract": "hc_isa_mask_and(const vbool32_t *pa,const vbool32_t *pb,size_t vl)\n/*@ With (A:Recordvbool32_t) (B:Recordvbool32_t) Require 0<=vl && vl<=4 && hc_legal_mask(A,vl) && hc_legal_mask(B,vl) && (StructPredvbool32_t(pa,A)*StructPredvbool32_t(pb,B)) Ensure exists(R:Recordvbool32_t),hc_mask_and(R,A,B,vl) && hc_legal_mask(R,vl) && (StructPredvbool32_t(pa,A)*StructPredvbool32_t(pb,B)*StructPredvbool32_t(&__return,R)) */;",
+      "contract_sha256": "f098c22653cfc82dff576b6ef743ea37fe5aa3db424b4a22f36e4fb4dc7fac0b",
+      "Coq_definitions": [
+        {
+          "FQ": "HwcConv.RvvViewsModel.hc_mask_and",
+          "source": "proof/coq/RvvViewsModel.v",
+          "source_sha256": "621c0ba4132ce35f58883bd802808e3ec296ea6ea277ed86e4e1c4265c33cc25"
+        }
+      ],
+      "note": "VLMAX4, all legal VL retained including non-min choices for4<AVL<8; inactive lanes unconstrained. _m masked load imposes read permission only for mask-true active addresses modulo2^64 and leaves mask-false/tail fields arbitrary. _mu FMA preserves mask-false active accumulator bits, tails arbitrary; it skips FMA entirely for missing odd-right taps."
+    },
+    {
+      "name": "hc_isa_masked_strided_load",
+      "original_intrinsic": "__riscv_vlse32_v_f32m1_m",
+      "side": "RVV",
+      "boundary": "source-reviewed-spec",
+      "formal_ISA_correspondence_proved": false,
+      "physical_SIMD_ABI_mapping_proved": false,
+      "human_review": "pending final manual review",
+      "official_source": {
+        "url": "https://raw.githubusercontent.com/riscvarchive/riscv-v-spec/v1.0/v-spec.adoc",
+        "version": "1.0",
+        "sha256": "bfe42bd33dc6abeef5362f475605dda3d229e722257a613b0691cee760f04a19",
+        "bytes": 207611,
+        "archived_source": "proof/reference/isa/rvv-v1.0.adoc"
+      },
+      "configuration": "RVV1.0 VLEN128 SEW32 LMUL1 VLMAX4 XLEN64; all legal activeVL0..4, mask bits0/1; inactive fields arbitrary typed values",
+      "rounding_nan": "RNE, default-NaN/flush modes disabled, traps disabled; flags unobserved. Arm FMA operand priority/quieting and canonical RVV FMA NaN represented by frozen exact Flocq definitions; minNumber and NaN propagation distinguished.",
+      "header": "shim/rvv_views.h",
+      "header_sha256": "ab6f881e99ff0ecd32a442297cdf3dc6a59e9d49787f35e8c67099b4d46ef9ee",
+      "contract": "hc_isa_masked_strided_load(const vbool32_t *pm,const float *p,ptrdiff_t stride,size_t vl)\n/*@ With (F:HwcROMap) (M:Recordvbool32_t) Require 0<=vl && vl<=4 && hc_legal_mask(M,vl) && hc_masked_window(F,p,stride,M,vl) && (hc_data(F)*StructPredvbool32_t(pm,M)) Ensure exists(R:Recordvfloat32m1_t),hc_masked_load(R,F,p,stride,M,vl) && (hc_data(F)*StructPredvbool32_t(pm,M)*StructPredvfloat32m1_t(&__return,R)) */;",
+      "contract_sha256": "92360233b5d609e1d6461329f721faef1939aa742475aeaf25aa836215728103",
+      "Coq_definitions": [
+        {
+          "FQ": "HwcConv.RvvViewsModel.hc_masked_load",
+          "source": "proof/coq/RvvViewsModel.v",
+          "source_sha256": "621c0ba4132ce35f58883bd802808e3ec296ea6ea277ed86e4e1c4265c33cc25"
+        },
+        {
+          "FQ": "HwcConv.RvvViewsModel.hc_addr64",
+          "source": "proof/coq/RvvViewsModel.v",
+          "source_sha256": "621c0ba4132ce35f58883bd802808e3ec296ea6ea277ed86e4e1c4265c33cc25"
+        },
+        {
+          "FQ": "HwcConv.RvvViewsModel.hc_masked_window",
+          "source": "proof/coq/RvvViewsModel.v",
+          "source_sha256": "621c0ba4132ce35f58883bd802808e3ec296ea6ea277ed86e4e1c4265c33cc25"
+        }
+      ],
+      "note": "VLMAX4, all legal VL retained including non-min choices for4<AVL<8; inactive lanes unconstrained. _m masked load imposes read permission only for mask-true active addresses modulo2^64 and leaves mask-false/tail fields arbitrary. _mu FMA preserves mask-false active accumulator bits, tails arbitrary; it skips FMA entirely for missing odd-right taps."
+    },
+    {
+      "name": "hc_isa_rvv_fma",
+      "original_intrinsic": "__riscv_vfmacc_vf_f32m1",
+      "side": "RVV",
+      "boundary": "source-reviewed-spec",
+      "formal_ISA_correspondence_proved": false,
+      "physical_SIMD_ABI_mapping_proved": false,
+      "human_review": "pending final manual review",
+      "official_source": {
+        "url": "https://raw.githubusercontent.com/riscvarchive/riscv-v-spec/v1.0/v-spec.adoc",
+        "version": "1.0",
+        "sha256": "bfe42bd33dc6abeef5362f475605dda3d229e722257a613b0691cee760f04a19",
+        "bytes": 207611,
+        "archived_source": "proof/reference/isa/rvv-v1.0.adoc"
+      },
+      "configuration": "RVV1.0 VLEN128 SEW32 LMUL1 VLMAX4 XLEN64; all legal activeVL0..4, mask bits0/1; inactive fields arbitrary typed values",
+      "rounding_nan": "RNE, default-NaN/flush modes disabled, traps disabled; flags unobserved. Arm FMA operand priority/quieting and canonical RVV FMA NaN represented by frozen exact Flocq definitions; minNumber and NaN propagation distinguished.",
+      "header": "shim/rvv_views.h",
+      "header_sha256": "ab6f881e99ff0ecd32a442297cdf3dc6a59e9d49787f35e8c67099b4d46ef9ee",
+      "contract": "hc_isa_rvv_fma(const vfloat32m1_t *pa,float w,const vfloat32m1_t *px,size_t vl)\n/*@ With (A:Recordvfloat32m1_t) (X:Recordvfloat32m1_t) Require 0<=vl && vl<=4 && (StructPredvfloat32m1_t(pa,A)*StructPredvfloat32m1_t(px,X)) Ensure exists(R:Recordvfloat32m1_t),hc_rvv_fma(R,A,X,w,vl) && (StructPredvfloat32m1_t(pa,A)*StructPredvfloat32m1_t(px,X)*StructPredvfloat32m1_t(&__return,R)) */;",
+      "contract_sha256": "34a0cd336beb8c054c846a3a0dc602d9edf7b3201a733b32f7bbf599329f819e",
+      "Coq_definitions": [
+        {
+          "FQ": "HwcConv.RvvViewsModel.hc_rvv_fma",
+          "source": "proof/coq/RvvViewsModel.v",
+          "source_sha256": "621c0ba4132ce35f58883bd802808e3ec296ea6ea277ed86e4e1c4265c33cc25"
+        },
+        {
+          "FQ": "HwcConv.Model.dw_rvv_fma",
+          "source": "proof/coq/Model.v",
+          "source_sha256": "a546a73e085891e5856e902569ef928e02f236656d75ca9fff09cc48435b6524"
+        }
+      ],
+      "note": "VLMAX4, all legal VL retained including non-min choices for4<AVL<8; inactive lanes unconstrained. _m masked load imposes read permission only for mask-true active addresses modulo2^64 and leaves mask-false/tail fields arbitrary. _mu FMA preserves mask-false active accumulator bits, tails arbitrary; it skips FMA entirely for missing odd-right taps."
+    },
+    {
+      "name": "hc_isa_rvv_fma_mu",
+      "original_intrinsic": "__riscv_vfmacc_vf_f32m1_mu",
+      "side": "RVV",
+      "boundary": "source-reviewed-spec",
+      "formal_ISA_correspondence_proved": false,
+      "physical_SIMD_ABI_mapping_proved": false,
+      "human_review": "pending final manual review",
+      "official_source": {
+        "url": "https://raw.githubusercontent.com/riscvarchive/riscv-v-spec/v1.0/v-spec.adoc",
+        "version": "1.0",
+        "sha256": "bfe42bd33dc6abeef5362f475605dda3d229e722257a613b0691cee760f04a19",
+        "bytes": 207611,
+        "archived_source": "proof/reference/isa/rvv-v1.0.adoc"
+      },
+      "configuration": "RVV1.0 VLEN128 SEW32 LMUL1 VLMAX4 XLEN64; all legal activeVL0..4, mask bits0/1; inactive fields arbitrary typed values",
+      "rounding_nan": "RNE, default-NaN/flush modes disabled, traps disabled; flags unobserved. Arm FMA operand priority/quieting and canonical RVV FMA NaN represented by frozen exact Flocq definitions; minNumber and NaN propagation distinguished.",
+      "header": "shim/rvv_views.h",
+      "header_sha256": "ab6f881e99ff0ecd32a442297cdf3dc6a59e9d49787f35e8c67099b4d46ef9ee",
+      "contract": "hc_isa_rvv_fma_mu(const vbool32_t *pm,const vfloat32m1_t *pa,float w,const vfloat32m1_t *px,size_t vl)\n/*@ With (M:Recordvbool32_t) (A:Recordvfloat32m1_t) (X:Recordvfloat32m1_t) Require 0<=vl && vl<=4 && hc_legal_mask(M,vl) && (StructPredvbool32_t(pm,M)*StructPredvfloat32m1_t(pa,A)*StructPredvfloat32m1_t(px,X)) Ensure exists(R:Recordvfloat32m1_t),hc_rvv_fma_mu(R,A,X,w,M,vl) && (StructPredvbool32_t(pm,M)*StructPredvfloat32m1_t(pa,A)*StructPredvfloat32m1_t(px,X)*StructPredvfloat32m1_t(&__return,R)) */;",
+      "contract_sha256": "5e37c8a35d03619eee3282a4924b1a0e4f02b371b515fe7024a4e16201250f14",
+      "Coq_definitions": [
+        {
+          "FQ": "HwcConv.RvvViewsModel.hc_rvv_fma_mu",
+          "source": "proof/coq/RvvViewsModel.v",
+          "source_sha256": "621c0ba4132ce35f58883bd802808e3ec296ea6ea277ed86e4e1c4265c33cc25"
+        },
+        {
+          "FQ": "HwcConv.Model.dw_rvv_fma",
+          "source": "proof/coq/Model.v",
+          "source_sha256": "a546a73e085891e5856e902569ef928e02f236656d75ca9fff09cc48435b6524"
+        }
+      ],
+      "note": "VLMAX4, all legal VL retained including non-min choices for4<AVL<8; inactive lanes unconstrained. _m masked load imposes read permission only for mask-true active addresses modulo2^64 and leaves mask-false/tail fields arbitrary. _mu FMA preserves mask-false active accumulator bits, tails arbitrary; it skips FMA entirely for missing odd-right taps."
+    },
+    {
+      "name": "hc_isa_rvv_store",
+      "original_intrinsic": "__riscv_vse32_v_f32m1",
+      "side": "RVV",
+      "boundary": "source-reviewed-spec",
+      "formal_ISA_correspondence_proved": false,
+      "physical_SIMD_ABI_mapping_proved": false,
+      "human_review": "pending final manual review",
+      "official_source": {
+        "url": "https://raw.githubusercontent.com/riscvarchive/riscv-v-spec/v1.0/v-spec.adoc",
+        "version": "1.0",
+        "sha256": "bfe42bd33dc6abeef5362f475605dda3d229e722257a613b0691cee760f04a19",
+        "bytes": 207611,
+        "archived_source": "proof/reference/isa/rvv-v1.0.adoc"
+      },
+      "configuration": "RVV1.0 VLEN128 SEW32 LMUL1 VLMAX4 XLEN64; all legal activeVL0..4, mask bits0/1; inactive fields arbitrary typed values",
+      "rounding_nan": "RNE, default-NaN/flush modes disabled, traps disabled; flags unobserved. Arm FMA operand priority/quieting and canonical RVV FMA NaN represented by frozen exact Flocq definitions; minNumber and NaN propagation distinguished.",
+      "header": "shim/rvv_views.h",
+      "header_sha256": "ab6f881e99ff0ecd32a442297cdf3dc6a59e9d49787f35e8c67099b4d46ef9ee",
+      "contract": "hc_isa_rvv_store(float *p,const vfloat32m1_t *pa,size_t vl)\n/*@ With (W:list Z) (O:HwcOutput) (A:Recordvfloat32m1_t) Require 0<=vl && vl<=4 && hc_write_window(W,p,vl) && (hc_output(W,O)*StructPredvfloat32m1_t(pa,A)) Ensure hc_output(W,hc_store_rvv(O,p,A,vl))*StructPredvfloat32m1_t(pa,A) */;",
+      "contract_sha256": "ff586c9ff7d38b1693a065fc1a509ba52d22b03c09b6cd30d2d3256312ecbdd1",
+      "Coq_definitions": [
+        {
+          "FQ": "HwcConv.RvvViewsModel.hc_store_rvv",
+          "source": "proof/coq/RvvViewsModel.v",
+          "source_sha256": "621c0ba4132ce35f58883bd802808e3ec296ea6ea277ed86e4e1c4265c33cc25"
+        }
+      ],
+      "note": "VLMAX4, all legal VL retained including non-min choices for4<AVL<8; inactive lanes unconstrained. _m masked load imposes read permission only for mask-true active addresses modulo2^64 and leaves mask-false/tail fields arbitrary. _mu FMA preserves mask-false active accumulator bits, tails arbitrary; it skips FMA entirely for missing odd-right taps."
+    }
+  ],
+  "ordinary_helpers_not_exempt": [
+    "support.c",
+    "copy_float.c",
+    "nan_helpers.c",
+    "neon3_helpers.c",
+    "read_scalar.c",
+    "store_half.c",
+    "assert.c"
+  ],
+  "memory_scope": "One shared RO map supports full/partial input-zero-weight-param aliases; single mutable output map with uninitialized None and arbitrary outside frame; standard logical CHW window separation only, internal final-row/channel aliases preserved.",
+  "view_contract_status": "Declared and current helper consumers partly typed; whole main actual call closure pending."
+}

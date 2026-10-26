@@ -1,0 +1,233 @@
+{
+  "contract": "/*@ With (F:HwcROMap) (O:HwcOutput) (W:list Z) (H:Z) (N:Z) (Top:Z) (Start:Z) (End:Z) (Input:Z) (Zero:Z) (Weights:Z) (Output:Z) (Params:Z) (Cn:Z) (Hs:Z) (Cs:Z) (Lo:fp32) (Hi:fp32) Require (input_height==H) && (input_width==N) && (input_padding_top==Top) && (output_y_start==Start) && (output_y_end==End) && (input==Input) && (zero==Zero) && (weights==Weights) && (output==Output) && (params==Params) && (output_channels==Cn) && (output_height_stride==Hs) && (output_channel_stride==Cs) && (hc_input_domain(F,Input,Zero,Weights,Params,H,N,Top,Start,End,Cn)) && (hc_output_layout(Output,Hs,Cs,H,N,Cn,End)) && (hc_output_owned(W,Output,Hs,Cs,Cn,Start,End,(N+1)/2)) && (hc_present(F,&(params->scalar.min))) && (hc_present(F,&(params->scalar.max))) && (hc_same_bits(hc_get(F,&(params->scalar.min)),Lo)) && (hc_same_bits(hc_get(F,&(params->scalar.max)),Hi)) && (0<H) && (0<N) && (0<Cn) && (0<=Top) && (Top<=1) && (0<=Start) && (Start<End) && hc_data(F) * hc_output(W,O) Ensure hc_data(F)*hc_output(W,hc_final(hc_visible(hc_rvv_raw(F,Input,Zero,Weights,H,N,Top,Lo,Hi),Cn),O,Output,Hs,Cs,Cn,Start,End,(N+1)/2)) */\n",
+  "for (size_t output_y =": "(input_height==H) && (input_width==N) && (input_padding_top==Top) && (output_y_start==Start) && (output_y_end==End) && (input==Input) && (zero==Zero) && (weights==Weights) && (output==Output) && (params==Params) && (output_channels==Cn) && (output_height_stride==Hs) && (output_channel_stride==Cs) && (hc_input_domain(F,Input,Zero,Weights,Params,H,N,Top,Start,End,Cn)) && (hc_output_layout(Output,Hs,Cs,H,N,Cn,End)) && (hc_output_owned(W,Output,Hs,Cs,Cn,Start,End,(N+1)/2)) && (hc_present(F,&(params->scalar.min))) && (hc_present(F,&(params->scalar.max))) && (hc_same_bits(hc_get(F,&(params->scalar.min)),Lo)) && (hc_same_bits(hc_get(F,&(params->scalar.max)),Hi)) && (0<H) && (0<N) && (0<Cn) && (0<=Top) && (Top<=1) && (0<=Start) && (Start<End) && (input_height_stride==12*N) && (output_width==(N+1)/2) && (output_channel_increment==hc_addr64(4*Cs-4*((N+1)/2))) && (Start<=output_y) && (output_y<=End+1) && (hc_rows_pending(Input,Zero,H,N,Top,output_y,End,i0,i1,i2,i3,i4)) && (hc_pending_outputs(Output,Hs,output_y,End,output0,output1)) && hc_data(F) * hc_output(W,hc_progress(hc_visible(hc_rvv_raw(F,Input,Zero,Weights,H,N,Top,Lo,Hi),Cn),O,Output,Hs,Cs,Cn,Start,End,(N+1)/2,output_y,0,0))",
+  "while (c != 0)": "exists (WLocal:Z) ,(input_height==H) && (input_width==N) && (input_padding_top==Top) && (output_y_start==Start) && (output_y_end==End) && (input==Input) && (zero==Zero) && (weights==Weights) && (output==Output) && (params==Params) && (output_channels==Cn) && (output_height_stride==Hs) && (output_channel_stride==Cs) && (hc_input_domain(F,Input,Zero,Weights,Params,H,N,Top,Start,End,Cn)) && (hc_output_layout(Output,Hs,Cs,H,N,Cn,End)) && (hc_output_owned(W,Output,Hs,Cs,Cn,Start,End,(N+1)/2)) && (hc_present(F,&(params->scalar.min))) && (hc_present(F,&(params->scalar.max))) && (hc_same_bits(hc_get(F,&(params->scalar.min)),Lo)) && (hc_same_bits(hc_get(F,&(params->scalar.max)),Hi)) && (0<H) && (0<N) && (0<Cn) && (0<=Top) && (Top<=1) && (0<=Start) && (Start<End) && (input_height_stride==12*N) && (output_width==(N+1)/2) && (output_channel_increment==hc_addr64(4*Cs-4*((N+1)/2))) && (input_y2==hc_addr64(2*output_y+2-Top)) && (input_y4==hc_addr64(2*output_y+4-Top)) && (output0==hc_addr64(Output+Hs*output_y)) && (output1==hc_addr64(Output+Hs*hc_store_row(End,output_y,1))) && (Start<=output_y) && (output_y<End) && (0<=c) && (c<=Cn) && (c==0 || (Cn-c)%4==0) && (hc_outer_input(Input,Zero,H,N,Top,output_y,i0,i1,i2,i3,i4)) && (c==0 || w==hc_addr64(Weights+448*((Cn-c)/4))) && (hc_channel_pending(Output,Hs,Cs,Cn,End,output_y,Cn-c,o0c0,o0c1,o0c2,o0c3,o1c0,o1c1,o1c2,o1c3)) && (w==WLocal) && hc_data(F) * hc_output(W,hc_progress(hc_visible(hc_rvv_raw(F,Input,Zero,Weights,H,N,Top,Lo,Hi),Cn),O,Output,Hs,Cs,Cn,Start,End,(N+1)/2,output_y,Cn-c,0))",
+  "while (ow > 0)": "(input_height==H) && (input_width==N) && (input_padding_top==Top) && (output_y_start==Start) && (output_y_end==End) && (input==Input) && (zero==Zero) && (weights==Weights) && (output==Output) && (params==Params) && (output_channels==Cn) && (output_height_stride==Hs) && (output_channel_stride==Cs) && (hc_input_domain(F,Input,Zero,Weights,Params,H,N,Top,Start,End,Cn)) && (hc_output_layout(Output,Hs,Cs,H,N,Cn,End)) && (hc_output_owned(W,Output,Hs,Cs,Cn,Start,End,(N+1)/2)) && (hc_present(F,&(params->scalar.min))) && (hc_present(F,&(params->scalar.max))) && (hc_same_bits(hc_get(F,&(params->scalar.min)),Lo)) && (hc_same_bits(hc_get(F,&(params->scalar.max)),Hi)) && (0<H) && (0<N) && (0<Cn) && (0<=Top) && (Top<=1) && (0<=Start) && (Start<End) && (input_height_stride==12*N) && (output_width==(N+1)/2) && (output_channel_increment==hc_addr64(4*Cs-4*((N+1)/2))) && (input_y2==hc_addr64(2*output_y+2-Top)) && (input_y4==hc_addr64(2*output_y+4-Top)) && (output0==hc_addr64(Output+Hs*output_y)) && (output1==hc_addr64(Output+Hs*hc_store_row(End,output_y,1))) && (Start<=output_y) && (output_y<End) && (0<c) && (c<=Cn) && ((Cn-c)%4==0) && (hc_outer_input(Input,Zero,H,N,Top,output_y,i0,i1,i2,i3,i4)) && (w==hc_addr64(Weights+448*((Cn-c)/4))) && (0<=ow_done) && (ow_done<=(N+1)/2) && (ow==(N+1)/2-ow_done) && (hc_channel_output(Output,Hs,Cs,Cn,End,output_y,Cn-c,o0c0,o0c1,o0c2,o0c3,o1c0,o1c1,o1c2,o1c3)) && (current_o0c0==hc_output_address(Output,Hs,Cs,hc_store_channel(Cn,Cn-c,0),hc_store_row(End,output_y,0),ow_done)) && (current_o0c1==hc_output_address(Output,Hs,Cs,hc_store_channel(Cn,Cn-c,1),hc_store_row(End,output_y,0),ow_done)) && (current_o0c2==hc_output_address(Output,Hs,Cs,hc_store_channel(Cn,Cn-c,2),hc_store_row(End,output_y,0),ow_done)) && (current_o0c3==hc_output_address(Output,Hs,Cs,hc_store_channel(Cn,Cn-c,3),hc_store_row(End,output_y,0),ow_done)) && (current_o1c0==hc_output_address(Output,Hs,Cs,hc_store_channel(Cn,Cn-c,0),hc_store_row(End,output_y,1),ow_done)) && (current_o1c1==hc_output_address(Output,Hs,Cs,hc_store_channel(Cn,Cn-c,1),hc_store_row(End,output_y,1),ow_done)) && (current_o1c2==hc_output_address(Output,Hs,Cs,hc_store_channel(Cn,Cn-c,2),hc_store_row(End,output_y,1),ow_done)) && (current_o1c3==hc_output_address(Output,Hs,Cs,hc_store_channel(Cn,Cn-c,3),hc_store_row(End,output_y,1),ow_done)) && (hc_footprint(i0,3*N+3)) && (hc_window(F,i0,3*N+3)) && (hc_footprint(i1,3*N+3)) && (hc_window(F,i1,3*N+3)) && (hc_footprint(i2,3*N+3)) && (hc_window(F,i2,3*N+3)) && (hc_footprint(i3,3*N+3)) && (hc_window(F,i3,3*N+3)) && (hc_footprint(i4,3*N+3)) && (hc_window(F,i4,3*N+3)) && (w==Weights+448*((Cn-c)/4)) && (hc_footprint(w,112)) && (hc_window(F,w,112)) && hc_data(F) * hc_output(W,hc_progress(hc_visible(hc_rvv_raw(F,Input,Zero,Weights,H,N,Top,Lo,Hi),Cn),O,Output,Hs,Cs,Cn,Start,End,(N+1)/2,output_y,Cn-c,ow_done))",
+  "completed-pixel8-source-prefix27": "exists (A00:Recordvfloat32m1_t) (A01:Recordvfloat32m1_t) (A02:Recordvfloat32m1_t) (A03:Recordvfloat32m1_t) (A10:Recordvfloat32m1_t) (A11:Recordvfloat32m1_t) (A12:Recordvfloat32m1_t) (A13:Recordvfloat32m1_t) ,(input_height==H) && (input_width==N) && (input_padding_top==Top) && (output_y_start==Start) && (output_y_end==End) && (input==Input) && (zero==Zero) && (weights==Weights) && (output==Output) && (params==Params) && (output_channels==Cn) && (output_height_stride==Hs) && (output_channel_stride==Cs) && (hc_input_domain(F,Input,Zero,Weights,Params,H,N,Top,Start,End,Cn)) && (hc_output_layout(Output,Hs,Cs,H,N,Cn,End)) && (hc_output_owned(W,Output,Hs,Cs,Cn,Start,End,(N+1)/2)) && (hc_present(F,&(params->scalar.min))) && (hc_present(F,&(params->scalar.max))) && (hc_same_bits(hc_get(F,&(params->scalar.min)),Lo)) && (hc_same_bits(hc_get(F,&(params->scalar.max)),Hi)) && (0<H) && (0<N) && (0<Cn) && (0<=Top) && (Top<=1) && (0<=Start) && (Start<End) && (input_height_stride==12*N) && (output_width==(N+1)/2) && (output_channel_increment==hc_addr64(4*Cs-4*((N+1)/2))) && (input_y2==hc_addr64(2*output_y+2-Top)) && (input_y4==hc_addr64(2*output_y+4-Top)) && (output0==hc_addr64(Output+Hs*output_y)) && (output1==hc_addr64(Output+Hs*hc_store_row(End,output_y,1))) && (Start<=output_y) && (output_y<End) && (0<c) && (c<=Cn) && ((Cn-c)%4==0) && (hc_outer_input(Input,Zero,H,N,Top,output_y,i0,i1,i2,i3,i4)) && (w==hc_addr64(Weights+448*((Cn-c)/4))) && (0<=ow_done) && (ow_done<=(N+1)/2) && (ow==(N+1)/2-ow_done) && (hc_channel_output(Output,Hs,Cs,Cn,End,output_y,Cn-c,o0c0,o0c1,o0c2,o0c3,o1c0,o1c1,o1c2,o1c3)) && (current_o0c0==hc_output_address(Output,Hs,Cs,hc_store_channel(Cn,Cn-c,0),hc_store_row(End,output_y,0),ow_done)) && (current_o0c1==hc_output_address(Output,Hs,Cs,hc_store_channel(Cn,Cn-c,1),hc_store_row(End,output_y,0),ow_done)) && (current_o0c2==hc_output_address(Output,Hs,Cs,hc_store_channel(Cn,Cn-c,2),hc_store_row(End,output_y,0),ow_done)) && (current_o0c3==hc_output_address(Output,Hs,Cs,hc_store_channel(Cn,Cn-c,3),hc_store_row(End,output_y,0),ow_done)) && (current_o1c0==hc_output_address(Output,Hs,Cs,hc_store_channel(Cn,Cn-c,0),hc_store_row(End,output_y,1),ow_done)) && (current_o1c1==hc_output_address(Output,Hs,Cs,hc_store_channel(Cn,Cn-c,1),hc_store_row(End,output_y,1),ow_done)) && (current_o1c2==hc_output_address(Output,Hs,Cs,hc_store_channel(Cn,Cn-c,2),hc_store_row(End,output_y,1),ow_done)) && (current_o1c3==hc_output_address(Output,Hs,Cs,hc_store_channel(Cn,Cn-c,3),hc_store_row(End,output_y,1),ow_done)) && (hc_footprint(i0,3*N+3)) && (hc_window(F,i0,3*N+3)) && (hc_footprint(i1,3*N+3)) && (hc_window(F,i1,3*N+3)) && (hc_footprint(i2,3*N+3)) && (hc_window(F,i2,3*N+3)) && (hc_footprint(i3,3*N+3)) && (hc_window(F,i3,3*N+3)) && (hc_footprint(i4,3*N+3)) && (hc_window(F,i4,3*N+3)) && (w==Weights+448*((Cn-c)/4)) && (hc_footprint(w,112)) && (hc_window(F,w,112)) && (0<ow) && (hc_rvv_vl(ow,vl)) && (0<vl) && (vl<=ow) && (hc_acc_prefix(A00,F,Input,Zero,Weights,H,N,Top,output_y+0,ow_done,Cn-c,0,27,vl)) && (hc_acc_prefix(A01,F,Input,Zero,Weights,H,N,Top,output_y+0,ow_done,Cn-c,1,27,vl)) && (hc_acc_prefix(A02,F,Input,Zero,Weights,H,N,Top,output_y+0,ow_done,Cn-c,2,27,vl)) && (hc_acc_prefix(A03,F,Input,Zero,Weights,H,N,Top,output_y+0,ow_done,Cn-c,3,27,vl)) && (hc_acc_prefix(A10,F,Input,Zero,Weights,H,N,Top,output_y+1,ow_done,Cn-c,0,27,vl)) && (hc_acc_prefix(A11,F,Input,Zero,Weights,H,N,Top,output_y+1,ow_done,Cn-c,1,27,vl)) && (hc_acc_prefix(A12,F,Input,Zero,Weights,H,N,Top,output_y+1,ow_done,Cn-c,2,27,vl)) && (hc_acc_prefix(A13,F,Input,Zero,Weights,H,N,Top,output_y+1,ow_done,Cn-c,3,27,vl)) && hc_data(F) * hc_output(W,hc_progress(hc_visible(hc_rvv_raw(F,Input,Zero,Weights,H,N,Top,Lo,Hi),Cn),O,Output,Hs,Cs,Cn,Start,End,(N+1)/2,output_y,Cn-c,ow_done)) * StructPredvfloat32m1_t(&v_o0c0,A00) * StructPredvfloat32m1_t(&v_o0c1,A01) * StructPredvfloat32m1_t(&v_o0c2,A02) * StructPredvfloat32m1_t(&v_o0c3,A03) * StructPredvfloat32m1_t(&v_o1c0,A10) * StructPredvfloat32m1_t(&v_o1c1,A11) * StructPredvfloat32m1_t(&v_o1c2,A12) * StructPredvfloat32m1_t(&v_o1c3,A13)",
+  "bindings": [
+    {
+      "name": "hc_rvv_pixel9_raw",
+      "args": "i0,i1,i2,w,input_width,ow_done,0u,vl",
+      "bindings": [
+        "F=F"
+      ]
+    },
+    {
+      "name": "hc_rvv_pixel9_raw",
+      "args": "i0,i1,i2,w,input_width,ow_done,1u,vl",
+      "bindings": [
+        "F=F"
+      ]
+    },
+    {
+      "name": "hc_rvv_pixel9_raw",
+      "args": "i0,i1,i2,w,input_width,ow_done,2u,vl",
+      "bindings": [
+        "F=F"
+      ]
+    },
+    {
+      "name": "hc_rvv_pixel9_raw",
+      "args": "i0,i1,i2,w,input_width,ow_done,3u,vl",
+      "bindings": [
+        "F=F"
+      ]
+    },
+    {
+      "name": "hc_rvv_pixel9_raw",
+      "args": "i2,i3,i4,w,input_width,ow_done,0u,vl",
+      "bindings": [
+        "F=F"
+      ]
+    },
+    {
+      "name": "hc_rvv_pixel9_raw",
+      "args": "i2,i3,i4,w,input_width,ow_done,1u,vl",
+      "bindings": [
+        "F=F"
+      ]
+    },
+    {
+      "name": "hc_rvv_pixel9_raw",
+      "args": "i2,i3,i4,w,input_width,ow_done,2u,vl",
+      "bindings": [
+        "F=F"
+      ]
+    },
+    {
+      "name": "hc_rvv_pixel9_raw",
+      "args": "i2,i3,i4,w,input_width,ow_done,3u,vl",
+      "bindings": [
+        "F=F"
+      ]
+    },
+    {
+      "name": "hc_read_scalar",
+      "args": "&(params->scalar.min)",
+      "bindings": [
+        "F=F"
+      ]
+    },
+    {
+      "name": "hc_read_scalar",
+      "args": "&(params->scalar.min)",
+      "bindings": [
+        "F=F"
+      ]
+    },
+    {
+      "name": "hc_read_scalar",
+      "args": "&(params->scalar.min)",
+      "bindings": [
+        "F=F"
+      ]
+    },
+    {
+      "name": "hc_read_scalar",
+      "args": "&(params->scalar.min)",
+      "bindings": [
+        "F=F"
+      ]
+    },
+    {
+      "name": "hc_read_scalar",
+      "args": "&(params->scalar.min)",
+      "bindings": [
+        "F=F"
+      ]
+    },
+    {
+      "name": "hc_read_scalar",
+      "args": "&(params->scalar.min)",
+      "bindings": [
+        "F=F"
+      ]
+    },
+    {
+      "name": "hc_read_scalar",
+      "args": "&(params->scalar.min)",
+      "bindings": [
+        "F=F"
+      ]
+    },
+    {
+      "name": "hc_read_scalar",
+      "args": "&(params->scalar.min)",
+      "bindings": [
+        "F=F"
+      ]
+    },
+    {
+      "name": "hc_read_scalar",
+      "args": "&(params->scalar.max)",
+      "bindings": [
+        "F=F"
+      ]
+    },
+    {
+      "name": "hc_read_scalar",
+      "args": "&(params->scalar.max)",
+      "bindings": [
+        "F=F"
+      ]
+    },
+    {
+      "name": "hc_read_scalar",
+      "args": "&(params->scalar.max)",
+      "bindings": [
+        "F=F"
+      ]
+    },
+    {
+      "name": "hc_read_scalar",
+      "args": "&(params->scalar.max)",
+      "bindings": [
+        "F=F"
+      ]
+    },
+    {
+      "name": "hc_read_scalar",
+      "args": "&(params->scalar.max)",
+      "bindings": [
+        "F=F"
+      ]
+    },
+    {
+      "name": "hc_read_scalar",
+      "args": "&(params->scalar.max)",
+      "bindings": [
+        "F=F"
+      ]
+    },
+    {
+      "name": "hc_read_scalar",
+      "args": "&(params->scalar.max)",
+      "bindings": [
+        "F=F"
+      ]
+    },
+    {
+      "name": "hc_read_scalar",
+      "args": "&(params->scalar.max)",
+      "bindings": [
+        "F=F"
+      ]
+    },
+    {
+      "name": "__riscv_vse32_v_f32m1",
+      "args": "current_o1c0, v_o1c0, vl",
+      "bindings": [
+        "W=W"
+      ]
+    },
+    {
+      "name": "__riscv_vse32_v_f32m1",
+      "args": "current_o1c1, v_o1c1, vl",
+      "bindings": [
+        "W=W"
+      ]
+    },
+    {
+      "name": "__riscv_vse32_v_f32m1",
+      "args": "current_o1c2, v_o1c2, vl",
+      "bindings": [
+        "W=W"
+      ]
+    },
+    {
+      "name": "__riscv_vse32_v_f32m1",
+      "args": "current_o1c3, v_o1c3, vl",
+      "bindings": [
+        "W=W"
+      ]
+    },
+    {
+      "name": "__riscv_vse32_v_f32m1",
+      "args": "current_o0c0, v_o0c0, vl",
+      "bindings": [
+        "W=W"
+      ]
+    },
+    {
+      "name": "__riscv_vse32_v_f32m1",
+      "args": "current_o0c1, v_o0c1, vl",
+      "bindings": [
+        "W=W"
+      ]
+    },
+    {
+      "name": "__riscv_vse32_v_f32m1",
+      "args": "current_o0c2, v_o0c2, vl",
+      "bindings": [
+        "W=W"
+      ]
+    },
+    {
+      "name": "__riscv_vse32_v_f32m1",
+      "args": "current_o0c3, v_o0c3, vl",
+      "bindings": [
+        "W=W"
+      ]
+    }
+  ]
+}

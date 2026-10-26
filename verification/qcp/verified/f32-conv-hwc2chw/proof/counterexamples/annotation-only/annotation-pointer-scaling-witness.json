@@ -1,0 +1,40 @@
+{
+  "scope": "explicit arithmetic witness to private annotation defect, not implementation counterexample/not proof credit",
+  "old_goal_sha256": "ea30213d8141fdc4bdea0749ed52b8efa04200d4db7692d13dd4e05c0748293b",
+  "old_renderer": "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-conv-hwc2chw/.build/hwc-cached-neon-main-plan/prepare_cached_neon_v2.py",
+  "public_source_unchanged": true,
+  "logical_domain_example": {
+    "H": 3,
+    "N": 4,
+    "Top": 1,
+    "Start": 0,
+    "End": 1,
+    "Cn": 1,
+    "Input": 4096,
+    "Zero": 8192,
+    "Weights": 12288,
+    "Params": 16384,
+    "Output": 20480,
+    "Hs": 8,
+    "Cs": 8,
+    "ow": 2
+  },
+  "valid_row_geometry_check": "2*(End-1)+1-Top=0 <H=3",
+  "positive_layout_check": "4*ow=8<=Hs=8; End*Hs=8<=Cs=8; max output end20488<2^64",
+  "row0_cache": 8192,
+  "before_iteration_iw": 4,
+  "after_iteration_iw": 0,
+  "C_body_i0_plus_12_float_bytes": 48,
+  "actual_i0_after": 8240,
+  "old_annotation_hc_row_pointer_plus_12_times_N_minus_iw_elements": 48,
+  "old_annotation_extra_sizeof_factor": 4,
+  "old_annotation_required_i0_after": 8384,
+  "actual_not_equal_required": true,
+  "explanation": "C source +=12 float advances48 bytes; current annotation cache float* +12*(N-iw) when consumed4 adds48 elements=192 bytes. Inv must express byte arithmetic with logical row_base Z or explicit uintptr cast. All five cached rows have this same annotation mistake.",
+  "retained_valid_history": [
+    "main443-arithmetic222-status.json contains true222 local fields only; not whole valid Inv",
+    "bridge-checked-status.json is independent exact rows/pixel/list math and unchanged",
+    "parent Main443WindowFacts is independent clipped output math, unaffected"
+  ],
+  "ordinary_proof_fallback_not_allowed": "No proving this false invariant by adding ranges or dropping locals/owners; repair only annotations then regenerate exact goals and recompile applicable source proof."
+}

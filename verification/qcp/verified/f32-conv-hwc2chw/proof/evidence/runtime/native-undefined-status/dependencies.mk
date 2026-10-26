@@ -1,0 +1,29 @@
+harness.o: \
+ /srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-conv-hwc2chw/.build/hwc-whole-integration/case/.build/native-current-undefined-ss0f5ika/case/proof/native/harness.c \
+ /srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-conv-hwc2chw/.build/hwc-whole-integration/case/.build/native-current-undefined-ss0f5ika/case/proof/native/runtime.h \
+ /srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-conv-hwc2chw/.build/hwc-whole-integration/case/.build/native-current-undefined-ss0f5ika/case/proof/native/extra.h \
+ /srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-conv-hwc2chw/.build/hwc-whole-integration/case/.build/native-current-undefined-ss0f5ika/case/proof/native/../../shim/support.c \
+ /srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-conv-hwc2chw/.build/hwc-whole-integration/case/.build/native-current-undefined-ss0f5ika/case/proof/native/../../shim/copy_float.c \
+ /srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-conv-hwc2chw/.build/hwc-whole-integration/case/.build/native-current-undefined-ss0f5ika/case/proof/native/../../shim/copy_float.h \
+ /srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-conv-hwc2chw/.build/hwc-whole-integration/case/.build/native-current-undefined-ss0f5ika/case/proof/native/../../shim/nan_helpers.c \
+ /srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-conv-hwc2chw/.build/hwc-whole-integration/case/.build/native-current-undefined-ss0f5ika/case/proof/native/../../shim/nan_helpers.h \
+ /srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-conv-hwc2chw/.build/hwc-whole-integration/case/.build/native-current-undefined-ss0f5ika/case/proof/native/../../shim/neon3_helpers.c \
+ /srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-conv-hwc2chw/.build/hwc-whole-integration/case/.build/native-current-undefined-ss0f5ika/case/proof/native/../../shim/neon3_helpers.h \
+ /srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-conv-hwc2chw/.build/hwc-whole-integration/case/.build/native-current-undefined-ss0f5ika/case/proof/native/../../shim/read_scalar.c \
+ /srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-conv-hwc2chw/.build/hwc-whole-integration/case/.build/native-current-undefined-ss0f5ika/case/proof/native/../../shim/read_api.h \
+ /srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-conv-hwc2chw/.build/hwc-whole-integration/case/.build/native-current-undefined-ss0f5ika/case/proof/native/../../shim/store_half.c \
+ /srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-conv-hwc2chw/.build/hwc-whole-integration/case/.build/native-current-undefined-ss0f5ika/case/proof/native/../../shim/store_half.h \
+ /srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-conv-hwc2chw/.build/hwc-whole-integration/case/.build/native-current-undefined-ss0f5ika/case/proof/native/../../shim/neon_rows_pixel.c \
+ /srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-conv-hwc2chw/.build/hwc-whole-integration/case/.build/native-current-undefined-ss0f5ika/case/proof/native/../../shim/neon_rows_pixel.h \
+ /srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-conv-hwc2chw/.build/hwc-whole-integration/case/.build/native-current-undefined-ss0f5ika/case/proof/native/../../impl/testNEON.c \
+ /srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-conv-hwc2chw/.build/hwc-whole-integration/case/.build/native-current-undefined-ss0f5ika/case/proof/native/../../impl/../shim/store_half.h \
+ /srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-conv-hwc2chw/.build/hwc-whole-integration/case/.build/native-current-undefined-ss0f5ika/case/proof/native/../../impl/../shim/neon_rows_pixel.h \
+ /srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-conv-hwc2chw/.build/hwc-whole-integration/case/.build/native-current-undefined-ss0f5ika/case/proof/native/../../shim/rvv_rows_fma3.c \
+ /srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-conv-hwc2chw/.build/hwc-whole-integration/case/.build/native-current-undefined-ss0f5ika/case/proof/native/../../shim/rvv_rows_fma3.h \
+ /srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-conv-hwc2chw/.build/hwc-whole-integration/case/.build/native-current-undefined-ss0f5ika/case/proof/native/../../shim/hc_rvv_pixel9.c \
+ /srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-conv-hwc2chw/.build/hwc-whole-integration/case/.build/native-current-undefined-ss0f5ika/case/proof/native/../../shim/hc_rvv_pixel9.h \
+ /srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-conv-hwc2chw/.build/hwc-whole-integration/case/.build/native-current-undefined-ss0f5ika/case/proof/native/../../impl/testRVV.c \
+ /srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-conv-hwc2chw/.build/hwc-whole-integration/case/.build/native-current-undefined-ss0f5ika/case/proof/native/../../impl/../shim/hc_rvv_pixel9.h \
+ /srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-conv-hwc2chw/.build/hwc-whole-integration/case/.build/native-current-undefined-ss0f5ika/case/proof/native/../../impl/../shim/nan_helpers.h \
+ /srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-conv-hwc2chw/.build/hwc-whole-integration/case/.build/native-current-undefined-ss0f5ika/case/proof/native/../../impl/../shim/read_api.h \
+ /srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-conv-hwc2chw/.build/hwc-whole-integration/case/.build/native-current-undefined-ss0f5ika/case/proof/native/../../spec.c

@@ -1,0 +1,218 @@
+{
+  "status": "repair and compatibility chain audited; current finite UBSan/ASan and both SDK checks passed; complete actual C/Coq whole-case admission pending",
+  "whole_kernel_verified": false,
+  "original_catalog_sha256": "8241533682d842e466bd104053820d8bea8b2b4d97e0b504b5d9a812663c15ac",
+  "implementations": {
+    "neon": {
+      "original_sha256": "87a57d56fc8836dd5394e59ab113fd6bd7d328023fc68e214ae0b42168eaea58",
+      "original_source": "proof/original/testNEON.c",
+      "current_source": "impl/testNEON.c",
+      "current_sha256": "b8ceabb9dfe5195ba1243783449902384da43bebd7eff02d229a77ef0f79e48e",
+      "patch": "proof/repair-neon.patch",
+      "patch_sha256": "051eb97ddca01ed6ab52e66ce1474512caa23495aa8c0deb6511befaefc313d6",
+      "current_lines": 219
+    },
+    "rvv": {
+      "original_sha256": "dc4b036479e134d3f95bdaed47244a936696ae31d061d26b8478c3a183b1a200",
+      "original_source": "proof/original/testRVV.c",
+      "current_source": "impl/testRVV.c",
+      "current_sha256": "fbe1d3bd721d8fb09d1067b3bedf29dc01be91c07b7f0d8360aa070587871335",
+      "patch": "proof/repair-rvv.patch",
+      "patch_sha256": "029762b5fce6529d0bc7d25dd0addbd5908eea93aa3f7383f80aeb638b66f09e",
+      "current_lines": 162
+    }
+  },
+  "repair_patch": "proof/repair.patch",
+  "repair_patch_sha256": "5672def31e35cfd480ccd992f78b79942fe3b20ba6baef84386285b77eb281da",
+  "bundle_patch": "proof/repair-bundle.patch",
+  "bundle_patch_sha256": "bd4711690717617ef994a658fa97e00e74e4b85e629e7b8857a13c8164fefe9e",
+  "supporting_source_sha256": {
+    "shim/assert.c": "aadf401b19e6d4c38a332c489cf7e1fe5b619319cc81d56babb90685ec4f5f7b",
+    "shim/assert_api.h": "7b3e7171ca30f56cc0f775f30897c98576c89a23be0554ee02efbd9805356332",
+    "shim/clamp_views.h": "481004127094d6d20c332ba7f0c75bc05cf9a943551f5be449cd57b869e59180",
+    "shim/copy_float.c": "180abcdbb17b95a221e30b5b2fee180911f29a2b5921a98b3eb7b2c21e3d7219",
+    "shim/copy_float.h": "45c3101ce5f777fa1d38e8a7c416eea8f08c54c0fbc4f80be3e602184fafcb77",
+    "shim/hc_rvv_pixel9.c": "b773b01478c8e4019381275f580cef2f007f0541511bac792cc2fb5dbcd0a190",
+    "shim/hc_rvv_pixel9.h": "619eda7edd43c7cb73a8197a92495bdfaa8dd8b0bbd3508ce2551845940c6cde",
+    "shim/kernel_program.h": "1fd235c315278846d8c434c3f81533dae22687700df27aabf79a4f3d26286dac",
+    "shim/kernel_types.h": "cba0dcb8b00d91323792b82e595ce6afe53c7b849149671f666c0b75fe3109a2",
+    "shim/maps_model.h": "13d258cd4486c447aaa87a54e369139565b70dcc5d7d17c5c3c372dcb4591c45",
+    "shim/nan_helpers.c": "55ac3173f748554ecd7908535faaab71bbbf0bc820abf3166f2bb2597b62848b",
+    "shim/nan_helpers.h": "bc196f43fd75934efbec78d8a6e7bb1426718f7e222a4c424a5c30647fd3dee5",
+    "shim/neon3_helpers.c": "634b3b989ea76686dc8f9bcc5ad6a93a641b171d1acaa6f36fef57dcf8654f1c",
+    "shim/neon3_helpers.h": "579b852c55e41a43b86befaa4c96c7faae6a167d64710f433d63619d9f58a1e6",
+    "shim/neon3_views.h": "02e0d5b01196bb5470b697cee3711cb1b579f6f7bfcb27f31e1a06fd973909b5",
+    "shim/neon_kernel_program.h": "1a1ccc32fc156b5431090d3bf3401ec18e65c299054f85cbb761f46947850ef1",
+    "shim/neon_rows_pixel.c": "dee6ee96078f80a077fd8c665a4a3d9fe5dfe90770c149009dc2467fb91fd0b1",
+    "shim/neon_rows_pixel.h": "eb4f46be99505bebc9e3ee32ec8e7ba5f2c1b356e6dc66381a99dde5260c7cb7",
+    "shim/neon_views.h": "2168782864493ef4d3b67b2c40c12fcc554282c505be6cb5a2b496293dafece1",
+    "shim/read_api.h": "c9f435d8d7b66edcce4581a493b605e0a7f79af3635ad2db6d38a69c35cdfd82",
+    "shim/read_scalar.c": "a0bdb26cb882cf5b3ee24e06122f0f26a150382e0c01395b96e7504143f8da0e",
+    "shim/rvv_rows_fma3.c": "320f34987c7ed10911f4e83d688a522407b203c2a49e62168b240d5350621640",
+    "shim/rvv_rows_fma3.h": "7de70173b17fd9c8a97d99f66edc18e3e8575f017f15d19977524a0291fc1d15",
+    "shim/rvv_views.h": "ab6f881e99ff0ecd32a442297cdf3dc6a59e9d49787f35e8c67099b4d46ef9ee",
+    "shim/store_half.c": "89c3cbae32018e044f28298cbb9968ffef563d59ec2253cafb775d5a6dfee6f4",
+    "shim/store_half.h": "9b88f4da30c361148e6e416e177fee9f68b793a233fc1bb686adf8aa5aaac5ef",
+    "shim/store_views.h": "112d35754ffb5be6dd665e28ea839fd82e5a11f50d99f61baac40972041d88f6",
+    "shim/support.c": "71404e7ea4caa8d8218bce5b81bc8973912fe2e793a15730587998c8b1adc8b8",
+    "shim/support.h": "7bc313f43f3f168663bd0686a4a5120455f9b208cec151f92c46952bd4ecc48f",
+    "shim/types.h": "fb23b44591d1a79b2d68b5f20a691cb12b0646d52715a9d831f7895b248fa6a0",
+    "shim/vector_types.h": "0506ce9568c825ed01a2a4e601af4fa9f642589cc5e7f6c84e4296653c4e3835"
+  },
+  "zero_fuzz_replay": {
+    "passed": true,
+    "scope": "private bidirectional exact-byte replay, no native/Coq proof credit",
+    "checks": [
+      {
+        "label": "both-main",
+        "forward_exit": 0,
+        "reverse_exit": 0,
+        "zero_fuzz": true,
+        "forward_full_inventory": {
+          "impl/testNEON.c": "b8ceabb9dfe5195ba1243783449902384da43bebd7eff02d229a77ef0f79e48e",
+          "impl/testRVV.c": "fbe1d3bd721d8fb09d1067b3bedf29dc01be91c07b7f0d8360aa070587871335"
+        },
+        "reverse_full_inventory": {
+          "impl/testNEON.c": "87a57d56fc8836dd5394e59ab113fd6bd7d328023fc68e214ae0b42168eaea58",
+          "impl/testRVV.c": "dc4b036479e134d3f95bdaed47244a936696ae31d061d26b8478c3a183b1a200"
+        },
+        "patch_sha256": "5672def31e35cfd480ccd992f78b79942fe3b20ba6baef84386285b77eb281da",
+        "scope": "byte replay only, not C/native/Coq proof"
+      },
+      {
+        "label": "full-C-helper-bundle",
+        "forward_exit": 0,
+        "reverse_exit": 0,
+        "zero_fuzz": true,
+        "forward_full_inventory": {
+          "impl/testNEON.c": "b8ceabb9dfe5195ba1243783449902384da43bebd7eff02d229a77ef0f79e48e",
+          "impl/testRVV.c": "fbe1d3bd721d8fb09d1067b3bedf29dc01be91c07b7f0d8360aa070587871335",
+          "shim/assert.c": "aadf401b19e6d4c38a332c489cf7e1fe5b619319cc81d56babb90685ec4f5f7b",
+          "shim/assert_api.h": "7b3e7171ca30f56cc0f775f30897c98576c89a23be0554ee02efbd9805356332",
+          "shim/clamp_views.h": "481004127094d6d20c332ba7f0c75bc05cf9a943551f5be449cd57b869e59180",
+          "shim/copy_float.c": "180abcdbb17b95a221e30b5b2fee180911f29a2b5921a98b3eb7b2c21e3d7219",
+          "shim/copy_float.h": "45c3101ce5f777fa1d38e8a7c416eea8f08c54c0fbc4f80be3e602184fafcb77",
+          "shim/hc_rvv_pixel9.c": "b773b01478c8e4019381275f580cef2f007f0541511bac792cc2fb5dbcd0a190",
+          "shim/hc_rvv_pixel9.h": "619eda7edd43c7cb73a8197a92495bdfaa8dd8b0bbd3508ce2551845940c6cde",
+          "shim/kernel_program.h": "1fd235c315278846d8c434c3f81533dae22687700df27aabf79a4f3d26286dac",
+          "shim/kernel_types.h": "cba0dcb8b00d91323792b82e595ce6afe53c7b849149671f666c0b75fe3109a2",
+          "shim/maps_model.h": "13d258cd4486c447aaa87a54e369139565b70dcc5d7d17c5c3c372dcb4591c45",
+          "shim/nan_helpers.c": "55ac3173f748554ecd7908535faaab71bbbf0bc820abf3166f2bb2597b62848b",
+          "shim/nan_helpers.h": "bc196f43fd75934efbec78d8a6e7bb1426718f7e222a4c424a5c30647fd3dee5",
+          "shim/neon3_helpers.c": "634b3b989ea76686dc8f9bcc5ad6a93a641b171d1acaa6f36fef57dcf8654f1c",
+          "shim/neon3_helpers.h": "579b852c55e41a43b86befaa4c96c7faae6a167d64710f433d63619d9f58a1e6",
+          "shim/neon3_views.h": "02e0d5b01196bb5470b697cee3711cb1b579f6f7bfcb27f31e1a06fd973909b5",
+          "shim/neon_kernel_program.h": "1a1ccc32fc156b5431090d3bf3401ec18e65c299054f85cbb761f46947850ef1",
+          "shim/neon_rows_pixel.c": "dee6ee96078f80a077fd8c665a4a3d9fe5dfe90770c149009dc2467fb91fd0b1",
+          "shim/neon_rows_pixel.h": "eb4f46be99505bebc9e3ee32ec8e7ba5f2c1b356e6dc66381a99dde5260c7cb7",
+          "shim/neon_views.h": "2168782864493ef4d3b67b2c40c12fcc554282c505be6cb5a2b496293dafece1",
+          "shim/read_api.h": "c9f435d8d7b66edcce4581a493b605e0a7f79af3635ad2db6d38a69c35cdfd82",
+          "shim/read_scalar.c": "a0bdb26cb882cf5b3ee24e06122f0f26a150382e0c01395b96e7504143f8da0e",
+          "shim/rvv_rows_fma3.c": "320f34987c7ed10911f4e83d688a522407b203c2a49e62168b240d5350621640",
+          "shim/rvv_rows_fma3.h": "7de70173b17fd9c8a97d99f66edc18e3e8575f017f15d19977524a0291fc1d15",
+          "shim/rvv_views.h": "ab6f881e99ff0ecd32a442297cdf3dc6a59e9d49787f35e8c67099b4d46ef9ee",
+          "shim/store_half.c": "89c3cbae32018e044f28298cbb9968ffef563d59ec2253cafb775d5a6dfee6f4",
+          "shim/store_half.h": "9b88f4da30c361148e6e416e177fee9f68b793a233fc1bb686adf8aa5aaac5ef",
+          "shim/store_views.h": "112d35754ffb5be6dd665e28ea839fd82e5a11f50d99f61baac40972041d88f6",
+          "shim/support.c": "71404e7ea4caa8d8218bce5b81bc8973912fe2e793a15730587998c8b1adc8b8",
+          "shim/support.h": "7bc313f43f3f168663bd0686a4a5120455f9b208cec151f92c46952bd4ecc48f",
+          "shim/types.h": "fb23b44591d1a79b2d68b5f20a691cb12b0646d52715a9d831f7895b248fa6a0",
+          "shim/vector_types.h": "0506ce9568c825ed01a2a4e601af4fa9f642589cc5e7f6c84e4296653c4e3835"
+        },
+        "reverse_full_inventory": {
+          "impl/testNEON.c": "87a57d56fc8836dd5394e59ab113fd6bd7d328023fc68e214ae0b42168eaea58",
+          "impl/testRVV.c": "dc4b036479e134d3f95bdaed47244a936696ae31d061d26b8478c3a183b1a200"
+        },
+        "patch_sha256": "bd4711690717617ef994a658fa97e00e74e4b85e629e7b8857a13c8164fefe9e",
+        "scope": "byte replay only, not C/native/Coq proof"
+      }
+    ],
+    "forward_and_reverse_full_inventory_exact": true
+  },
+  "counterexample": {
+    "receipt": "proof/original-native-counterexample-status.json",
+    "scope": "Actual original NEON and original RVV full C kernels in separately defined ISA emulation, plus independent scalar source-order whole outmap oracle. Original NEON sha was original87a57d56, not a later extracted variant. Finite witness, not physical ISA execution.",
+    "witness": "H1,W1,top1,start0,end1,C1,pattern1,alias0,VLpolicy0,cell0; original NEON/oracle7fc00000 vs original RVVc0000000."
+  },
+  "semantic_repairs": [
+    "Mask the actual strided loads; do not dereference inactive/invalid left or right lanes.",
+    "Apply second-row upper clamp too.",
+    "Explicit canonical NaN propagation through actual checked ordinary helpers.",
+    "Odd right absent taps skip FMA entirely by true _mu accumulator-preserving masked FMA; left padding still computes0*weight.",
+    "Use local0..3 uint32 lane comparisons plus uint64 global index/address arithmetic; no INT32 dimension cut.",
+    "Store row1 before row0 so clipped final row is overwritten by the valid row0, retaining lane0..3 final-channel aliases."
+  ],
+  "compatibility_changes": [
+    "NEON three vertical FMAs extracted to4 ordinary pointer-borrow helpers with original per-accumulator operand/lane/order trace.",
+    "NEON low/high selection plus2lane store uses2 ordinary checked pointer-borrow helpers; original row/channel write order retained.",
+    "RVV scalar-copy classifier avoids pinned QCP syntactic self-comparison issue; exact binary32 copy body checked.",
+    "RVV pure mask comparison/load temporaries made explicit for readonly borrowed record views; scalar reads use actual checked reader.",
+    "NEON219 caches original five row bases and calls ordinary pixel27 while retaining channel/row/width cursors and original store order.",
+    "RVV162 calls eight ordinary pixel9 wrappers, each doing nine ordered ordinary rows_fma3 calls; each accumulator retains dx,ci,ky27 order and packed112-block lane addresses. Global readonly load/inter-accumulator schedule changes are explicit.",
+    "Width invariants use raw logical Z output cursors at one-past2^64; actual uint64 updates retain mod2^64. This is annotation-only, no new domain restriction or C repair."
+  ],
+  "domain": {
+    "dimensions": "uint64 values bounded only by explicit valid nonwrapping input/zero/weights/params/output footprints; positive H/W/channels, top0..1,0<=start<end with2*(end-1)+1-top<H. No arbitrary32bit or finite/ordered-float restriction.",
+    "read_alias": "Single shared RO map permits complete/partial input, supplied zero-row, packed weights and params aliases; zero row arbitrary fp32 values.",
+    "output": "Standard nonoverlapping logical CHW windows with stride gaps and arbitrary initial Some/None outside/written state. Internal clipped last-row and last-channel padded-lane3 aliases retained by actual store order. General overlapping logical CHW windows not claimed.",
+    "fp": "All binary32 values incl q/sNaN,Inf,\u00b10,subnormal and unordered bounds. RNE; default-NaN/flush modes/traps disabled, flags unobserved.",
+    "rvv": "Fixed VLEN128/e32m1/VLMAX4/XLEN64, all legal VL choices0..4 at spec; active loop positive, inactive data arbitrary.",
+    "observation": "Internal full binary32 model and ordinary helper bit-structural identities; cross-ISA dw_rel permits differing NaN payloads, public dw_observe is numerical fp32_eq or both NaN, hence does not require NaN payload or signed-zero bit identity. Neither is an all-ISA execution refinement."
+  },
+  "evidence": {
+    "native-undefined-status.json": {
+      "receipt": "proof/native-undefined-status.json",
+      "sha256": "7b0aeebdcc8b61813970a360e7635ba1cb1926f0bd25cf0403c5ac374258bfd4",
+      "run_directory": "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-conv-hwc2chw/.build/hwc-whole-integration/case/.build/native-current-undefined-ss0f5ika",
+      "all_current_input_pins_match": true,
+      "run_status_exact_receipt": true,
+      "log_or_object_chain_checked": true,
+      "scope": "finite native emulation/source-order oracle",
+      "formal_proof_credit": false
+    },
+    "native-address-status.json": {
+      "receipt": "proof/native-address-status.json",
+      "sha256": "cc261f2466fd4beecdd4afd892013db806a11b1b4b3799b8d9d5b20a9b5ef056",
+      "run_directory": "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-conv-hwc2chw/.build/hwc-whole-integration/case/.build/native-current-address-yspvv2vw",
+      "all_current_input_pins_match": true,
+      "run_status_exact_receipt": true,
+      "log_or_object_chain_checked": true,
+      "scope": "finite native emulation/source-order oracle",
+      "formal_proof_credit": false
+    },
+    "rv64-buildability-status.json": {
+      "receipt": "proof/rv64-buildability-status.json",
+      "sha256": "fdf599b544f10b3fc22579c592417c52ea5b133cfe43fb0499ca40165d7b2092",
+      "run_directory": "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-conv-hwc2chw/.build/hwc-whole-integration/case/.build/current-sdk-both-wepsngjz/rv64",
+      "all_current_input_pins_match": true,
+      "run_status_exact_receipt": true,
+      "log_or_object_chain_checked": true,
+      "scope": "real SDK compile only",
+      "formal_proof_credit": false
+    },
+    "neon-front-buildability-status.json": {
+      "receipt": "proof/neon-front-buildability-status.json",
+      "sha256": "d72f570fd2c3e1d2893361608c6965f9983e75712521fb9f57909d64cf38acb1",
+      "run_directory": "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-conv-hwc2chw/.build/hwc-whole-integration/case/.build/current-sdk-both-wepsngjz/neon",
+      "all_current_input_pins_match": true,
+      "run_status_exact_receipt": true,
+      "log_or_object_chain_checked": true,
+      "scope": "real SDK compile only",
+      "formal_proof_credit": false
+    }
+  },
+  "trust_boundary": "Original-instruction32 views source-reviewed-spec, no new Coq axiom; exact ISA spec correspondence and physical SIMD ABI mapping not formally proved, final manual review pending. Ordinary helpers/kernel/loop/memory/public callers require actual typed C VC closure. Finite native and SDK buildability are separate evidence only.",
+  "historical_records": "proof/history retains old draft/patch/source, rejected auto32BE/RInt defs, annotation/tool generation failures and pre-mask component evidence.",
+  "historical_evidence": {
+    "archived_repair": "proof/history/before-whole-cached-main/repair.json",
+    "archived_repair_sha256": "d5e1056f0612dec20cbda563b3310015953a4baabe707f854d8b15641fbb5a49",
+    "scope": "Exact old repair/patches preserved; its old native/SDK main-source bindings are historical and must not be credited to integrated K."
+  },
+  "current_K_native_and_SDK_pending": false,
+  "all_current_ordinary_helpers_and_mains_require_whole_fresh_gate": true,
+  "repair_review_snapshot_sha256": "1d42fe11c64a40b8b1c8353a6bd3c06f905c4dced77539bb3494d19e5541fc4b",
+  "repair_review_scope": "source and exact patch audit only; no formal completion/native execution/ISA correspondence claim",
+  "variant": "repaired-neon219-rvv162-ordinary-pixel-helpers",
+  "whole_case_gate_required": true,
+  "native_and_SDK_are_not_formal_kernel_proof": true
+}

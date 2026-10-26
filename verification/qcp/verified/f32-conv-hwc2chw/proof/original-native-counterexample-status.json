@@ -1,0 +1,90 @@
+{
+  "passed": true,
+  "whole_kernel_verified": false,
+  "scope": "Finite independent scalar source-order oracle against both actual C kernels in separately defined Arm/RVV instruction emulation; no physical ISA execution or formal proof credit",
+  "run_directory": "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-conv-hwc2chw/.build/native-original-undefined-35naan_u",
+  "input_sha256": {
+    "proof/check_native.py": "e2a43f5713bbae8a6ad130e84b4480fa7fe28f56f6b5f72df7aea7b111e4066c",
+    "proof/native/harness.c": "f7f77938eaa702f03cf9e2aef80e4303c9034a5770b96fca6366151c57821a9d",
+    "proof/native/runtime.h": "56bf485245b0ad38a15b8e18908dfc722534b80ee41f06c26b5ea5b251c0085d",
+    "proof/native/extra.h": "52a3f172e26abeb4b8c6a0799ad90daee587edea3df06dfececf5a4e6c16a1f5",
+    "shim/support.c": "71404e7ea4caa8d8218bce5b81bc8973912fe2e793a15730587998c8b1adc8b8",
+    "impl/testNEON.c": "87a57d56fc8836dd5394e59ab113fd6bd7d328023fc68e214ae0b42168eaea58",
+    "impl/testRVV.c": "80ceec1793c661b5f25cdbbea10d1eb6614ebaaaa5a0e16abb52c28de9009415",
+    "proof/original/testRVV.c": "dc4b036479e134d3f95bdaed47244a936696ae31d061d26b8478c3a183b1a200"
+  },
+  "sanitizer": "undefined",
+  "original_rvv": true,
+  "quick": true,
+  "configured_jobs": 32,
+  "max_live_processes": 1,
+  "per_process_memory_GiB": 16,
+  "records": [
+    {
+      "label": "compile",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "gcc",
+        "-std=c11",
+        "-O1",
+        "-g",
+        "-frounding-math",
+        "-ffp-contract=off",
+        "-fno-strict-aliasing",
+        "-fno-omit-frame-pointer",
+        "-fno-sanitize-recover=all",
+        "-fsanitize=undefined",
+        "-DHWC_ORIGINAL_RVV",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-conv-hwc2chw/.build/native-original-undefined-35naan_u/case/proof/native/harness.c",
+        "-lm",
+        "-o",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-conv-hwc2chw/.build/native-original-undefined-35naan_u/case/test"
+      ],
+      "exit_code": 0,
+      "seconds": 14.352528013056144,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "correct",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-conv-hwc2chw/.build/native-original-undefined-35naan_u/case/test"
+      ],
+      "exit_code": 2,
+      "seconds": 0.008727413835003972,
+      "log_sha256": "2dd31086549150a264189c3ee700ee205433317ac880b6219c3f9159aac9a6dd"
+    }
+  ],
+  "actual_recursive_local_input_sha256": {
+    "proof/native/harness.c": "f7f77938eaa702f03cf9e2aef80e4303c9034a5770b96fca6366151c57821a9d",
+    "proof/native/runtime.h": "56bf485245b0ad38a15b8e18908dfc722534b80ee41f06c26b5ea5b251c0085d",
+    "proof/native/extra.h": "52a3f172e26abeb4b8c6a0799ad90daee587edea3df06dfececf5a4e6c16a1f5",
+    "shim/support.c": "71404e7ea4caa8d8218bce5b81bc8973912fe2e793a15730587998c8b1adc8b8",
+    "impl/testNEON.c": "87a57d56fc8836dd5394e59ab113fd6bd7d328023fc68e214ae0b42168eaea58",
+    "proof/original/testRVV.c": "dc4b036479e134d3f95bdaed47244a936696ae31d061d26b8478c3a183b1a200"
+  },
+  "actual_recursive_local_input_count": 6,
+  "dependency_command": [
+    "gcc",
+    "-std=c11",
+    "-O1",
+    "-g",
+    "-frounding-math",
+    "-ffp-contract=off",
+    "-fno-strict-aliasing",
+    "-fno-omit-frame-pointer",
+    "-fno-sanitize-recover=all",
+    "-fsanitize=undefined",
+    "-DHWC_ORIGINAL_RVV",
+    "-MM",
+    "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-conv-hwc2chw/.build/native-original-undefined-35naan_u/case/proof/native/harness.c"
+  ],
+  "executable_sha256": "118c9e0c7e7da8a13e8c20ef210eccf3afbd539b9386647a612cb7b9262e7bec",
+  "original_counterexample": true,
+  "counterexample_log": "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-conv-hwc2chw/.build/native-original-undefined-35naan_u/correct.log",
+  "counterexample": "mismatch H=1 W=1 top=1 start=0 end=1 C=1 p=1 alias=0 policy=0 cell=0 written=1 N=7fc00000 R=c0000000 O=7fc00000\n"
+}

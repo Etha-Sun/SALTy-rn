@@ -1,0 +1,59 @@
+From HwcConv Require Import Main443Tactics.
+Module Checked.
+Lemma proof_of_test_neon_safety_wit_8 : HwcConv.neon_unit_goal.test_neon_safety_wit_8.
+Proof. unfold HwcConv.neon_unit_goal.test_neon_safety_wit_8;hcm_pure. Qed.
+Definition second_test_neon_safety_wit_8 : HwcConv.neon_unit_goal.test_neon_safety_wit_8 := proof_of_test_neon_safety_wit_8.
+Lemma proof_of_test_neon_safety_wit_24 : HwcConv.neon_unit_goal.test_neon_safety_wit_24.
+Proof. unfold HwcConv.neon_unit_goal.test_neon_safety_wit_24;hcm_pure. Qed.
+Definition second_test_neon_safety_wit_24 : HwcConv.neon_unit_goal.test_neon_safety_wit_24 := proof_of_test_neon_safety_wit_24.
+Lemma proof_of_test_neon_safety_wit_40 : HwcConv.neon_unit_goal.test_neon_safety_wit_40.
+Proof. unfold HwcConv.neon_unit_goal.test_neon_safety_wit_40;hcm_pure. Qed.
+Definition second_test_neon_safety_wit_40 : HwcConv.neon_unit_goal.test_neon_safety_wit_40 := proof_of_test_neon_safety_wit_40.
+Lemma proof_of_test_neon_safety_wit_56 : HwcConv.neon_unit_goal.test_neon_safety_wit_56.
+Proof. unfold HwcConv.neon_unit_goal.test_neon_safety_wit_56;hcm_pure. Qed.
+Definition second_test_neon_safety_wit_56 : HwcConv.neon_unit_goal.test_neon_safety_wit_56 := proof_of_test_neon_safety_wit_56.
+Lemma proof_of_test_neon_safety_wit_72 : HwcConv.neon_unit_goal.test_neon_safety_wit_72.
+Proof. unfold HwcConv.neon_unit_goal.test_neon_safety_wit_72;hcm_pure. Qed.
+Definition second_test_neon_safety_wit_72 : HwcConv.neon_unit_goal.test_neon_safety_wit_72 := proof_of_test_neon_safety_wit_72.
+Lemma proof_of_test_neon_safety_wit_88 : HwcConv.neon_unit_goal.test_neon_safety_wit_88.
+Proof. unfold HwcConv.neon_unit_goal.test_neon_safety_wit_88;hcm_pure. Qed.
+Definition second_test_neon_safety_wit_88 : HwcConv.neon_unit_goal.test_neon_safety_wit_88 := proof_of_test_neon_safety_wit_88.
+Lemma proof_of_test_neon_safety_wit_104 : HwcConv.neon_unit_goal.test_neon_safety_wit_104.
+Proof. unfold HwcConv.neon_unit_goal.test_neon_safety_wit_104;hcm_pure. Qed.
+Definition second_test_neon_safety_wit_104 : HwcConv.neon_unit_goal.test_neon_safety_wit_104 := proof_of_test_neon_safety_wit_104.
+Lemma proof_of_test_neon_safety_wit_120 : HwcConv.neon_unit_goal.test_neon_safety_wit_120.
+Proof. unfold HwcConv.neon_unit_goal.test_neon_safety_wit_120;hcm_pure. Qed.
+Definition second_test_neon_safety_wit_120 : HwcConv.neon_unit_goal.test_neon_safety_wit_120 := proof_of_test_neon_safety_wit_120.
+Lemma proof_of_test_neon_safety_wit_136 : HwcConv.neon_unit_goal.test_neon_safety_wit_136.
+Proof. unfold HwcConv.neon_unit_goal.test_neon_safety_wit_136;hcm_pure. Qed.
+Definition second_test_neon_safety_wit_136 : HwcConv.neon_unit_goal.test_neon_safety_wit_136 := proof_of_test_neon_safety_wit_136.
+Lemma proof_of_test_neon_safety_wit_152 : HwcConv.neon_unit_goal.test_neon_safety_wit_152.
+Proof. unfold HwcConv.neon_unit_goal.test_neon_safety_wit_152;hcm_pure. Qed.
+Definition second_test_neon_safety_wit_152 : HwcConv.neon_unit_goal.test_neon_safety_wit_152 := proof_of_test_neon_safety_wit_152.
+Lemma proof_of_test_neon_safety_wit_168 : HwcConv.neon_unit_goal.test_neon_safety_wit_168.
+Proof. unfold HwcConv.neon_unit_goal.test_neon_safety_wit_168;hcm_pure. Qed.
+Definition second_test_neon_safety_wit_168 : HwcConv.neon_unit_goal.test_neon_safety_wit_168 := proof_of_test_neon_safety_wit_168.
+Lemma proof_of_test_neon_safety_wit_184 : HwcConv.neon_unit_goal.test_neon_safety_wit_184.
+Proof. unfold HwcConv.neon_unit_goal.test_neon_safety_wit_184;hcm_pure. Qed.
+Definition second_test_neon_safety_wit_184 : HwcConv.neon_unit_goal.test_neon_safety_wit_184 := proof_of_test_neon_safety_wit_184.
+Lemma proof_of_test_neon_safety_wit_200 : HwcConv.neon_unit_goal.test_neon_safety_wit_200.
+Proof. unfold HwcConv.neon_unit_goal.test_neon_safety_wit_200;hcm_pure. Qed.
+Definition second_test_neon_safety_wit_200 : HwcConv.neon_unit_goal.test_neon_safety_wit_200 := proof_of_test_neon_safety_wit_200.
+Lemma proof_of_test_neon_partial_solve_wit_2_pure : HwcConv.neon_unit_goal.test_neon_partial_solve_wit_2_pure.
+Proof. unfold HwcConv.neon_unit_goal.test_neon_partial_solve_wit_2_pure;hcm_pure. Qed.
+Definition second_test_neon_partial_solve_wit_2_pure : HwcConv.neon_unit_goal.test_neon_partial_solve_wit_2_pure := proof_of_test_neon_partial_solve_wit_2_pure.
+End Checked.
+Print Assumptions Checked.proof_of_test_neon_safety_wit_8.
+Print Assumptions Checked.proof_of_test_neon_safety_wit_24.
+Print Assumptions Checked.proof_of_test_neon_safety_wit_40.
+Print Assumptions Checked.proof_of_test_neon_safety_wit_56.
+Print Assumptions Checked.proof_of_test_neon_safety_wit_72.
+Print Assumptions Checked.proof_of_test_neon_safety_wit_88.
+Print Assumptions Checked.proof_of_test_neon_safety_wit_104.
+Print Assumptions Checked.proof_of_test_neon_safety_wit_120.
+Print Assumptions Checked.proof_of_test_neon_safety_wit_136.
+Print Assumptions Checked.proof_of_test_neon_safety_wit_152.
+Print Assumptions Checked.proof_of_test_neon_safety_wit_168.
+Print Assumptions Checked.proof_of_test_neon_safety_wit_184.
+Print Assumptions Checked.proof_of_test_neon_safety_wit_200.
+Print Assumptions Checked.proof_of_test_neon_partial_solve_wit_2_pure.

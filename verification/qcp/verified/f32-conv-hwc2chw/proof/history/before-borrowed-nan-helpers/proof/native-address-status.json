@@ -1,0 +1,169 @@
+{
+  "passed": true,
+  "whole_kernel_verified": false,
+  "scope": "Finite independent scalar source-order oracle against both actual C kernels in separately defined Arm/RVV instruction emulation; no physical ISA execution or formal proof credit",
+  "run_directory": "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-conv-hwc2chw/.build/native-current-address-626q3ipt",
+  "input_sha256": {
+    "proof/check_native.py": "afbf374ed0f44c37f63823e2cb67e2f6b5eec35607a779242f8ffa149a592d5d",
+    "proof/native/harness.c": "968158705caea87718497b1274652cf751dedeb5521bb8a00c7f71c3033d2c2a",
+    "proof/native/runtime.h": "56bf485245b0ad38a15b8e18908dfc722534b80ee41f06c26b5ea5b251c0085d",
+    "proof/native/extra.h": "52a3f172e26abeb4b8c6a0799ad90daee587edea3df06dfececf5a4e6c16a1f5",
+    "shim/support.c": "71404e7ea4caa8d8218bce5b81bc8973912fe2e793a15730587998c8b1adc8b8",
+    "shim/copy_float.c": "180abcdbb17b95a221e30b5b2fee180911f29a2b5921a98b3eb7b2c21e3d7219",
+    "shim/copy_float.h": "45c3101ce5f777fa1d38e8a7c416eea8f08c54c0fbc4f80be3e602184fafcb77",
+    "impl/testNEON.c": "87a57d56fc8836dd5394e59ab113fd6bd7d328023fc68e214ae0b42168eaea58",
+    "impl/testRVV.c": "9ad70f22645dde8a53aa9c83430ea48db0e2b7e6196973995694ba538f8cbf29",
+    "proof/original/testRVV.c": "dc4b036479e134d3f95bdaed47244a936696ae31d061d26b8478c3a183b1a200"
+  },
+  "sanitizer": "address",
+  "original_rvv": false,
+  "quick": false,
+  "configured_jobs": 32,
+  "max_live_processes": 1,
+  "per_process_memory_GiB": 16,
+  "records": [
+    {
+      "label": "compile",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "gcc",
+        "-std=c11",
+        "-O1",
+        "-g",
+        "-frounding-math",
+        "-ffp-contract=off",
+        "-fno-strict-aliasing",
+        "-fno-omit-frame-pointer",
+        "-fno-sanitize-recover=all",
+        "-fsanitize=address,undefined",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-conv-hwc2chw/.build/native-current-address-626q3ipt/case/proof/native/harness.c",
+        "-lm",
+        "-o",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-conv-hwc2chw/.build/native-current-address-626q3ipt/case/test"
+      ],
+      "exit_code": 0,
+      "seconds": 38.84558827895671,
+      "log_sha256": "adf641222a24a737aeb52eef8fbfca29647e62af3967cbbbdaa88e2d86453e3f"
+    },
+    {
+      "label": "correct",
+      "command": [
+        "systemd-run",
+        "--user",
+        "--wait",
+        "--pipe",
+        "--quiet",
+        "-p",
+        "MemoryMax=17179869184",
+        "-p",
+        "MemorySwapMax=0",
+        "python3",
+        "-c",
+        "import pathlib,subprocess,sys,json;p=pathlib.Path('/proc/self/cgroup').read_text().strip().split('::',1)[1];d=pathlib.Path('/sys/fs/cgroup')/p.lstrip('/');m=(d/'memory.max').read_text().strip();s=(d/'memory.swap.max').read_text().strip();assert m=='17179869184'and s=='0';print(json.dumps({'actual_memory_max':m,'actual_memory_swap_max':s}),flush=True);sys.exit(subprocess.run(sys.argv[1:]).returncode)",
+        "env",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-conv-hwc2chw/.build/native-current-address-626q3ipt/case/test"
+      ],
+      "exit_code": 0,
+      "seconds": 17.192785896128044,
+      "log_sha256": "3f47c592181ebcb5e2e3f4915f52f0789ffd742d89c37bab02244d29c35403e4"
+    },
+    {
+      "label": "wrong-1",
+      "command": [
+        "systemd-run",
+        "--user",
+        "--wait",
+        "--pipe",
+        "--quiet",
+        "-p",
+        "MemoryMax=17179869184",
+        "-p",
+        "MemorySwapMax=0",
+        "python3",
+        "-c",
+        "import pathlib,subprocess,sys,json;p=pathlib.Path('/proc/self/cgroup').read_text().strip().split('::',1)[1];d=pathlib.Path('/sys/fs/cgroup')/p.lstrip('/');m=(d/'memory.max').read_text().strip();s=(d/'memory.swap.max').read_text().strip();assert m=='17179869184'and s=='0';print(json.dumps({'actual_memory_max':m,'actual_memory_swap_max':s}),flush=True);sys.exit(subprocess.run(sys.argv[1:]).returncode)",
+        "env",
+        "HWC_NEGATIVE=1",
+        "HWC_QUICK=1",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-conv-hwc2chw/.build/native-current-address-626q3ipt/case/test"
+      ],
+      "exit_code": 2,
+      "seconds": 0.6047467240132391,
+      "log_sha256": "34f5fece7fe551f58561431ba14660e37bb2bf97858db82fae5a2d2a63864094"
+    },
+    {
+      "label": "wrong-2",
+      "command": [
+        "systemd-run",
+        "--user",
+        "--wait",
+        "--pipe",
+        "--quiet",
+        "-p",
+        "MemoryMax=17179869184",
+        "-p",
+        "MemorySwapMax=0",
+        "python3",
+        "-c",
+        "import pathlib,subprocess,sys,json;p=pathlib.Path('/proc/self/cgroup').read_text().strip().split('::',1)[1];d=pathlib.Path('/sys/fs/cgroup')/p.lstrip('/');m=(d/'memory.max').read_text().strip();s=(d/'memory.swap.max').read_text().strip();assert m=='17179869184'and s=='0';print(json.dumps({'actual_memory_max':m,'actual_memory_swap_max':s}),flush=True);sys.exit(subprocess.run(sys.argv[1:]).returncode)",
+        "env",
+        "HWC_NEGATIVE=2",
+        "HWC_QUICK=1",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-conv-hwc2chw/.build/native-current-address-626q3ipt/case/test"
+      ],
+      "exit_code": 2,
+      "seconds": 0.3947468549013138,
+      "log_sha256": "ae3567c83ba4f75ce6b1118d89405effa6330932dbe4b6b2db393f0907ef57d5"
+    }
+  ],
+  "actual_recursive_local_input_sha256": {
+    "proof/native/harness.c": "968158705caea87718497b1274652cf751dedeb5521bb8a00c7f71c3033d2c2a",
+    "proof/native/runtime.h": "56bf485245b0ad38a15b8e18908dfc722534b80ee41f06c26b5ea5b251c0085d",
+    "proof/native/extra.h": "52a3f172e26abeb4b8c6a0799ad90daee587edea3df06dfececf5a4e6c16a1f5",
+    "shim/support.c": "71404e7ea4caa8d8218bce5b81bc8973912fe2e793a15730587998c8b1adc8b8",
+    "shim/copy_float.c": "180abcdbb17b95a221e30b5b2fee180911f29a2b5921a98b3eb7b2c21e3d7219",
+    "shim/copy_float.h": "45c3101ce5f777fa1d38e8a7c416eea8f08c54c0fbc4f80be3e602184fafcb77",
+    "impl/testNEON.c": "87a57d56fc8836dd5394e59ab113fd6bd7d328023fc68e214ae0b42168eaea58",
+    "impl/testRVV.c": "9ad70f22645dde8a53aa9c83430ea48db0e2b7e6196973995694ba538f8cbf29"
+  },
+  "actual_recursive_local_input_count": 8,
+  "dependency_command": [
+    "gcc",
+    "-std=c11",
+    "-O1",
+    "-g",
+    "-frounding-math",
+    "-ffp-contract=off",
+    "-fno-strict-aliasing",
+    "-fno-omit-frame-pointer",
+    "-fno-sanitize-recover=all",
+    "-fsanitize=address,undefined",
+    "-MM",
+    "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-conv-hwc2chw/.build/native-current-address-626q3ipt/case/proof/native/harness.c"
+  ],
+  "executable_sha256": "f23402049ae6f58da719398745ef15ff2351c7c70c31ae5ea92d3d9ffe28abbc",
+  "cases": 210600,
+  "lanes_per_side": 6879600,
+  "RO_alias_cases": 168480,
+  "unwritten_frame_cells": 49137570,
+  "failures": 0,
+  "actual_memory_max": 17179869184,
+  "actual_memory_swap_max": 0,
+  "LSan_enabled": true,
+  "negative_controls": [
+    {
+      "kind": "wrong-one",
+      "exit_code": 2,
+      "oracle_rejected": true,
+      "log_sha256": "34f5fece7fe551f58561431ba14660e37bb2bf97858db82fae5a2d2a63864094"
+    },
+    {
+      "kind": "wrong-both-same",
+      "exit_code": 2,
+      "oracle_rejected": true,
+      "log_sha256": "ae3567c83ba4f75ce6b1118d89405effa6330932dbe4b6b2db393f0907ef57d5"
+    }
+  ]
+}

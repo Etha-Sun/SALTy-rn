@@ -1,0 +1,20 @@
+From HwcConv Require Export Types.
+Import Snaive_C_Rules64. Local Open Scope string_scope. Local Open Scope sac.
+Record Recordfloat32x2_t:Type:=make_record_float32x2_t{float32x2_t_s0:fp32;float32x2_t_s1:fp32}.
+Definition StructPredfloat32x2_t(p:Z)(v:Recordfloat32x2_t):Assertion:=(&(p # "float32x2_t" ->ₛ "s0")) # Float |-> v.(float32x2_t_s0) ** (&(p # "float32x2_t" ->ₛ "s1")) # Float |-> v.(float32x2_t_s1).
+Definition UndefStructPredfloat32x2_t(p:Z):Assertion:=(&(p # "float32x2_t" ->ₛ "s0")) # Float |->_ ** (&(p # "float32x2_t" ->ₛ "s1")) # Float |->_.
+Record Recordfloat32x4_t:Type:=make_record_float32x4_t{float32x4_t_s0:fp32;float32x4_t_s1:fp32;float32x4_t_s2:fp32;float32x4_t_s3:fp32}.
+Definition StructPredfloat32x4_t(p:Z)(v:Recordfloat32x4_t):Assertion:=(&(p # "float32x4_t" ->ₛ "s0")) # Float |-> v.(float32x4_t_s0) ** (&(p # "float32x4_t" ->ₛ "s1")) # Float |-> v.(float32x4_t_s1) ** (&(p # "float32x4_t" ->ₛ "s2")) # Float |-> v.(float32x4_t_s2) ** (&(p # "float32x4_t" ->ₛ "s3")) # Float |-> v.(float32x4_t_s3).
+Definition UndefStructPredfloat32x4_t(p:Z):Assertion:=(&(p # "float32x4_t" ->ₛ "s0")) # Float |->_ ** (&(p # "float32x4_t" ->ₛ "s1")) # Float |->_ ** (&(p # "float32x4_t" ->ₛ "s2")) # Float |->_ ** (&(p # "float32x4_t" ->ₛ "s3")) # Float |->_.
+Record Recordvfloat32m1_t:Type:=make_record_vfloat32m1_t{vfloat32m1_t_s0:fp32;vfloat32m1_t_s1:fp32;vfloat32m1_t_s2:fp32;vfloat32m1_t_s3:fp32}.
+Definition StructPredvfloat32m1_t(p:Z)(v:Recordvfloat32m1_t):Assertion:=(&(p # "vfloat32m1_t" ->ₛ "s0")) # Float |-> v.(vfloat32m1_t_s0) ** (&(p # "vfloat32m1_t" ->ₛ "s1")) # Float |-> v.(vfloat32m1_t_s1) ** (&(p # "vfloat32m1_t" ->ₛ "s2")) # Float |-> v.(vfloat32m1_t_s2) ** (&(p # "vfloat32m1_t" ->ₛ "s3")) # Float |-> v.(vfloat32m1_t_s3).
+Definition UndefStructPredvfloat32m1_t(p:Z):Assertion:=(&(p # "vfloat32m1_t" ->ₛ "s0")) # Float |->_ ** (&(p # "vfloat32m1_t" ->ₛ "s1")) # Float |->_ ** (&(p # "vfloat32m1_t" ->ₛ "s2")) # Float |->_ ** (&(p # "vfloat32m1_t" ->ₛ "s3")) # Float |->_.
+Record Recorduint32x4_t:Type:=make_record_uint32x4_t{uint32x4_t_s0:Z;uint32x4_t_s1:Z;uint32x4_t_s2:Z;uint32x4_t_s3:Z}.
+Definition StructPreduint32x4_t(p:Z)(v:Recorduint32x4_t):Assertion:=(&(p # "uint32x4_t" ->ₛ "s0")) # UInt |-> v.(uint32x4_t_s0) ** (&(p # "uint32x4_t" ->ₛ "s1")) # UInt |-> v.(uint32x4_t_s1) ** (&(p # "uint32x4_t" ->ₛ "s2")) # UInt |-> v.(uint32x4_t_s2) ** (&(p # "uint32x4_t" ->ₛ "s3")) # UInt |-> v.(uint32x4_t_s3).
+Definition UndefStructPreduint32x4_t(p:Z):Assertion:=(&(p # "uint32x4_t" ->ₛ "s0")) # UInt |->_ ** (&(p # "uint32x4_t" ->ₛ "s1")) # UInt |->_ ** (&(p # "uint32x4_t" ->ₛ "s2")) # UInt |->_ ** (&(p # "uint32x4_t" ->ₛ "s3")) # UInt |->_.
+Record Recordvuint32m1_t:Type:=make_record_vuint32m1_t{vuint32m1_t_s0:Z;vuint32m1_t_s1:Z;vuint32m1_t_s2:Z;vuint32m1_t_s3:Z}.
+Definition StructPredvuint32m1_t(p:Z)(v:Recordvuint32m1_t):Assertion:=(&(p # "vuint32m1_t" ->ₛ "s0")) # UInt |-> v.(vuint32m1_t_s0) ** (&(p # "vuint32m1_t" ->ₛ "s1")) # UInt |-> v.(vuint32m1_t_s1) ** (&(p # "vuint32m1_t" ->ₛ "s2")) # UInt |-> v.(vuint32m1_t_s2) ** (&(p # "vuint32m1_t" ->ₛ "s3")) # UInt |-> v.(vuint32m1_t_s3).
+Definition UndefStructPredvuint32m1_t(p:Z):Assertion:=(&(p # "vuint32m1_t" ->ₛ "s0")) # UInt |->_ ** (&(p # "vuint32m1_t" ->ₛ "s1")) # UInt |->_ ** (&(p # "vuint32m1_t" ->ₛ "s2")) # UInt |->_ ** (&(p # "vuint32m1_t" ->ₛ "s3")) # UInt |->_.
+Record Recordvbool32_t:Type:=make_record_vbool32_t{vbool32_t_s0:Z;vbool32_t_s1:Z;vbool32_t_s2:Z;vbool32_t_s3:Z}.
+Definition StructPredvbool32_t(p:Z)(v:Recordvbool32_t):Assertion:=(&(p # "vbool32_t" ->ₛ "s0")) # UInt |-> v.(vbool32_t_s0) ** (&(p # "vbool32_t" ->ₛ "s1")) # UInt |-> v.(vbool32_t_s1) ** (&(p # "vbool32_t" ->ₛ "s2")) # UInt |-> v.(vbool32_t_s2) ** (&(p # "vbool32_t" ->ₛ "s3")) # UInt |-> v.(vbool32_t_s3).
+Definition UndefStructPredvbool32_t(p:Z):Assertion:=(&(p # "vbool32_t" ->ₛ "s0")) # UInt |->_ ** (&(p # "vbool32_t" ->ₛ "s1")) # UInt |->_ ** (&(p # "vbool32_t" ->ₛ "s2")) # UInt |->_ ** (&(p # "vbool32_t" ->ₛ "s3")) # UInt |->_.

@@ -1,0 +1,5 @@
+From HwcConv Require Import Neon3Tactics.
+Import Snaive_C_Rules64. Local Open Scope sac.
+Lemma proof_of_hc_neon_fma3_lane2_partial_solve_wit_4:HwcConv.neon3_unit_goal.hc_neon_fma3_lane2_partial_solve_wit_4.
+Proof. unfold HwcConv.neon3_unit_goal.hc_neon_fma3_lane2_partial_solve_wit_4;try left;intros;hc_neon3_eta;hc_neon3_frame. Qed.
+Print Assumptions proof_of_hc_neon_fma3_lane2_partial_solve_wit_4.

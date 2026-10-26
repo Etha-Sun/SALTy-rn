@@ -1,0 +1,5 @@
+From HwcConv Require Import neon_pixel_unit_goal StoreHalfFacts.
+Import Snaive_C_Rules64. Local Open Scope sac.
+Lemma proof_of_hc_neon_rows_pixel27_return_wit_1:HwcConv.neon_pixel_unit_goal.hc_neon_rows_pixel27_return_wit_1.
+Proof. unfold HwcConv.neon_pixel_unit_goal.hc_neon_rows_pixel27_return_wit_1;right;intros;rewrite hc_store_f4_eta;entailer!. Qed.
+Print Assumptions proof_of_hc_neon_rows_pixel27_return_wit_1.

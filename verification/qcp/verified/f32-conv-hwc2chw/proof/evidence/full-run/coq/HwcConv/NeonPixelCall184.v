@@ -1,0 +1,7 @@
+From HwcConv Require Import NeonPixelCallsTactics.
+Import Snaive_C_Rules64. Local Open Scope Z_scope. Local Open Scope sac.
+Lemma proof_of_hc_neon_rows_pixel27_partial_solve_wit_25:HwcConv.neon_pixel_unit_goal.hc_neon_rows_pixel27_partial_solve_wit_25.
+Proof. unfold HwcConv.neon_pixel_unit_goal.hc_neon_rows_pixel27_partial_solve_wit_25.
+intros Hpure;unfold HwcConv.neon_pixel_unit_goal.hc_neon_rows_pixel27_partial_solve_wit_25_aux;hc_pixel_prepare;hc_pixel_frame.
+Qed.
+Print Assumptions proof_of_hc_neon_rows_pixel27_partial_solve_wit_25.

@@ -1,0 +1,5 @@
+From HwcConv Require Import ClampTactics.
+Import Snaive_C_Rules64. Local Open Scope sac.
+Lemma proof_of_hc_max_f32m1_partial_solve_wit_10_pure:HwcConv.nan_helpers_unit_goal.hc_max_f32m1_partial_solve_wit_10_pure.
+Proof. unfold HwcConv.nan_helpers_unit_goal.hc_max_f32m1_partial_solve_wit_10_pure;try left;hc_clamp_start;hc_clamp_frame. Qed.
+Print Assumptions proof_of_hc_max_f32m1_partial_solve_wit_10_pure.

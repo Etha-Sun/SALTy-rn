@@ -1,0 +1,8 @@
+From HwcConv Require Import HwcRvvPixel9Automation4.
+Import Snaive_C_Rules64. Local Open Scope Z_scope. Local Open Scope sac.
+Local Opaque hc_data hc_get hc_rvv_rows_group hc_rvv_row_group_value hc_rvv_pixel9_prefix hc_rvv_pixel9_fold dw_rvv_fma.
+Lemma proof_of_hc_rvv_pixel9_raw_partial_solve_wit_21 : HwcConv.pixel9_unit_goal.hc_rvv_pixel9_raw_partial_solve_wit_21.
+Proof. unfold HwcConv.pixel9_unit_goal.hc_rvv_pixel9_raw_partial_solve_wit_21;hp2_solve. Qed.
+Definition ExactSecond : HwcConv.pixel9_unit_goal.hc_rvv_pixel9_raw_partial_solve_wit_21 := proof_of_hc_rvv_pixel9_raw_partial_solve_wit_21.
+Print Assumptions proof_of_hc_rvv_pixel9_raw_partial_solve_wit_21.
+Print Assumptions ExactSecond.

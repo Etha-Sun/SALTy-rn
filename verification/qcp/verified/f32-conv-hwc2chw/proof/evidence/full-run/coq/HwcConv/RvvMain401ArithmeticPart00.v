@@ -1,0 +1,26 @@
+From HwcConv Require Import RvvMain401ArithmeticSupport.
+Import Snaive_C_Rules64. Local Open Scope Z_scope. Local Open Scope sac.
+Local Opaque hc_data hc_output hc_get hc_present hc_rvv_raw hc_rvv_source_fold dw_rvv_fma hc_rvv_pixel9_prefix.
+Module Checked.
+Lemma proof_of_test_rvv_partial_solve_wit_1_pure:HwcConv.rvv_unit_goal.test_rvv_partial_solve_wit_1_pure.
+Proof. unfold HwcConv.rvv_unit_goal.test_rvv_partial_solve_wit_1_pure;hr401_solve. Qed.
+Lemma proof_of_test_rvv_partial_solve_wit_2_pure:HwcConv.rvv_unit_goal.test_rvv_partial_solve_wit_2_pure.
+Proof. unfold HwcConv.rvv_unit_goal.test_rvv_partial_solve_wit_2_pure;hr401_solve. Qed.
+Lemma proof_of_test_rvv_partial_solve_wit_3_pure:HwcConv.rvv_unit_goal.test_rvv_partial_solve_wit_3_pure.
+Proof. unfold HwcConv.rvv_unit_goal.test_rvv_partial_solve_wit_3_pure;hr401_solve. Qed.
+Lemma proof_of_test_rvv_partial_solve_wit_4_pure:HwcConv.rvv_unit_goal.test_rvv_partial_solve_wit_4_pure.
+Proof. unfold HwcConv.rvv_unit_goal.test_rvv_partial_solve_wit_4_pure;hr401_solve. Qed.
+Lemma proof_of_test_rvv_partial_solve_wit_6_pure:HwcConv.rvv_unit_goal.test_rvv_partial_solve_wit_6_pure.
+Proof. unfold HwcConv.rvv_unit_goal.test_rvv_partial_solve_wit_6_pure;hr401_solve. Qed.
+Lemma proof_of_test_rvv_partial_solve_wit_8_pure:HwcConv.rvv_unit_goal.test_rvv_partial_solve_wit_8_pure.
+Proof. unfold HwcConv.rvv_unit_goal.test_rvv_partial_solve_wit_8_pure;hr401_solve. Qed.
+Lemma proof_of_test_rvv_partial_solve_wit_10_pure:HwcConv.rvv_unit_goal.test_rvv_partial_solve_wit_10_pure.
+Proof. unfold HwcConv.rvv_unit_goal.test_rvv_partial_solve_wit_10_pure;hr401_solve. Qed.
+End Checked.
+Print Assumptions Checked.proof_of_test_rvv_partial_solve_wit_1_pure.
+Print Assumptions Checked.proof_of_test_rvv_partial_solve_wit_2_pure.
+Print Assumptions Checked.proof_of_test_rvv_partial_solve_wit_3_pure.
+Print Assumptions Checked.proof_of_test_rvv_partial_solve_wit_4_pure.
+Print Assumptions Checked.proof_of_test_rvv_partial_solve_wit_6_pure.
+Print Assumptions Checked.proof_of_test_rvv_partial_solve_wit_8_pure.
+Print Assumptions Checked.proof_of_test_rvv_partial_solve_wit_10_pure.

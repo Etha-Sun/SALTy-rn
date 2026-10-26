@@ -1,0 +1,8 @@
+From HwcConv Require Import HwcRvv336RestFrame.
+Import Snaive_C_Rules64. Local Open Scope Z_scope. Local Open Scope sac.
+Local Opaque hc_data hc_get hc_present hc_rvv_rows_group hc_rvv_row_group_value dw_rvv_fma dw_arm_fma.
+Lemma proof_of_hc_rvv_rows_fma3_partial_solve_wit_126 : HwcConv.rvv_fma3_unit_goal.hc_rvv_rows_fma3_partial_solve_wit_126.
+Proof. unfold HwcConv.rvv_fma3_unit_goal.hc_rvv_rows_fma3_partial_solve_wit_126, HwcConv.rvv_fma3_unit_goal.hc_rvv_rows_fma3_partial_solve_wit_126_aux;hrm_solve. Qed.
+Definition ExactSecond : HwcConv.rvv_fma3_unit_goal.hc_rvv_rows_fma3_partial_solve_wit_126 := proof_of_hc_rvv_rows_fma3_partial_solve_wit_126.
+Print Assumptions proof_of_hc_rvv_rows_fma3_partial_solve_wit_126.
+Print Assumptions ExactSecond.

@@ -1,0 +1,11 @@
+From HwcConv Require Import Main443WindowPureTacticsFast.
+Module Checked.
+Lemma proof_of_test_neon_partial_solve_wit_47_pure : HwcConv.neon_unit_goal.test_neon_partial_solve_wit_47_pure.
+Proof. unfold HwcConv.neon_unit_goal.test_neon_partial_solve_wit_47_pure;hcp_window_pure_fast. Qed.
+Definition second_test_neon_partial_solve_wit_47_pure : HwcConv.neon_unit_goal.test_neon_partial_solve_wit_47_pure := proof_of_test_neon_partial_solve_wit_47_pure.
+Lemma proof_of_test_neon_partial_solve_wit_115_pure : HwcConv.neon_unit_goal.test_neon_partial_solve_wit_115_pure.
+Proof. unfold HwcConv.neon_unit_goal.test_neon_partial_solve_wit_115_pure;hcp_window_pure_fast. Qed.
+Definition second_test_neon_partial_solve_wit_115_pure : HwcConv.neon_unit_goal.test_neon_partial_solve_wit_115_pure := proof_of_test_neon_partial_solve_wit_115_pure.
+End Checked.
+Print Assumptions Checked.proof_of_test_neon_partial_solve_wit_47_pure.
+Print Assumptions Checked.proof_of_test_neon_partial_solve_wit_115_pure.

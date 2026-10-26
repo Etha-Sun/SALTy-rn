@@ -199,9 +199,12 @@
         }
       },
       "qcp": {
-        "whole_kernel_proved": false,
-        "status": "inventoried_not_verified",
-        "status_scope": "original bodies + mapper + actual intrinsic bodies + comparator dependency closure"
+        "whole_kernel_proved": true,
+        "status": "proved",
+        "status_scope": "修复/兼容版 repaired-neon219-rvv162-ordinary-pixel-helpers 在公开单输出模式 caller 契约下的 C-shim 模块化部分正确性及 NEON/RVV 完整输出观察等价性。13 个实际 C 单元、1748 条 C 义务、19 个普通函数体及4条共用策略均由统一 fresh Coq 门禁覆盖；原版文件、NaN 反例、精确正反补丁及兼容调整单独保留。RVV 固定 VLEN=128、SEW=32、LMUL=1、VLMAX=4、XLEN=64、小端，覆盖公开模型允许的全部合法VL选择；RNE、关闭 default-NaN/flush/traps，异常标志不观察。允许全部 binary32 值、任意给定 zero-row 内容、只读 input/zero/weights/params 的完整或部分别名；输出采用公开逻辑 CHW 窗口及帧条件，保留裁剪尾行和尾通道的实际最后写入效果、任意初始 Some/None 与精确未写入帧。每个累加器保持原27次融合运算次序；公开观察为数值相等或双方NaN，允许NaN payload及±0位模式差异。32项原始 intrinsic-spec 视图、合同、Coq定义和官方来源公开供最终人工审核；不把该边界、有限native/SDK或签发审计称为真实ISA/物理ABI/编译器精化或整程序终止性证明。一个完整 kernel，不将组件重复计数；原始未修复RVV不继承修复版结论。",
+        "implementation_variant": "repaired-neon219-rvv162-ordinary-pixel-helpers",
+        "case": "verified/f32-conv-hwc2chw",
+        "status_evidence": "verification/qcp/verified/f32-conv-hwc2chw/proof/status.json"
       }
     },
     {

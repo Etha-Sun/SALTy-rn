@@ -1,0 +1,53 @@
+From HwcConv Require Import RvvMain401ArithmeticSupport.
+Import Snaive_C_Rules64. Local Open Scope Z_scope. Local Open Scope sac.
+Local Opaque hc_data hc_output hc_get hc_present hc_rvv_raw hc_rvv_source_fold dw_rvv_fma hc_rvv_pixel9_prefix.
+Module Checked.
+Lemma proof_of_test_rvv_safety_wit_113:HwcConv.rvv_unit_goal.test_rvv_safety_wit_113.
+Proof. unfold HwcConv.rvv_unit_goal.test_rvv_safety_wit_113;hr401_solve. Qed.
+Lemma proof_of_test_rvv_safety_wit_114:HwcConv.rvv_unit_goal.test_rvv_safety_wit_114.
+Proof. unfold HwcConv.rvv_unit_goal.test_rvv_safety_wit_114;hr401_solve. Qed.
+Lemma proof_of_test_rvv_safety_wit_115:HwcConv.rvv_unit_goal.test_rvv_safety_wit_115.
+Proof. unfold HwcConv.rvv_unit_goal.test_rvv_safety_wit_115;hr401_solve. Qed.
+Lemma proof_of_test_rvv_safety_wit_116:HwcConv.rvv_unit_goal.test_rvv_safety_wit_116.
+Proof. unfold HwcConv.rvv_unit_goal.test_rvv_safety_wit_116;hr401_solve. Qed.
+Lemma proof_of_test_rvv_safety_wit_117:HwcConv.rvv_unit_goal.test_rvv_safety_wit_117.
+Proof. unfold HwcConv.rvv_unit_goal.test_rvv_safety_wit_117;hr401_solve. Qed.
+Lemma proof_of_test_rvv_safety_wit_118:HwcConv.rvv_unit_goal.test_rvv_safety_wit_118.
+Proof. unfold HwcConv.rvv_unit_goal.test_rvv_safety_wit_118;hr401_solve. Qed.
+Lemma proof_of_test_rvv_safety_wit_119:HwcConv.rvv_unit_goal.test_rvv_safety_wit_119.
+Proof. unfold HwcConv.rvv_unit_goal.test_rvv_safety_wit_119;hr401_solve. Qed.
+Lemma proof_of_test_rvv_safety_wit_120:HwcConv.rvv_unit_goal.test_rvv_safety_wit_120.
+Proof. unfold HwcConv.rvv_unit_goal.test_rvv_safety_wit_120;hr401_solve. Qed.
+Lemma proof_of_test_rvv_safety_wit_121:HwcConv.rvv_unit_goal.test_rvv_safety_wit_121.
+Proof. unfold HwcConv.rvv_unit_goal.test_rvv_safety_wit_121;hr401_solve. Qed.
+Lemma proof_of_test_rvv_safety_wit_122:HwcConv.rvv_unit_goal.test_rvv_safety_wit_122.
+Proof. unfold HwcConv.rvv_unit_goal.test_rvv_safety_wit_122;hr401_solve. Qed.
+Lemma proof_of_test_rvv_safety_wit_123:HwcConv.rvv_unit_goal.test_rvv_safety_wit_123.
+Proof. unfold HwcConv.rvv_unit_goal.test_rvv_safety_wit_123;hr401_solve. Qed.
+Lemma proof_of_test_rvv_safety_wit_124:HwcConv.rvv_unit_goal.test_rvv_safety_wit_124.
+Proof. unfold HwcConv.rvv_unit_goal.test_rvv_safety_wit_124;hr401_solve. Qed.
+Lemma proof_of_test_rvv_safety_wit_125:HwcConv.rvv_unit_goal.test_rvv_safety_wit_125.
+Proof. unfold HwcConv.rvv_unit_goal.test_rvv_safety_wit_125;hr401_solve. Qed.
+Lemma proof_of_test_rvv_safety_wit_126:HwcConv.rvv_unit_goal.test_rvv_safety_wit_126.
+Proof. unfold HwcConv.rvv_unit_goal.test_rvv_safety_wit_126;hr401_solve. Qed.
+Lemma proof_of_test_rvv_safety_wit_127:HwcConv.rvv_unit_goal.test_rvv_safety_wit_127.
+Proof. unfold HwcConv.rvv_unit_goal.test_rvv_safety_wit_127;hr401_solve. Qed.
+Lemma proof_of_test_rvv_safety_wit_128:HwcConv.rvv_unit_goal.test_rvv_safety_wit_128.
+Proof. unfold HwcConv.rvv_unit_goal.test_rvv_safety_wit_128;hr401_solve. Qed.
+End Checked.
+Print Assumptions Checked.proof_of_test_rvv_safety_wit_113.
+Print Assumptions Checked.proof_of_test_rvv_safety_wit_114.
+Print Assumptions Checked.proof_of_test_rvv_safety_wit_115.
+Print Assumptions Checked.proof_of_test_rvv_safety_wit_116.
+Print Assumptions Checked.proof_of_test_rvv_safety_wit_117.
+Print Assumptions Checked.proof_of_test_rvv_safety_wit_118.
+Print Assumptions Checked.proof_of_test_rvv_safety_wit_119.
+Print Assumptions Checked.proof_of_test_rvv_safety_wit_120.
+Print Assumptions Checked.proof_of_test_rvv_safety_wit_121.
+Print Assumptions Checked.proof_of_test_rvv_safety_wit_122.
+Print Assumptions Checked.proof_of_test_rvv_safety_wit_123.
+Print Assumptions Checked.proof_of_test_rvv_safety_wit_124.
+Print Assumptions Checked.proof_of_test_rvv_safety_wit_125.
+Print Assumptions Checked.proof_of_test_rvv_safety_wit_126.
+Print Assumptions Checked.proof_of_test_rvv_safety_wit_127.
+Print Assumptions Checked.proof_of_test_rvv_safety_wit_128.

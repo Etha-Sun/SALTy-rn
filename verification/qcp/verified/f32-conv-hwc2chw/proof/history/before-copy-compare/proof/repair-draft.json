@@ -1,0 +1,39 @@
+{
+  "whole_kernel_verified": false,
+  "formal_helpers_proved": false,
+  "native_or_SDK_current_tested": "SDK true for both actual current targets; native still pending",
+  "original_rvv_sha256": "dc4b036479e134d3f95bdaed47244a936696ae31d061d26b8478c3a183b1a200",
+  "current_rvv_sha256": "80ceec1793c661b5f25cdbbea10d1eb6614ebaaaa5a0e16abb52c28de9009415",
+  "reference_rvv_sha256": "ad1e5b1bf080182086946e8a770206a0acb85dc4c8497bea06076712008e30ff",
+  "patch": "proof/repair-rvv.patch",
+  "patch_sha256": "afc1ae5dc824fcce2ba56935f29e9b2afa50bca44771660cf2ad75228a2f5f29",
+  "original_neon_unchanged": true,
+  "changes": [
+    "actual masked strided loads, no dereference of masked lanes",
+    "propagating NaN min/max via two actual ordinary helpers, no __builtin_nanf exemption",
+    "second output row gets upper clamp",
+    "odd right edge uses genuine masked FMA preserving accumulator; left zero padding still evaluates original FMA",
+    "only0..3 local lane numbers are32bit; global width/current output index and byte offset areuint64",
+    "strided offsets use uint64 address arithmetic rather than signed ptrdiff multiply",
+    "Use genuine mask-undisturbed _mu FMA; _m may clobber masked-off accumulator lanes and is insufficient for skip semantics"
+  ],
+  "remaining": [
+    "independent original counterexamples and repaired native oracle",
+    "primary bundle including actual supporting helper bodies",
+    "helper contracts/Coq body proofs and full actual main/caller",
+    "public domain/memory/strides/alias correspondence and intrinsic original spec ledger",
+    "complete fresh gate"
+  ],
+  "initial_sdk_attempt": {
+    "path": ".build/current-sdk-both-7aqmjc9t",
+    "rv64_exit": 1,
+    "neon_exit": 0,
+    "cause": "unsigned compare intrinsic spelling needs ISA unsigned u suffix, vmsgeu/vmsltu; preserved as failed build, not kernel counterexample"
+  },
+  "masked_fma_policy_review": "proof/masked-fma-policy-review.json",
+  "SDK_for_current_policy_pending": false,
+  "current_policy_SDK_statuses": [
+    "proof/rv64-buildability-status.json",
+    "proof/neon-front-buildability-status.json"
+  ]
+}

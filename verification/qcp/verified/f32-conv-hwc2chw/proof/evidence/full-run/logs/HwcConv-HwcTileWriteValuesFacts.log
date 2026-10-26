@@ -1,0 +1,164 @@
+Chars 107 - 147 [From~Coq~Require~Import~ZArith...] 0.384 secs (0.207u,0.175s)
+Chars 148 - 193 [From~HwcConv~Require~Export~Hw...] 4.13 secs (3.382u,0.731s)
+Chars 194 - 215 [Import~ListNotations.] 0. secs (0.u,0.s)
+Chars 216 - 241 [#[local]~Open~Scope~Z_scope.] 0. secs (0.u,0.s)
+Chars 243 - 369 [Lemma~hc_write_values_frame~:~...] 0.001 secs (0.001u,0.s)
+Chars 370 - 376 [Proof.] 0. secs (0.u,0.s)
+Chars 378 - 459 [(induction~xs~as~[|~v~xs~IH];~...] 0.001 secs (0.001u,0.s)
+Chars 461 - 472 [(rewrite~IH).] 0. secs (0.u,0.s)
+Chars 474 - 475 [-] 0. secs (0.u,0.s)
+Chars 476 - 504 [(unfold~hc_output_put,~hc_put).] 0. secs (0.u,0.s)
+Chars 508 - 603 [(destruct~(Z.eqb_spec~q~p);~~~...] 0.483 secs (0.004u,0.s)
+Chars 605 - 606 [-] 0. secs (0.u,0.s)
+Chars 607 - 654 [(intros~n~Hn~Eq;~apply~(Haway~...] 0.001 secs (0.001u,0.s)
+Chars 658 - 685 [(rewrite~Nat2Z.inj_succ;~lia).] 0.001 secs (0.001u,0.s)
+Chars 686 - 690 [Qed.] 0.005 secs (0.005u,0.s)
+Chars 692 - 821 [Lemma~hc_write_values_nth~:~~~...] 0.001 secs (0.001u,0.s)
+Chars 822 - 828 [Proof.] 0. secs (0.u,0.s)
+Chars 830 - 889 [(induction~xs~as~[|~v~xs~IH];~...] 0.001 secs (0.001u,0.s)
+Chars 891 - 909 [(destruct~n~as~[|~n]).] 0. secs (0.u,0.s)
+Chars 911 - 912 [-] 0. secs (0.u,0.s)
+Chars 913 - 938 [(cbn[hc_write_values~nth]).] 0. secs (0.u,0.s)
+Chars 942 - 972 [(rewrite~hc_write_values_frame).] 0. secs (0.u,0.s)
+Chars 976 - 977 [+] 0. secs (0.u,0.s)
+Chars 978 - 1015 [replace~(p~+~4~*~Z.of_nat~0)~w...] 0.001 secs (0.001u,0.s)
+Chars 1021 - 1080 [(unfold~hc_output_put,~hc_put;...] 0. secs (0.u,0.s)
+Chars 1084 - 1085 [+] 0. secs (0.u,0.s)
+Chars 1086 - 1105 [(intros~k~Hk~Eq;~lia).] 0.001 secs (0.001u,0.s)
+Chars 1107 - 1108 [-] 0. secs (0.u,0.s)
+Chars 1109 - 1134 [(cbn[hc_write_values~nth]).] 0. secs (0.u,0.s)
+Chars 1138 - 1219 [replace~(p~+~4~*~Z.of_nat~(S~n...] 0.002 secs (0.002u,0.s)
+Chars 1223 - 1246 [(apply~IH;~cbn~in~Hn;~lia).] 0.001 secs (0.001u,0.s)
+Chars 1247 - 1251 [Qed.] 0.007 secs (0.007u,0.s)
+Closed under the global context
+Chars 1253 - 1293 [Print~Assumptions~hc_write_val...] 0.339 secs (0.311u,0.027s)
+Axioms:
+ClassicalDedekindReals.sig_not_dec : forall P : Prop, {~ ~ P} + {~ P}
+ClassicalDedekindReals.sig_forall_dec :
+  forall P : nat -> Prop,
+  (forall n : nat, {P n} + {~ P n}) ->
+  {n : nat | ~ P n} + {forall n : nat, P n}
+FunctionalExtensionality.functional_extensionality_dep :
+  forall (A : Type) (B : A -> Type) (f g : forall x : A, B x),
+  (forall x : A, f x = g x) -> f = g
+Classical_Prop.classic : forall P : Prop, P \/ ~ P
+Chars 1294 - 1332 [Print~Assumptions~hc_write_val...] 1.31 secs (1.275u,0.034s)
+Chars 1481 - 1730 [Lemma~hc_write_values_cell~:~~...] 0.002 secs (0.001u,0.s)
+Chars 1731 - 1737 [Proof.] 0. secs (0.u,0.s)
+Chars 1739 - 1755 [(intros~xs~O~p~q).] 0. secs (0.u,0.s)
+Chars 1757 - 1791 [(destruct~(Z_le_dec~p~q)~as~[H...] 0.001 secs (0.u,0.001s)
+Chars 1793 - 1794 [-] 0. secs (0.u,0.s)
+Chars 1795 - 1852 [(destruct~(Z_lt_dec~q~(p~+~4~*...] 0.001 secs (0.u,0.s)
+Chars 1856 - 1857 [+] 0. secs (0.u,0.s)
+Chars 1858 - 1907 [(destruct~(Z.eq_dec~((q~-~p)~m...] 0.001 secs (0.001u,0.s)
+Chars 1913 - 1914 [*] 0. secs (0.u,0.s)
+Chars 1915 - 1957 [(assert~(Hj~:~0~<=~(q~-~p)~/~4...] 0. secs (0.u,0.s)
+Chars 1965 - 1966 [{] 0. secs (0.u,0.s)
+Chars 1967 - 2026 [(split;~[~apply~Z.div_pos;~lia...] 0.003 secs (0.003u,0.s)
+Chars 2027 - 2028 [}] 0. secs (0.u,0.s)
+Chars 2036 - 2082 [(pose~proof~(Z.div_mod~(q~-~p)...] 0.001 secs (0.001u,0.s)
+Chars 2090 - 2135 [(assert~(Hq~:~q~=~p~+~4~*~Z.of...] 0. secs (0.u,0.s)
+Chars 2143 - 2144 [{] 0. secs (0.u,0.s)
+Chars 2145 - 2173 [(rewrite~Z2Nat.id~by~lia;~lia).] 0.003 secs (0.003u,0.s)
+Chars 2174 - 2175 [}] 0. secs (0.u,0.s)
+Chars 2183 - 2225 [(rewrite~Hq~~at~1;~apply~hc_wr...] 0.02 secs (0.016u,0.003s)
+Chars 2233 - 2280 [(apply~Nat2Z.inj_lt;~rewrite~Z...] 0.003 secs (0.003u,0.s)
+Chars 2286 - 2287 [*] 0. secs (0.u,0.s)
+Chars 2288 - 2331 [(apply~hc_write_values_frame;~...] 0. secs (0.u,0.s)
+Chars 2339 - 2363 [(apply~Halign;~rewrite~Eq).] 0. secs (0.u,0.s)
+Chars 2371 - 2422 [replace~(p~+~4~*~Z.of_nat~n~-~...] 0.005 secs (0.005u,0.s)
+Chars 2430 - 2450 [(apply~Z.mod_mul;~lia).] 0.001 secs (0.001u,0.s)
+Chars 2454 - 2455 [+] 0. secs (0.u,0.s)
+Chars 2456 - 2499 [(apply~hc_write_values_frame;~...] 0. secs (0.u,0.s)
+Chars 2505 - 2579 [(assert~(HnZ~:~Z.of_nat~n~<~Z....] 0.001 secs (0.001u,0.s)
+Chars 2585 - 2589 [lia.] 0.005 secs (0.002u,0.003s)
+Chars 2591 - 2592 [-] 0. secs (0.u,0.s)
+Chars 2593 - 2636 [(apply~hc_write_values_frame;~...] 0. secs (0.u,0.s)
+Chars 2640 - 2674 [(pose~proof~(Nat2Z.is_nonneg~n...] 0.001 secs (0.u,0.001s)
+Chars 2675 - 2679 [Qed.] 0.012 secs (0.011u,0.001s)
+Axioms:
+ClassicalDedekindReals.sig_not_dec : forall P : Prop, {~ ~ P} + {~ P}
+ClassicalDedekindReals.sig_forall_dec :
+  forall P : nat -> Prop,
+  (forall n : nat, {P n} + {~ P n}) ->
+  {n : nat | ~ P n} + {forall n : nat, P n}
+FunctionalExtensionality.functional_extensionality_dep :
+  forall (A : Type) (B : A -> Type) (f g : forall x : A, B x),
+  (forall x : A, f x = g x) -> f = g
+Classical_Prop.classic : forall P : Prop, P \/ ~ P
+Chars 2680 - 2719 [Print~Assumptions~hc_write_val...] 0.851 secs (0.851u,0.s)
+Chars 2721 - 2828 [Lemma~hc_tile_values_length~:~...] 0. secs (0.u,0.s)
+Chars 2829 - 2835 [Proof.] 0. secs (0.u,0.s)
+File "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-conv-hwc2chw/.build/hwc-whole-integration/f32-conv-hwc2chw/.build/full-kfv6l5c2/coq/HwcConv/HwcTileWriteValuesFacts.v", line 74, characters 44-54:
+Warning: Notation map_length is deprecated since 8.20.
+Use length_map instead.
+[deprecated-syntactic-definition-since-8.20,deprecated-since-8.20,deprecated-syntactic-definition,deprecated,default]
+File "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-conv-hwc2chw/.build/hwc-whole-integration/f32-conv-hwc2chw/.build/full-kfv6l5c2/coq/HwcConv/HwcTileWriteValuesFacts.v", line 74, characters 55-65:
+Warning: Notation seq_length is deprecated since 8.20.
+Use length_seq instead.
+[deprecated-syntactic-definition-since-8.20,deprecated-since-8.20,deprecated-syntactic-definition,deprecated,default]
+File "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-conv-hwc2chw/.build/hwc-whole-integration/f32-conv-hwc2chw/.build/full-kfv6l5c2/coq/HwcConv/HwcTileWriteValuesFacts.v", line 74, characters 44-54:
+Warning: Notation map_length is deprecated since 8.20.
+Use length_map instead.
+[deprecated-syntactic-definition-since-8.20,deprecated-since-8.20,deprecated-syntactic-definition,deprecated,default]
+File "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-conv-hwc2chw/.build/hwc-whole-integration/f32-conv-hwc2chw/.build/full-kfv6l5c2/coq/HwcConv/HwcTileWriteValuesFacts.v", line 74, characters 44-54:
+Warning: Notation map_length is deprecated since 8.20.
+Use length_map instead.
+[deprecated-syntactic-definition-since-8.20,deprecated-since-8.20,deprecated-syntactic-definition,deprecated,default]
+File "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-conv-hwc2chw/.build/hwc-whole-integration/f32-conv-hwc2chw/.build/full-kfv6l5c2/coq/HwcConv/HwcTileWriteValuesFacts.v", line 74, characters 55-65:
+Warning: Notation seq_length is deprecated since 8.20.
+Use length_seq instead.
+[deprecated-syntactic-definition-since-8.20,deprecated-since-8.20,deprecated-syntactic-definition,deprecated,default]
+File "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-conv-hwc2chw/.build/hwc-whole-integration/f32-conv-hwc2chw/.build/full-kfv6l5c2/coq/HwcConv/HwcTileWriteValuesFacts.v", line 74, characters 55-65:
+Warning: Notation seq_length is deprecated since 8.20.
+Use length_seq instead.
+[deprecated-syntactic-definition-since-8.20,deprecated-since-8.20,deprecated-syntactic-definition,deprecated,default]
+Chars 2836 - 2907 [(intros;~unfold~hc_tile_values...] 0.008 secs (0.001u,0.s)
+Chars 2908 - 2912 [Qed.] 0. secs (0.u,0.s)
+Chars 2913 - 3067 [Lemma~hc_tile_values_nth~:~~~f...] 0. secs (0.u,0.s)
+Chars 3068 - 3074 [Proof.] 0. secs (0.u,0.s)
+Chars 3076 - 3105 [(intros;~unfold~hc_tile_values).] 0. secs (0.u,0.s)
+Chars 3107 - 3194 [(transitivity~~~((fun~k~:~nat~...] 0. secs (0.u,0.s)
+Chars 3196 - 3197 [-] 0. secs (0.u,0.s)
+Chars 3198 - 3295 [(rewrite~~~<-~(@map_nth~nat~fp...] 0.001 secs (0.001u,0.s)
+File "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-conv-hwc2chw/.build/hwc-whole-integration/f32-conv-hwc2chw/.build/full-kfv6l5c2/coq/HwcConv/HwcTileWriteValuesFacts.v", line 82, characters 27-37:
+Warning: Notation map_length is deprecated since 8.20.
+Use length_map instead.
+[deprecated-syntactic-definition-since-8.20,deprecated-since-8.20,deprecated-syntactic-definition,deprecated,default]
+File "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-conv-hwc2chw/.build/hwc-whole-integration/f32-conv-hwc2chw/.build/full-kfv6l5c2/coq/HwcConv/HwcTileWriteValuesFacts.v", line 82, characters 38-48:
+Warning: Notation seq_length is deprecated since 8.20.
+Use length_seq instead.
+[deprecated-syntactic-definition-since-8.20,deprecated-since-8.20,deprecated-syntactic-definition,deprecated,default]
+File "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-conv-hwc2chw/.build/hwc-whole-integration/f32-conv-hwc2chw/.build/full-kfv6l5c2/coq/HwcConv/HwcTileWriteValuesFacts.v", line 82, characters 27-37:
+Warning: Notation map_length is deprecated since 8.20.
+Use length_map instead.
+[deprecated-syntactic-definition-since-8.20,deprecated-since-8.20,deprecated-syntactic-definition,deprecated,default]
+File "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-conv-hwc2chw/.build/hwc-whole-integration/f32-conv-hwc2chw/.build/full-kfv6l5c2/coq/HwcConv/HwcTileWriteValuesFacts.v", line 82, characters 27-37:
+Warning: Notation map_length is deprecated since 8.20.
+Use length_map instead.
+[deprecated-syntactic-definition-since-8.20,deprecated-since-8.20,deprecated-syntactic-definition,deprecated,default]
+File "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-conv-hwc2chw/.build/hwc-whole-integration/f32-conv-hwc2chw/.build/full-kfv6l5c2/coq/HwcConv/HwcTileWriteValuesFacts.v", line 82, characters 38-48:
+Warning: Notation seq_length is deprecated since 8.20.
+Use length_seq instead.
+[deprecated-syntactic-definition-since-8.20,deprecated-since-8.20,deprecated-syntactic-definition,deprecated,default]
+File "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-conv-hwc2chw/.build/hwc-whole-integration/f32-conv-hwc2chw/.build/full-kfv6l5c2/coq/HwcConv/HwcTileWriteValuesFacts.v", line 82, characters 38-48:
+Warning: Notation seq_length is deprecated since 8.20.
+Use length_seq instead.
+[deprecated-syntactic-definition-since-8.20,deprecated-since-8.20,deprecated-syntactic-definition,deprecated,default]
+Chars 3299 - 3356 [(apply~nth_indep;~rewrite~map_...] 0.001 secs (0.001u,0.s)
+Chars 3358 - 3359 [-] 0. secs (0.u,0.s)
+Chars 3360 - 3433 [(rewrite~seq_nth~by~assumption...] 0.002 secs (0.001u,0.s)
+Chars 3434 - 3438 [Qed.] 0.001 secs (0.001u,0.s)
+Closed under the global context
+Chars 3439 - 3479 [Print~Assumptions~hc_tile_valu...] 0. secs (0.u,0.s)
+Axioms:
+ClassicalDedekindReals.sig_not_dec : forall P : Prop, {~ ~ P} + {~ P}
+ClassicalDedekindReals.sig_forall_dec :
+  forall P : nat -> Prop,
+  (forall n : nat, {P n} + {~ P n}) ->
+  {n : nat | ~ P n} + {forall n : nat, P n}
+FunctionalExtensionality.functional_extensionality_dep :
+  forall (A : Type) (B : A -> Type) (f g : forall x : A, B x),
+  (forall x : A, f x = g x) -> f = g
+Classical_Prop.classic : forall P : Prop, P \/ ~ P
+Chars 3480 - 3517 [Print~Assumptions~hc_tile_valu...] 1.222 secs (1.2u,0.007s)

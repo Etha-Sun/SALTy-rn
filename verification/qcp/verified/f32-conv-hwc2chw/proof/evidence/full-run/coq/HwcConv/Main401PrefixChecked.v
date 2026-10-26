@@ -1,0 +1,8 @@
+From HwcConv Require Import Main401PrefixAssert.
+Module Type ExactPrefixAssert.
+ Parameter proof_of_test_rvv_entail_wit_3:HwcConv.rvv_unit_goal.test_rvv_entail_wit_3.
+End ExactPrefixAssert.
+Module Checked : ExactPrefixAssert.
+ Definition proof_of_test_rvv_entail_wit_3:HwcConv.rvv_unit_goal.test_rvv_entail_wit_3:=HwcConv.Main401PrefixAssert.CheckedPrefix.proof_of_test_rvv_entail_wit_3.
+End Checked.
+Print Assumptions Checked.proof_of_test_rvv_entail_wit_3.

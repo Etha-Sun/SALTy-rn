@@ -1,0 +1,488 @@
+--- a/impl/testNEON.c
++++ b/impl/testNEON.c
+@@ -1,5 +1,5 @@
+ #include "../shim/store_half.h"
+-#include "../shim/neon3_helpers.h"
++#include "../shim/neon_rows_pixel.h"
+ /*
+ struct xnn_f32_minmax_params {
+   struct {
+@@ -91,235 +91,24 @@
+       }
+ 
+       // viMx0 = ( iM0c2, iM0c1, iM0c0, --- )
+-      float32x4_t vi0x0 = vmovq_n_f32(0.0f);
+-      float32x4_t vi1x0 = vmovq_n_f32(0.0f);
+-      float32x4_t vi2x0 = vmovq_n_f32(0.0f);
+-      float32x4_t vi3x0 = vmovq_n_f32(0.0f);
+-      float32x4_t vi4x0 = vmovq_n_f32(0.0f);
+ 
++      const float *hc_row0=i0;
++      const float *hc_row1=i1;
++      const float *hc_row2=i2;
++      const float *hc_row3=i3;
++      const float *hc_row4=i4;
+       size_t iw = input_width;
+       for (; iw >= 4; iw -= 4) {
+-        float32x4_t vo0x0 = vld1q_f32(w);
+-        float32x4_t vo1x0 = vo0x0;
+-        float32x4_t vo0x1 = vo0x0;
+-        float32x4_t vo1x1 = vo0x0;
+-
+-        const float32x4_t vk00c0 = vld1q_f32(w + 4);
+-
+-        // viMx1 = ( iM2c0, iM1c2, iM1c1, iM1c0 )
+-        const float32x4_t vi0x1 = vld1q_f32(i0); i0 += 4;
+-        const float32x4_t vi1x1 = vld1q_f32(i1); i1 += 4;
+-        const float32x4_t vi2x1 = vld1q_f32(i2); i2 += 4;
+-        const float32x4_t vi3x1 = vld1q_f32(i3); i3 += 4;
+-        const float32x4_t vi4x1 = vld1q_f32(i4); i4 += 4;
+-
+-        
+-        
+-        
+-        
+-
+-        const float32x4_t vk10c0 = vld1q_f32(w + 8);
+-
+-        
+-        
+-        
+-        
+-
+-        const float32x4_t vk20c0 = vld1q_f32(w + 12);
+-
+-        vo0x0 = hc_neon_fma3_lane1(&vo0x0,&vk00c0,&vk10c0,&vk20c0,&vi0x0,&vi1x0,&vi2x0);
+-        vo1x0 = hc_neon_fma3_lane1(&vo1x0,&vk00c0,&vk10c0,&vk20c0,&vi2x0,&vi3x0,&vi4x0);
+-        vo0x1 = hc_neon_fma3_lane3(&vo0x1,&vk00c0,&vk10c0,&vk20c0,&vi0x1,&vi1x1,&vi2x1);
+-        vo1x1 = hc_neon_fma3_lane3(&vo1x1,&vk00c0,&vk10c0,&vk20c0,&vi2x1,&vi3x1,&vi4x1);
+-
+-        const float32x4_t vk00c1 = vld1q_f32(w + 16);
+-
+-        // viMx2 = ( iM3c1, iM3c0, iM2c2, iM2c1 )
+-        const float32x4_t vi0x2 = vld1q_f32(i0); i0 += 4;
+-        const float32x4_t vi1x2 = vld1q_f32(i1); i1 += 4;
+-        const float32x4_t vi2x2 = vld1q_f32(i2); i2 += 4;
+-        const float32x4_t vi3x2 = vld1q_f32(i3); i3 += 4;
+-        const float32x4_t vi4x2 = vld1q_f32(i4); i4 += 4;
+-
+-        
+-        
+-        
+-        
+-
+-        const float32x4_t vk10c1 = vld1q_f32(w + 20);
+-
+-        
+-        
+-        
+-        
+-
+-        const float32x4_t vk20c1 = vld1q_f32(w + 24);
+-
+-        vo0x0 = hc_neon_fma3_lane2(&vo0x0,&vk00c1,&vk10c1,&vk20c1,&vi0x0,&vi1x0,&vi2x0);
+-        vo1x0 = hc_neon_fma3_lane2(&vo1x0,&vk00c1,&vk10c1,&vk20c1,&vi2x0,&vi3x0,&vi4x0);
+-        vo0x1 = hc_neon_fma3_lane0(&vo0x1,&vk00c1,&vk10c1,&vk20c1,&vi0x2,&vi1x2,&vi2x2);
+-        vo1x1 = hc_neon_fma3_lane0(&vo1x1,&vk00c1,&vk10c1,&vk20c1,&vi2x2,&vi3x2,&vi4x2);
+-
+-        const float32x4_t vk00c2 = vld1q_f32(w + 28);
+-
+-        
+-        
+-        
+-        
+-
+-        const float32x4_t vk10c2 = vld1q_f32(w + 32);
+-
+-        
+-        
+-        
+-        
+-
+-        const float32x4_t vk20c2 = vld1q_f32(w + 36);
+-
+-        vo0x0 = hc_neon_fma3_lane3(&vo0x0,&vk00c2,&vk10c2,&vk20c2,&vi0x0,&vi1x0,&vi2x0);
+-        vo1x0 = hc_neon_fma3_lane3(&vo1x0,&vk00c2,&vk10c2,&vk20c2,&vi2x0,&vi3x0,&vi4x0);
+-        vo0x1 = hc_neon_fma3_lane1(&vo0x1,&vk00c2,&vk10c2,&vk20c2,&vi0x2,&vi1x2,&vi2x2);
+-        vo1x1 = hc_neon_fma3_lane1(&vo1x1,&vk00c2,&vk10c2,&vk20c2,&vi2x2,&vi3x2,&vi4x2);
+-
+-        const float32x4_t vk01c0 = vld1q_f32(w + 40);
+-
+-        
+-        
+-        
+-        
+-
+-        const float32x4_t vk11c0 = vld1q_f32(w + 44);
+-
+-        
+-        
+-        
+-        
+-
+-        const float32x4_t vk21c0 = vld1q_f32(w + 48);
+-
+-        vo0x0 = hc_neon_fma3_lane0(&vo0x0,&vk01c0,&vk11c0,&vk21c0,&vi0x1,&vi1x1,&vi2x1);
+-        vo1x0 = hc_neon_fma3_lane0(&vo1x0,&vk01c0,&vk11c0,&vk21c0,&vi2x1,&vi3x1,&vi4x1);
+-        vo0x1 = hc_neon_fma3_lane2(&vo0x1,&vk01c0,&vk11c0,&vk21c0,&vi0x2,&vi1x2,&vi2x2);
+-        vo1x1 = hc_neon_fma3_lane2(&vo1x1,&vk01c0,&vk11c0,&vk21c0,&vi2x2,&vi3x2,&vi4x2);
+-
+-        const float32x4_t vk01c1 = vld1q_f32(w + 52);
+-
+-        
+-        
+-        
+-        
+-
+-        const float32x4_t vk11c1 = vld1q_f32(w + 56);
+-
+-        
+-        
+-        
+-        
+-
+-        const float32x4_t vk21c1 = vld1q_f32(w + 60);
+-
+-        vo0x0 = hc_neon_fma3_lane1(&vo0x0,&vk01c1,&vk11c1,&vk21c1,&vi0x1,&vi1x1,&vi2x1);
+-        vo1x0 = hc_neon_fma3_lane1(&vo1x0,&vk01c1,&vk11c1,&vk21c1,&vi2x1,&vi3x1,&vi4x1);
+-        vo0x1 = hc_neon_fma3_lane3(&vo0x1,&vk01c1,&vk11c1,&vk21c1,&vi0x2,&vi1x2,&vi2x2);
+-        vo1x1 = hc_neon_fma3_lane3(&vo1x1,&vk01c1,&vk11c1,&vk21c1,&vi2x2,&vi3x2,&vi4x2);
+-
+-        const float32x4_t vk01c2 = vld1q_f32(w + 64);
+-
+-        // viMx3 = ( iM4c2, iM4c1, iM4c0, iM3c2 )
+-        const float32x4_t vi0x3 = vld1q_f32(i0); i0 += 4;
+-        const float32x4_t vi1x3 = vld1q_f32(i1); i1 += 4;
+-        const float32x4_t vi2x3 = vld1q_f32(i2); i2 += 4;
+-        const float32x4_t vi3x3 = vld1q_f32(i3); i3 += 4;
+-        const float32x4_t vi4x3 = vld1q_f32(i4); i4 += 4;
+-
+-        
+-        
+-        
+-        
+-
+-        const float32x4_t vk11c2 = vld1q_f32(w + 68);
+-
+-        
+-        
+-        
+-        
+-
+-        const float32x4_t vk21c2 = vld1q_f32(w + 72);
+-
+-        vo0x0 = hc_neon_fma3_lane2(&vo0x0,&vk01c2,&vk11c2,&vk21c2,&vi0x1,&vi1x1,&vi2x1);
+-        vo1x0 = hc_neon_fma3_lane2(&vo1x0,&vk01c2,&vk11c2,&vk21c2,&vi2x1,&vi3x1,&vi4x1);
+-        vo0x1 = hc_neon_fma3_lane0(&vo0x1,&vk01c2,&vk11c2,&vk21c2,&vi0x3,&vi1x3,&vi2x3);
+-        vo1x1 = hc_neon_fma3_lane0(&vo1x1,&vk01c2,&vk11c2,&vk21c2,&vi2x3,&vi3x3,&vi4x3);
+-
+-        const float32x4_t vk02c0 = vld1q_f32(w + 76);
+-
+-        
+-        
+-        
+-        
+-
+-        const float32x4_t vk12c0 = vld1q_f32(w + 80);
+-
+-        
+-        
+-        
+-        
+-
+-        const float32x4_t vk22c0 = vld1q_f32(w + 84);
+-
+-        vo0x0 = hc_neon_fma3_lane3(&vo0x0,&vk02c0,&vk12c0,&vk22c0,&vi0x1,&vi1x1,&vi2x1);
+-        vo1x0 = hc_neon_fma3_lane3(&vo1x0,&vk02c0,&vk12c0,&vk22c0,&vi2x1,&vi3x1,&vi4x1);
+-        vo0x1 = hc_neon_fma3_lane1(&vo0x1,&vk02c0,&vk12c0,&vk22c0,&vi0x3,&vi1x3,&vi2x3);
+-        vo1x1 = hc_neon_fma3_lane1(&vo1x1,&vk02c0,&vk12c0,&vk22c0,&vi2x3,&vi3x3,&vi4x3);
+-
+-        const float32x4_t vk02c1 = vld1q_f32(w + 88);
+-
+-        
+-        
+-        
+-        
+-
+-        const float32x4_t vk12c1 = vld1q_f32(w + 92);
+-
+-        
+-        
+-        
+-        
+-
+-        const float32x4_t vk22c1 = vld1q_f32(w + 96);
+-
+-        vo0x0 = hc_neon_fma3_lane0(&vo0x0,&vk02c1,&vk12c1,&vk22c1,&vi0x2,&vi1x2,&vi2x2);
+-        vo1x0 = hc_neon_fma3_lane0(&vo1x0,&vk02c1,&vk12c1,&vk22c1,&vi2x2,&vi3x2,&vi4x2);
+-        vo0x1 = hc_neon_fma3_lane2(&vo0x1,&vk02c1,&vk12c1,&vk22c1,&vi0x3,&vi1x3,&vi2x3);
+-        vo1x1 = hc_neon_fma3_lane2(&vo1x1,&vk02c1,&vk12c1,&vk22c1,&vi2x3,&vi3x3,&vi4x3);
+-
+-        const float32x4_t vk02c2 = vld1q_f32(w + 100);
+-
+-        
+-        
+-        
+-        
+-
+-        const float32x4_t vk12c2 = vld1q_f32(w + 104);
+-
+-        
+-        
+-        
+-        
+-
+-        const float32x4_t vk22c2 = vld1q_f32(w + 108);
+-
+-        vo0x0 = hc_neon_fma3_lane1(&vo0x0,&vk02c2,&vk12c2,&vk22c2,&vi0x2,&vi1x2,&vi2x2);
+-        vo1x0 = hc_neon_fma3_lane1(&vo1x0,&vk02c2,&vk12c2,&vk22c2,&vi2x2,&vi3x2,&vi4x2);
+-        vo0x1 = hc_neon_fma3_lane3(&vo0x1,&vk02c2,&vk12c2,&vk22c2,&vi0x3,&vi1x3,&vi2x3);
+-        vo1x1 = hc_neon_fma3_lane3(&vo1x1,&vk02c2,&vk12c2,&vk22c2,&vi2x3,&vi3x3,&vi4x3);
+-
+-        vi0x0 = vi0x3;
+-        vi1x0 = vi1x3;
+-        vi2x0 = vi2x3;
+-        vi3x0 = vi3x3;
+-        vi4x0 = vi4x3;
+-
++        const size_t hc_x=(input_width-iw)/2;
++        float32x4_t vo0x0=hc_neon_rows_pixel27(hc_row0,hc_row1,hc_row2,w,input_width,hc_x);
++        float32x4_t vo1x0=hc_neon_rows_pixel27(hc_row2,hc_row3,hc_row4,w,input_width,hc_x);
++        float32x4_t vo0x1=hc_neon_rows_pixel27(hc_row0,hc_row1,hc_row2,w,input_width,hc_x+1);
++        float32x4_t vo1x1=hc_neon_rows_pixel27(hc_row2,hc_row3,hc_row4,w,input_width,hc_x+1);
++        i0+=12;
++        i1+=12;
++        i2+=12;
++        i3+=12;
++        i4+=12;
+         vo0x0 = vmaxq_f32(vo0x0, vmin);
+         vo1x0 = vmaxq_f32(vo1x0, vmin);
+         vo0x1 = vmaxq_f32(vo0x1, vmin);
+@@ -348,219 +137,15 @@
+       }
+       assert(iw < 4);
+       if XNN_UNLIKELY(iw != 0) {
+-        float32x4_t vo0x0 = vld1q_f32(w);
+-        float32x4_t vo1x0 = vo0x0;
+-        float32x4_t vo0x1 = vo0x0;
+-        float32x4_t vo1x1 = vo0x0;
+-
+-        const float32x4_t vk00c0 = vld1q_f32(w + 4);
+-
+-        // viMx1 = ( iM2c0, iM1c2, iM1c1, iM1c0 )
+-        float32x4_t vi0x1 = vld1q_f32(i0);
+-        float32x4_t vi1x1 = vld1q_f32(i1);
+-        float32x4_t vi2x1 = vld1q_f32(i2);
+-        float32x4_t vi3x1 = vld1q_f32(i3);
+-        float32x4_t vi4x1 = vld1q_f32(i4);
+-
+-        
+-        
+-        
+-
+-        const float32x4_t vk10c0 = vld1q_f32(w + 8);
+-
+-        
+-        
+-        
+-
+-        const float32x4_t vk20c0 = vld1q_f32(w + 12);
+-
+-        vo0x0 = hc_neon_fma3_lane1(&vo0x0,&vk00c0,&vk10c0,&vk20c0,&vi0x0,&vi1x0,&vi2x0);
+-        vo1x0 = hc_neon_fma3_lane1(&vo1x0,&vk00c0,&vk10c0,&vk20c0,&vi2x0,&vi3x0,&vi4x0);
+-        if (iw > 2) {
+-          vo0x1 = hc_neon_fma3_lane3(&vo0x1,&vk00c0,&vk10c0,&vk20c0,&vi0x1,&vi1x1,&vi2x1);
+-          vo1x1 = hc_neon_fma3_lane3(&vo1x1,&vk00c0,&vk10c0,&vk20c0,&vi2x1,&vi3x1,&vi4x1);
+-        }
+-
+-        const float32x4_t vk00c1 = vld1q_f32(w + 16);
+-
+-        float32x4_t vi0x2 = vmovq_n_f32(0.0f);
+-        float32x4_t vi1x2 = vmovq_n_f32(0.0f);
+-        float32x4_t vi2x2 = vmovq_n_f32(0.0f);
+-        float32x4_t vi3x2 = vmovq_n_f32(0.0f);
+-        float32x4_t vi4x2 = vmovq_n_f32(0.0f);
+-        if (iw >= 2) {
+-          // viMx2 = ( iM3c1, iM3c0, iM2c2, iM2c1 )
+-          vi0x2 = vld1q_f32(i0 + 4);
+-          vi1x2 = vld1q_f32(i1 + 4);
+-          vi2x2 = vld1q_f32(i2 + 4);
+-          vi3x2 = vld1q_f32(i3 + 4);
+-          vi4x2 = vld1q_f32(i4 + 4);
+-        }
+-
+-        
+-        
+-        
+-        
+-
+-        const float32x4_t vk10c1 = vld1q_f32(w + 20);
+-
+-        
+-        
+-        
+-        
+-
+-        const float32x4_t vk20c1 = vld1q_f32(w + 24);
+-
+-        vo0x0 = hc_neon_fma3_lane2(&vo0x0,&vk00c1,&vk10c1,&vk20c1,&vi0x0,&vi1x0,&vi2x0);
+-        vo1x0 = hc_neon_fma3_lane2(&vo1x0,&vk00c1,&vk10c1,&vk20c1,&vi2x0,&vi3x0,&vi4x0);
+-        vo0x1 = hc_neon_fma3_lane0(&vo0x1,&vk00c1,&vk10c1,&vk20c1,&vi0x2,&vi1x2,&vi2x2);
+-        vo1x1 = hc_neon_fma3_lane0(&vo1x1,&vk00c1,&vk10c1,&vk20c1,&vi2x2,&vi3x2,&vi4x2);
+-
+-        const float32x4_t vk00c2 = vld1q_f32(w + 28);
+-
+-        
+-        
+-        
+-        
+-
+-        const float32x4_t vk10c2 = vld1q_f32(w + 32);
+-
+-        
+-        
+-        
+-        
+-
+-        const float32x4_t vk20c2 = vld1q_f32(w + 36);
+-
+-        vo0x0 = hc_neon_fma3_lane3(&vo0x0,&vk00c2,&vk10c2,&vk20c2,&vi0x0,&vi1x0,&vi2x0);
+-        vo1x0 = hc_neon_fma3_lane3(&vo1x0,&vk00c2,&vk10c2,&vk20c2,&vi2x0,&vi3x0,&vi4x0);
+-        vo0x1 = hc_neon_fma3_lane1(&vo0x1,&vk00c2,&vk10c2,&vk20c2,&vi0x2,&vi1x2,&vi2x2);
+-        vo1x1 = hc_neon_fma3_lane1(&vo1x1,&vk00c2,&vk10c2,&vk20c2,&vi2x2,&vi3x2,&vi4x2);
+-
+-        const float32x4_t vk01c0 = vld1q_f32(w + 40);
+-
+-        
+-        
+-        
+-
+-        const float32x4_t vk11c0 = vld1q_f32(w + 44);
+-
+-        
+-        
+-        
+-
+-        const float32x4_t vk21c0 = vld1q_f32(w + 48);
+-
+-        vo0x0 = hc_neon_fma3_lane0(&vo0x0,&vk01c0,&vk11c0,&vk21c0,&vi0x1,&vi1x1,&vi2x1);
+-        vo1x0 = hc_neon_fma3_lane0(&vo1x0,&vk01c0,&vk11c0,&vk21c0,&vi2x1,&vi3x1,&vi4x1);
+-        if (iw > 2) {
+-          vo0x1 = hc_neon_fma3_lane2(&vo0x1,&vk01c0,&vk11c0,&vk21c0,&vi0x2,&vi1x2,&vi2x2);
+-          vo1x1 = hc_neon_fma3_lane2(&vo1x1,&vk01c0,&vk11c0,&vk21c0,&vi2x2,&vi3x2,&vi4x2);
+-        }
+-
+-        const float32x4_t vk01c1 = vld1q_f32(w + 52);
+-
+-        
+-        
+-        
+-
+-        const float32x4_t vk11c1 = vld1q_f32(w + 56);
+-
+-        
+-        
+-        
+-
+-        const float32x4_t vk21c1 = vld1q_f32(w + 60);
+-
+-        vo0x0 = hc_neon_fma3_lane1(&vo0x0,&vk01c1,&vk11c1,&vk21c1,&vi0x1,&vi1x1,&vi2x1);
+-        vo1x0 = hc_neon_fma3_lane1(&vo1x0,&vk01c1,&vk11c1,&vk21c1,&vi2x1,&vi3x1,&vi4x1);
+-        if (iw > 2) {
+-          vo0x1 = hc_neon_fma3_lane3(&vo0x1,&vk01c1,&vk11c1,&vk21c1,&vi0x2,&vi1x2,&vi2x2);
+-          vo1x1 = hc_neon_fma3_lane3(&vo1x1,&vk01c1,&vk11c1,&vk21c1,&vi2x2,&vi3x2,&vi4x2);
++        const size_t hc_x=(input_width-iw)/2;
++        float32x4_t vo0x0=hc_neon_rows_pixel27(hc_row0,hc_row1,hc_row2,w,input_width,hc_x);
++        float32x4_t vo1x0=hc_neon_rows_pixel27(hc_row2,hc_row3,hc_row4,w,input_width,hc_x);
++        float32x4_t vo0x1=vmovq_n_f32(0.0f);
++        float32x4_t vo1x1=vmovq_n_f32(0.0f);
++        if(iw==3){
++          vo0x1=hc_neon_rows_pixel27(hc_row0,hc_row1,hc_row2,w,input_width,hc_x+1);
++          vo1x1=hc_neon_rows_pixel27(hc_row2,hc_row3,hc_row4,w,input_width,hc_x+1);
+         }
+-
+-        const float32x4_t vk01c2 = vld1q_f32(w + 64);
+-
+-        float32x4_t vi0x3 = vmovq_n_f32(0.0f);
+-        float32x4_t vi1x3 = vmovq_n_f32(0.0f);
+-        float32x4_t vi2x3 = vmovq_n_f32(0.0f);
+-        float32x4_t vi3x3 = vmovq_n_f32(0.0f);
+-        float32x4_t vi4x3 = vmovq_n_f32(0.0f);
+-        if (iw > 2) {
+-          // viMx3 = ( 0.0, 0.0, 0.0, iM3c2 )
+-          vi0x3 = vld1q_lane_f32(i0 + 8, vi0x3, 0);
+-          vi1x3 = vld1q_lane_f32(i1 + 8, vi1x3, 0);
+-          vi2x3 = vld1q_lane_f32(i2 + 8, vi2x3, 0);
+-          vi3x3 = vld1q_lane_f32(i3 + 8, vi3x3, 0);
+-          vi4x3 = vld1q_lane_f32(i4 + 8, vi4x3, 0);
+-        }
+-
+-        
+-        
+-        
+-        
+-
+-        const float32x4_t vk11c2 = vld1q_f32(w + 68);
+-
+-        
+-        
+-        
+-        
+-
+-        const float32x4_t vk21c2 = vld1q_f32(w + 72);
+-
+-        vo0x0 = hc_neon_fma3_lane2(&vo0x0,&vk01c2,&vk11c2,&vk21c2,&vi0x1,&vi1x1,&vi2x1);
+-        vo1x0 = hc_neon_fma3_lane2(&vo1x0,&vk01c2,&vk11c2,&vk21c2,&vi2x1,&vi3x1,&vi4x1);
+-        vo0x1 = hc_neon_fma3_lane0(&vo0x1,&vk01c2,&vk11c2,&vk21c2,&vi0x3,&vi1x3,&vi2x3);
+-        vo1x1 = hc_neon_fma3_lane0(&vo1x1,&vk01c2,&vk11c2,&vk21c2,&vi2x3,&vi3x3,&vi4x3);
+-
+-        if (iw >= 2) {
+-          const float32x4_t vk02c0 = vld1q_f32(w + 76);
+-
+-          
+-          
+-
+-          const float32x4_t vk12c0 = vld1q_f32(w + 80);
+-
+-          
+-          
+-
+-          const float32x4_t vk22c0 = vld1q_f32(w + 84);
+-
+-          vo0x0 = hc_neon_fma3_lane3(&vo0x0,&vk02c0,&vk12c0,&vk22c0,&vi0x1,&vi1x1,&vi2x1);
+-          vo1x0 = hc_neon_fma3_lane3(&vo1x0,&vk02c0,&vk12c0,&vk22c0,&vi2x1,&vi3x1,&vi4x1);
+-
+-          const float32x4_t vk02c1 = vld1q_f32(w + 88);
+-
+-          
+-          
+-
+-          const float32x4_t vk12c1 = vld1q_f32(w + 92);
+-
+-          
+-          
+-
+-          const float32x4_t vk22c1 = vld1q_f32(w + 96);
+-
+-          vo0x0 = hc_neon_fma3_lane0(&vo0x0,&vk02c1,&vk12c1,&vk22c1,&vi0x2,&vi1x2,&vi2x2);
+-          vo1x0 = hc_neon_fma3_lane0(&vo1x0,&vk02c1,&vk12c1,&vk22c1,&vi2x2,&vi3x2,&vi4x2);
+-
+-          const float32x4_t vk02c2 = vld1q_f32(w + 100);
+-
+-          
+-          
+-
+-          const float32x4_t vk12c2 = vld1q_f32(w + 104);
+-
+-          
+-          
+-
+-          const float32x4_t vk22c2 = vld1q_f32(w + 108);
+-
+-          vo0x0 = hc_neon_fma3_lane1(&vo0x0,&vk02c2,&vk12c2,&vk22c2,&vi0x2,&vi1x2,&vi2x2);
+-          vo1x0 = hc_neon_fma3_lane1(&vo1x0,&vk02c2,&vk12c2,&vk22c2,&vi2x2,&vi3x2,&vi4x2);
+-        }
+-
+         vo0x0 = vmaxq_f32(vo0x0, vmin);
+         vo1x0 = vmaxq_f32(vo1x0, vmin);
+         vo0x1 = vmaxq_f32(vo0x1, vmin);

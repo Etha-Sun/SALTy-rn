@@ -1,0 +1,31 @@
+#include "../../shim/maps_model.h"
+id : 1
+priority : core(2)
+left : hc_data(?F) at 0
+right : store(?p,float,?v) at 1
+check : infer(hc_present(F,p));
+action : left_erase(0);
+         left_add(hc_data(hc_pop(F,p)));
+         left_add(store(p,float,hc_get(F,p)));
+id : 2
+priority : core(1)
+left : hc_data(hc_pop(?F,?p)) at 0
+       store(?q,float,hc_get(F,p)) at 1
+check : infer(q == p);
+        infer(hc_present(F,p));
+action : left_erase(0);
+         left_erase(1);
+         left_add(hc_data(F));
+id : 5
+priority : core(0)
+left : hc_data(?F) at 0
+right : hc_data(F) at 1
+action : left_erase(0);
+         right_erase(1);
+id : 7
+priority : core(0)
+left : store(?p,float,?v) at 0
+right : store(?q,float,v) at 1
+check : infer(p == q);
+action : left_erase(0);
+         right_erase(1);

@@ -1,0 +1,8 @@
+From HwcConv Require Import Main443AdvancedPureTactics.
+Module Checked.
+Lemma proof_of_test_neon_partial_solve_wit_20_pure : HwcConv.neon_unit_goal.test_neon_partial_solve_wit_20_pure.
+Proof. unfold HwcConv.neon_unit_goal.test_neon_partial_solve_wit_20_pure;hcp_pure. Qed.
+Definition ExactSecond : HwcConv.neon_unit_goal.test_neon_partial_solve_wit_20_pure := proof_of_test_neon_partial_solve_wit_20_pure.
+End Checked.
+Print Assumptions Checked.proof_of_test_neon_partial_solve_wit_20_pure.
+Print Assumptions Checked.ExactSecond.
