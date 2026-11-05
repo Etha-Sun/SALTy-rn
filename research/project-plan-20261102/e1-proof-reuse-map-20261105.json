@@ -1,0 +1,2450 @@
+{
+ "schema": "e1-proof-reuse-map/v1",
+ "created": "2026-11-05",
+ "read_only_inputs": {
+  "old_packages": "/zp_vegeta/scratch_sb/ycsun/verus/build/e1-workers-20261104/w1-rvv-vadd/repo/verification/qcp/verified (commit 821969733, origin/c-shim-v2)",
+  "A": "/zp_vegeta/scratch_sb/ycsun/verus/research/sol-pipeline-comparison-20261030/sources/SALTy-rn/kernels/source",
+  "Bopt": "/zp_vegeta/scratch_sb/ycsun/verus/build/e1-source-pairing-20261104/upstream/optimized-rvv-kernels",
+  "lowering": "/zp_vegeta/scratch_sb/ycsun/verus/build/rvv-ptr-lower-20261104/val6/<k>/run1/<k>.lowering.json (ptr_ops)"
+ },
+ "method": {
+  "mechanical_fields": "computed by script: sha256 of A (all 35 equal the NEON sha recorded in old originals.json/repair.json where recorded); NEON-vs-A diff after comment strip + whitespace-collapse (line) and C-token SequenceMatcher (token); ptr_ops intrinsic names; set comparison with __riscv_* names in old impl/testRVV.c only (old helpers in shim/*.c not counted, so overlap is a lower bound)",
+  "qualitative_fields": "read from old package files (repair.json/repair.md/patches/spec.c/Coq .v names) and Bopt source; [V]=read in cited file, [I]=inference, not executed. Counterexamples marked [I] are hand-derived and NOT run.",
+  "no_new_verification": "No QCP/Coq/native run was performed. Old checker records are historical, not fresh."
+ },
+ "rating_rubric": {
+  "high": "old NEON proof targets A byte-identical or only QCP syntax compat; spec.c + kernel Coq models reusable; Bopt equivalence plausible; RVV side still rebuilt (pointer-form shim)",
+  "medium": "substantial models/spec reusable, but at least one of: NEON proof targets a semantically repaired or heavily refactored A; Bopt likely non-equivalent under the old observation (known witness) or needs an unadopted precondition; many new RVV families",
+  "low": "NEON proof tied to heavily refactored/repaired A AND Bopt changes algorithm/order/semantics; only FP/integer models and witnesses transfer"
+ },
+ "counts": {
+  "low": 5,
+  "medium": 21,
+  "high": 9,
+  "by_rating": {
+   "high": [
+    "f32-vadd",
+    "f32-vcmul",
+    "f32-vdiv",
+    "f32-vlrelu",
+    "f32-vmul",
+    "f32-vmulc",
+    "f32-vsqrt",
+    "f32-vsub",
+    "qu8-rsum"
+   ],
+   "medium": [
+    "f32-dwconv-minmax",
+    "f32-f16-vcvt",
+    "f32-gemm-minmax",
+    "f32-igemm-minmax",
+    "f32-maxpool",
+    "f32-vmax",
+    "f32-vmin",
+    "f32-vrndne",
+    "qd8-f32-qc4w-gemm-minmax",
+    "qs8-f32-vcvt",
+    "qs8-rdsum",
+    "qs8-rsum",
+    "qs8-vadd-minmax",
+    "qs8-vlrelu",
+    "qs8-vmul-minmax-fp32",
+    "qu8-f32-vcvt",
+    "qu8-rdsum",
+    "s8-vclamp",
+    "u8-vclamp",
+    "x32-packw-gemm-goi",
+    "x32transpose"
+   ],
+   "low": [
+    "dwconv2d-chw",
+    "f32-argmaxpool",
+    "f32-conv-hwc2chw",
+    "qs8-vcvt",
+    "qu8-vadd-minmax"
+   ]
+  }
+ },
+ "neon_side_changes": {
+  "identical": [
+   "f32-vadd",
+   "f32-vcmul",
+   "f32-vdiv",
+   "f32-vlrelu",
+   "f32-vmax",
+   "f32-vmin",
+   "f32-vmul",
+   "f32-vmulc",
+   "f32-vrndne",
+   "f32-vsqrt",
+   "f32-vsub",
+   "qd8-f32-qc4w-gemm-minmax",
+   "qs8-vmul-minmax-fp32",
+   "s8-vclamp",
+   "u8-vclamp"
+  ],
+  "compat-modified": [
+   "dwconv2d-chw",
+   "f32-conv-hwc2chw",
+   "f32-dwconv-minmax",
+   "f32-f16-vcvt",
+   "f32-gemm-minmax",
+   "f32-igemm-minmax",
+   "qu8-rsum",
+   "x32-packw-gemm-goi",
+   "x32transpose"
+  ],
+  "semantic-repaired": [
+   "f32-argmaxpool",
+   "f32-maxpool",
+   "qs8-f32-vcvt",
+   "qs8-rdsum",
+   "qs8-rsum",
+   "qs8-vadd-minmax",
+   "qs8-vcvt",
+   "qs8-vlrelu",
+   "qu8-f32-vcvt",
+   "qu8-rdsum",
+   "qu8-vadd-minmax"
+  ]
+ },
+ "cross_kernel_assets": [
+  {
+   "asset": "FP32 FMA model",
+   "paths": [
+    "<pkg>/proof/coq/GemmSpec/FmaModel.v (byte-identical in f32-gemm, f32-igemm, f32-spmm, qd8-qc4w, qd8-qc8w gemm/igemm)",
+    "<pkg>/proof/coq/FmaModel.v (byte-identical, same md5 7e10c691a2, in f32-dwconv-minmax, f32-dwconv2d-chw, f32-conv-hwc2chw, f32-raddstoreexpminusmax)"
+   ],
+   "use": "vfmacc/vfmadd single-rounding RNE (Flocq Bfma), fused-vs-split witnesses",
+   "verified": "md5 [V]"
+  },
+  {
+   "asset": "NaN-aware min/max models (ARM propagate vs RVV maximumNumber/minimumNumber)",
+   "paths": [
+    "f32-gemm-minmax/proof/coq/GemmSpec/IntrinsicModel.v (identical in 4 gemm pkgs)",
+    "f32-vmax/proof/coq/Model.v, f32-vmin/proof/coq/Model.v (mm_arm_bits/mm_rvv_bits)",
+    "f32-maxpool/proof/coq/Model.v (exact-bit mp_arm_bits/mp_rvv_bits)",
+    "f32-dwconv-minmax/proof/coq/Model.v (fp32_max/min_number)"
+   ],
+   "use": "vfmax/vfmin vv/vf for ~13 kernels; the matching old NaN counterexamples are the most likely E1 result for vmax/vmin/gemm/igemm/qc4w/maxpool/dwconv*/hwc2chw"
+  },
+  {
+   "asset": "Numeric-eq-or-both-NaN observation stack",
+   "paths": [
+    "f32-vadd/proof/coq/NanBridge/{BridgeLogic,ListBridge}.v",
+    "f32-vadd/proof/coq/VaddComparator/ComparatorLogic.v",
+    "f32-vadd/proof/coq/VaddWrapper/WrapperLogic.v",
+    "f32-vadd/proof/coq/relations/*"
+   ],
+   "use": "public observation used by f32 elementwise, f32 gemm family and qs8/qu8-f32-vcvt specs; already reused in E1 f32-vadd"
+  },
+  {
+   "asset": "Integer wrap/sum models",
+   "paths": [
+    "qs8-rsum|qu8-rsum|qs8-rdsum|qu8-rdsum/proof/coq/Model.v (byte-identical md5 4177718e0b)",
+    "*/proof/coq/IntegerFacts.v (same lemma set, per-kernel copies)",
+    "qd8-f32-qc4w-gemm-minmax/proof/coq/Qd8Phase/IntegerFold.v (wrap32 dot order independence)"
+   ],
+   "use": "vwadd/vwaddu/vredsum/vwredsumu reassociation and modular accumulation"
+  },
+  {
+   "asset": "Fixed-point rounding/saturation (VXRM)",
+   "paths": [
+    "qs8-vcvt/proof/coq/Model.v == qs8-vlrelu/proof/coq/Model.v (md5 2392c19fbc: qcv_qrdmulh_equiv, qcv_rvv_clip15, sat8/16)",
+    "qs8-vadd-minmax/proof/coq/ShiftFacts.v, qu8-vadd-minmax/proof/coq/ShiftFacts.v (dyadic round, RNU)"
+   ],
+   "use": "vsmul RNU, vnclip/vnclipu with VXRM, vsadd; old shim contracts are call-site-specialized (e.g. vnclip d==0 && rm==2) so only the Coq functions transfer"
+  },
+  {
+   "asset": "Misc reusable",
+   "paths": [
+    "u8-vclamp/proof/coq/RvvRepair/Policy.v (legal_vl per RVV 1.0)",
+    "x32-transposec/proof/coq/{SignedStrideFacts,StrideModel}.v (strided/segment addressing)",
+    "f32-argmaxpool/proof/coq/IntrinsicSemantics.v (vmfgt/vmerge)",
+    "f32-dwconv2d-chw/proof/coq/TerminalModel.v (vfslide1up/down)"
+   ]
+  }
+ ],
+ "global_pitfalls": [
+  "Old RVV formal models are flat per-lane structs (u8-vclamp: packed 32 uint32 words) with no proven struct<->array correspondence; old shim contracts are specialized to old call sites and LMUL; pointer-form shim must be rebuilt (as in E1 f32-vadd).",
+  "QCP 2.1.4 --arch=64 parses unsigned long as UINT32 (qs8-vadd-minmax/proof/type-width-repair.json); old project typedef size_t as unsigned long long. Bopt lowering ptr_ops declare vl as \"unsigned long\" -> check width model.",
+  "QCP cast elision u16->s16 (qu8-vadd-minmax/proof/unsigned16-decode-repair.json) affects Bopt vreinterpret/(int16_t) casts.",
+  "QCP front-end gaps forced compat edits on A: do-while, static locals, trailing initializer comma, hex float literals, post-increment in args, nested vector calls, restrict casts. Original A needs the same edits (disclose as compat, not repair).",
+  "Many Bopt files drop old-project repairs: NaN min/max/clamp (vmax, vmin, gemm, igemm, qc4w, maxpool, dwconv-minmax, dwconv2d-chw, hwc2chw), f16 NaN path, clamp order (s8/u8-vclamp), 2^31 int count (argmaxpool), packed weight stride (dwconv-minmax), width-0 (transpose), signed *output += (qs8-rsum). Old witnesses should be replayed natively on A vs Bopt before any proof work; do not add NaN-free or lo<=hi preconditions silently."
+ ],
+ "kernels": [
+  {
+   "kernel": "dwconv2d-chw",
+   "old_package": "f32-dwconv2d-chw",
+   "old_package_dir": "/zp_vegeta/scratch_sb/ycsun/verus/build/e1-workers-20261104/w1-rvv-vadd/repo/verification/qcp/verified/f32-dwconv2d-chw",
+   "A_path": "/zp_vegeta/scratch_sb/ycsun/verus/research/sol-pipeline-comparison-20261030/sources/SALTy-rn/kernels/source/f32-dwconv2d-chw.c",
+   "A_sha256": "92203697f6f349fe1519cb50907639a2977d73caa56672f68bd2696e3d7d363d",
+   "bopt_path": "/zp_vegeta/scratch_sb/ycsun/verus/build/e1-source-pairing-20261104/upstream/optimized-rvv-kernels/dwconv2d-chw.c",
+   "lowering_json": "/zp_vegeta/scratch_sb/ycsun/verus/build/rvv-ptr-lower-20261104/val6/dwconv2d-chw/run1/dwconv2d-chw.lowering.json",
+   "neon": {
+    "status": "compat-modified (heavy)",
+    "old_neon_proof_targets": "refactored A: static removed, FMAs into shim/neon_vector_pixel.c helpers, 46 scalar loads via dw_read_scalar, 58 nested calls hoisted; semantic_counterexample=false [V repair.json neon_compatibility, proof/repair-neon.patch]",
+    "normalized_line_diff_vs_A": 156,
+    "token_hunks_vs_A": 112,
+    "changed_tokens_vs_A": 1478
+   },
+   "old_rvv_repair": {
+    "repaired": true,
+    "sides": "RVV semantic (+NEON compat)",
+    "reason": "ARM FMAX/FMIN propagate NaN; RVV maxNumber/minNumber",
+    "counterexample": "3 NaN witnesses (proof/original-counterexamples.json)",
+    "precondition_strengthened": false,
+    "old_config": "VLEN128/e32m2/VLMAX8 (Bopt m4)"
+   },
+   "spec_observation": "dw_observe = fp32_eq or both NaN; unwritten option frames kept; shared RO aliases; bottom-row output overlap with o2/o1/o0 order; padding_top=1 [V Model.v]",
+   "coq_reusable_modules": {
+    "spec": [
+     "Model.v (dw_arm_*, fp32_max/min_number, dw_rvv_fma, dw_rel, dw_observe)",
+     "FmaModel.v",
+     "FmaSwap.v",
+     "NanFacts.v",
+     "TerminalModel.v (slide up/down)",
+     "VectorPixelModel.v",
+     "NeonVectorPixelModel.v",
+     "PublicObservation.v"
+    ]
+   },
+   "coq_module_root": "/zp_vegeta/scratch_sb/ycsun/verus/build/e1-workers-20261104/w1-rvv-vadd/repo/verification/qcp/verified/f32-dwconv2d-chw/proof/coq/",
+   "bopt_ptr_ops": [
+    "vfmacc_vf_f32m4",
+    "vfmadd_vf_f32m4",
+    "vfmax_vf_f32m4",
+    "vfmin_vf_f32m4",
+    "vfmv_v_f_f32m4",
+    "vfslide1down_vf_f32m4",
+    "vfslide1up_vf_f32m4",
+    "vle32_v_f32m4",
+    "vse32_v_f32m4"
+   ],
+   "bopt_ops_exactly_in_old_rvv_main": [],
+   "bopt_families_absent_from_old_rvv_main": [
+    "vfmacc_vf",
+    "vfmadd_vf",
+    "vfmax_vf",
+    "vfmin_vf",
+    "vfmv_v_f",
+    "vfslide1down_vf",
+    "vfslide1up_vf"
+   ],
+   "rvv_semantics_for_bopt": "vfslide1up/down: TerminalModel.v + shim/rvv_extended_intrinsics.h (m2); vfmacc_vf: dw_rvv_fma; vfmax/vfmin_vf: fp32_max/min_number; vfmadd_vf unmodeled [V]",
+   "bopt_mismatch_risk": "HIGH [V grep: no NaN repair] + [I] FMA tap order differs (A centre taps first; Bopt row-wise) -> fused rounding differs even without NaN",
+   "pitfalls": "NaN, FMA order, bottom-row alias/store order, slide1down right-edge reads",
+   "e1_outlook": "counterexample likely",
+   "rating": "low",
+   "rating_reason": "NEON proof targets refactored A; Bopt changes NaN semantics and FMA order; only FP models/witnesses carry",
+   "evidence_paths_relative_to_verified": [
+    "f32-dwconv2d-chw/proof/repair.json",
+    "f32-dwconv2d-chw/proof/repair-neon.patch",
+    "f32-dwconv2d-chw/proof/coq/Model.v",
+    "f32-dwconv2d-chw/proof/coq/TerminalModel.v"
+   ]
+  },
+  {
+   "kernel": "f32-argmaxpool",
+   "old_package": "f32-argmaxpool",
+   "old_package_dir": "/zp_vegeta/scratch_sb/ycsun/verus/build/e1-workers-20261104/w1-rvv-vadd/repo/verification/qcp/verified/f32-argmaxpool",
+   "A_path": "/zp_vegeta/scratch_sb/ycsun/verus/research/sol-pipeline-comparison-20261030/sources/SALTy-rn/kernels/source/f32-argmaxpool.c",
+   "A_sha256": "e1038b6c59a957e8d3faa014eef580b87ae4e79baf59c7a68bff4cdf8e0b1fa5",
+   "bopt_path": "/zp_vegeta/scratch_sb/ycsun/verus/build/e1-source-pairing-20261104/upstream/optimized-rvv-kernels/f32-argmaxpool.c",
+   "lowering_json": "/zp_vegeta/scratch_sb/ycsun/verus/build/rvv-ptr-lower-20261104/val6/f32-argmaxpool/run1/f32-argmaxpool.lowering.json",
+   "neon": {
+    "status": "semantic-repaired",
+    "old_neon_proof_targets": "semantically modified A: (int)pooling_elements -> size_t with saturating decrement; c=1..3 tail reads only initialized active lanes (adds vsetq_lane); read-table split [V proof/repair-neon.patch]",
+    "normalized_line_diff_vs_A": 78,
+    "token_hunks_vs_A": 46,
+    "changed_tokens_vs_A": 299
+   },
+   "old_rvv_repair": {
+    "repaired": true,
+    "sides": "both",
+    "reason": "size_t->int narrowing skips all input at 2^31; RVV 9-candidate block moved into ordinary helper",
+    "counterexample": "pooling_elements=2^31 with valid 16 GiB table: both originals output 0 instead of 1.0/idx0 (proof/original-counterexamples.json)",
+    "precondition_strengthened": false,
+    "old_config": "VLEN128/SEW32/LMUL8/VLMAX32 (same as Bopt)"
+   },
+   "spec_observation": "EXACT binary32 bits + u32 index: NaN payload, signed zero, strict-greater update, ties keep earlier index, index mod 2^32 [V README, Model.v]",
+   "coq_reusable_modules": {
+    "spec": [
+     "Model.v (ap_gt_mask, ap_step, ap_scan)",
+     "IntrinsicSemantics.v (ap_rvv_gt, ap_cross_isa_update/scan, ap_vl_progress)",
+     "APPublicModel.v",
+     "APProgramObservation.v",
+     "ReadPreviousModel.v"
+    ]
+   },
+   "coq_module_root": "/zp_vegeta/scratch_sb/ycsun/verus/build/e1-workers-20261104/w1-rvv-vadd/repo/verification/qcp/verified/f32-argmaxpool/proof/coq/",
+   "bopt_ptr_ops": [
+    "vfmax_vv_f32m8",
+    "vle32_v_f32m8",
+    "vmerge_vxm_u32m8",
+    "vmfgt_vv_f32m8_b4",
+    "vmv_v_x_u32m8",
+    "vse32_v_f32m8",
+    "vse32_v_u32m8"
+   ],
+   "bopt_ops_exactly_in_old_rvv_main": [],
+   "bopt_families_absent_from_old_rvv_main": [
+    "vfmax_vv",
+    "vle32_v",
+    "vmerge_vxm",
+    "vmfgt_vv",
+    "vmv_v_x",
+    "vse32_v"
+   ],
+   "rvv_semantics_for_bopt": "vmfgt_vv/vmerge_vxm_u32/vmv_v_x/vle/vse in shim/rvv_specs.h + IntrinsicSemantics.v; vfmax_vv not modeled here (borrow f32-maxpool mp_rvv_bits) [V]",
+   "bopt_mismatch_risk": "HIGH [V Bopt line 64: int k=(int)pooling_elements-1] 2^31 bug back; [I] Bopt updates value via vfmax: NaN-current-max and vfmax(-0,+0) break exact-bit observation",
+   "pitfalls": "2^31 narrowing, NaN-first, ±0 bits, NEON tail reads, table aliasing",
+   "e1_outlook": "counterexample likely",
+   "rating": "low",
+   "rating_reason": "NEON proof targets semantically repaired A; Bopt reintroduces count UB and changes NaN/±0",
+   "evidence_paths_relative_to_verified": [
+    "f32-argmaxpool/proof/repair.json",
+    "f32-argmaxpool/proof/repair-neon.patch",
+    "f32-argmaxpool/proof/original-counterexamples.json",
+    "f32-argmaxpool/proof/coq/IntrinsicSemantics.v"
+   ]
+  },
+  {
+   "kernel": "f32-conv-hwc2chw",
+   "old_package": "f32-conv-hwc2chw",
+   "old_package_dir": "/zp_vegeta/scratch_sb/ycsun/verus/build/e1-workers-20261104/w1-rvv-vadd/repo/verification/qcp/verified/f32-conv-hwc2chw",
+   "A_path": "/zp_vegeta/scratch_sb/ycsun/verus/research/sol-pipeline-comparison-20261030/sources/SALTy-rn/kernels/source/f32-conv-hwc2chw.c",
+   "A_sha256": "87a57d56fc8836dd5394e59ab113fd6bd7d328023fc68e214ae0b42168eaea58",
+   "bopt_path": "/zp_vegeta/scratch_sb/ycsun/verus/build/e1-source-pairing-20261104/upstream/optimized-rvv-kernels/f32-conv-hwc2chw.c",
+   "lowering_json": "/zp_vegeta/scratch_sb/ycsun/verus/build/rvv-ptr-lower-20261104/val6/f32-conv-hwc2chw/run1/f32-conv-hwc2chw.lowering.json",
+   "neon": {
+    "status": "compat-modified (heavy)",
+    "old_neon_proof_targets": "heavily restructured A (219-line main, 27-FMA into shim/neon_rows_pixel.c, neon3_helpers.c; order preserved); no NEON semantic repair [V proof/REPAIR.zh-CN.md, repair-neon.patch]",
+    "normalized_line_diff_vs_A": 390,
+    "token_hunks_vs_A": 100,
+    "changed_tokens_vs_A": 3900
+   },
+   "old_rvv_repair": {
+    "repaired": true,
+    "sides": "RVV semantic (+both compat)",
+    "reason": "masked strided loads (no inactive deref); row-2 upper clamp; NaN propagation; _mu skip of absent right taps; uint64 dims; row1 before row0 store",
+    "counterexample": "H1,W1,top1,start0,end1,C1: NEON/oracle 0x7fc00000 vs RVV 0xc0000000",
+    "precondition_strengthened": false,
+    "old_config": "VLEN128/e32m1/VLMAX4 (same as Bopt)"
+   },
+   "spec_observation": "public dw_observe = fp32_eq or both NaN; positive H/W/C, top 0..1; shared RO alias map; CHW output windows with option frames [V repair.json domain]",
+   "coq_reusable_modules": {
+    "spec": [
+     "HwcArithmeticModel.v (hwc_arm_fold, hwc_rvv_fold)",
+     "HwcSourcePixelModel.v",
+     "HwcProgramModel.v (tap index dx*9+ci*3+ky)",
+     "ClampModel.v",
+     "MaskModel.v",
+     "Model.v",
+     "FmaModel.v",
+     "NanFacts.v"
+    ],
+    "rvv": [
+     "RvvViewsModel.v (hc_rvv_fma)"
+    ]
+   },
+   "coq_module_root": "/zp_vegeta/scratch_sb/ycsun/verus/build/e1-workers-20261104/w1-rvv-vadd/repo/verification/qcp/verified/f32-conv-hwc2chw/proof/coq/",
+   "bopt_ptr_ops": [
+    "vadd_vx_i32m1",
+    "vfmacc_vf_f32m1",
+    "vfmax_vf_f32m1",
+    "vfmin_vf_f32m1",
+    "vfmv_v_f_f32m1",
+    "vfslide1down_vf_f32m1",
+    "vget_v_f32m1x6_f32m1",
+    "vid_v_u32m1",
+    "vlseg6e32_v_f32m1x6",
+    "vmand_mm_b32",
+    "vmerge_vvm_f32m1",
+    "vmsge_vx_i32m1_b32",
+    "vmslt_vx_i32m1_b32",
+    "vmul_vx_u32m1",
+    "vreinterpret_v_u32m1_i32m1",
+    "vse32_v_f32m1"
+   ],
+   "bopt_ops_exactly_in_old_rvv_main": [
+    "vse32_v_f32m1"
+   ],
+   "bopt_families_absent_from_old_rvv_main": [
+    "vadd_vx",
+    "vfmacc_vf",
+    "vfmax_vf",
+    "vfmin_vf",
+    "vfmv_v_f",
+    "vfslide1down_vf",
+    "vget_v",
+    "vid_v",
+    "vlseg6e32_v",
+    "vmand_mm_b32",
+    "vmerge_vvm",
+    "vmsge_vx",
+    "vmslt_vx",
+    "vmul_vx",
+    "vreinterpret_v"
+   ],
+   "rvv_semantics_for_bopt": "vfmax/vfmin_vf: ClampModel; vfmacc_vf: hc_rvv_fma; vmerge_vvm, vid, vmand: shim/rvv_views.h, clamp_views.h; NOT modeled: vlseg6e32+vget m1x6, vmsge/vmslt_vx_i32, vreinterpret u32->i32, vmul_vx/vadd_vx, vfslide1down [V]",
+   "bopt_mismatch_risk": "HIGH [V]: plain vfmax/vfmin (NaN bug back); unmasked vlseg6 tail/OOB reads; int32 width comparisons; [I] accumulation order ky->dx->ci vs NEON dx->ci->ky; right padding computes 0*w (0*Inf=NaN)",
+   "pitfalls": "NaN, padding asymmetry, OOB segment loads, int32 index, clipped-row aliases, FMA order",
+   "e1_outlook": "counterexample likely",
+   "rating": "low",
+   "rating_reason": "largest package, almost all tied to old restructured C; Bopt reintroduces several fixed bugs",
+   "evidence_paths_relative_to_verified": [
+    "f32-conv-hwc2chw/proof/REPAIR.zh-CN.md",
+    "f32-conv-hwc2chw/proof/repair.json",
+    "f32-conv-hwc2chw/proof/coq/HwcArithmeticModel.v",
+    "f32-conv-hwc2chw/proof/intrinsic-ledger.json"
+   ]
+  },
+  {
+   "kernel": "f32-dwconv-minmax",
+   "old_package": "f32-dwconv-minmax",
+   "old_package_dir": "/zp_vegeta/scratch_sb/ycsun/verus/build/e1-workers-20261104/w1-rvv-vadd/repo/verification/qcp/verified/f32-dwconv-minmax",
+   "A_path": "/zp_vegeta/scratch_sb/ycsun/verus/research/sol-pipeline-comparison-20261030/sources/SALTy-rn/kernels/source/f32-dwconv-minmax.c",
+   "A_sha256": "bdb7f141b37fc1f90c29f7ad39b40f34f5c67d44feac1c56529ea995b0fc177e",
+   "bopt_path": "/zp_vegeta/scratch_sb/ycsun/verus/build/e1-source-pairing-20261104/upstream/optimized-rvv-kernels/f32-dwconv-minmax.c",
+   "lowering_json": "/zp_vegeta/scratch_sb/ycsun/verus/build/rvv-ptr-lower-20261104/val6/f32-dwconv-minmax/run1/f32-dwconv-minmax.lowering.json",
+   "neon": {
+    "status": "compat-modified",
+    "old_neon_proof_targets": "A modulo do{}while(--w) -> while(w){...;--w;} (QCP invariant placement); neon_semantic_repair=false [V repair.json]",
+    "normalized_line_diff_vs_A": 5,
+    "token_hunks_vs_A": 4,
+    "changed_tokens_vs_A": 15
+   },
+   "old_rvv_repair": {
+    "repaired": true,
+    "sides": "RVV semantic (+both loop compat)",
+    "reason": "RVV advanced the shared 4-channel packed weights by dynamic VL; RVV maxNumber/minNumber drop NaN",
+    "counterexample": "channels=1 weight layout; NaN accumulator; NaN lower bound (proof/original-counterexamples.json)",
+    "precondition_strengthened": false,
+    "old_config": "VLEN128/e32m4/VLMAX16 (same as Bopt)"
+   },
+   "spec_observation": "numeric eq or both NaN; schedule FMA(i0,k0,b), MUL(i1,k1), FMA(i2,k2), ADD, max lo, min hi; signed int64 input_stride, zero-pointer skip, RO alias, last write wins [V spec.c]",
+   "coq_reusable_modules": {
+    "spec": [
+     "Model.v (dw_arm_*, fp32_min/max_number)",
+     "FmaModel.v (fma_rne + fused/split witness lemmas)",
+     "NanFacts.v",
+     "VectorModel.v",
+     "PublicModel.v",
+     "Observation.v"
+    ]
+   },
+   "coq_module_root": "/zp_vegeta/scratch_sb/ycsun/verus/build/e1-workers-20261104/w1-rvv-vadd/repo/verification/qcp/verified/f32-dwconv-minmax/proof/coq/",
+   "bopt_ptr_ops": [
+    "vfmacc_vv_f32m4",
+    "vfmax_vf_f32m4",
+    "vfmin_vf_f32m4",
+    "vle32_v_f32m4",
+    "vse32_v_f32m4"
+   ],
+   "bopt_ops_exactly_in_old_rvv_main": [
+    "vfmacc_vv_f32m4",
+    "vfmax_vf_f32m4",
+    "vfmin_vf_f32m4",
+    "vle32_v_f32m4",
+    "vse32_v_f32m4"
+   ],
+   "bopt_families_absent_from_old_rvv_main": [],
+   "rvv_semantics_for_bopt": "Bopt 5 ops exactly = old RVV ops (vfmacc_vv, vfmax_vf, vfmin_vf, vle32, vse32 m4) [V]",
+   "bopt_mismatch_risk": "HIGH [V Bopt lines 46-49: w += vl] weight-layout bug back (channels=1 witness); plain vfmax/vfmin (NaN); three fused vfmacc vs A FMA/MUL/FMA/ADD -> finite rounding differs",
+   "pitfalls": "packed weight layout, NaN clamp, fused vs split rounding",
+   "e1_outlook": "counterexample likely (old witnesses)",
+   "rating": "medium",
+   "rating_reason": "NEON proof nearly on A and intrinsic set matches, but Bopt non-equivalent three ways",
+   "evidence_paths_relative_to_verified": [
+    "f32-dwconv-minmax/proof/repair.json",
+    "f32-dwconv-minmax/spec.c",
+    "f32-dwconv-minmax/proof/coq/FmaModel.v"
+   ]
+  },
+  {
+   "kernel": "f32-f16-vcvt",
+   "old_package": "f32-f16-vcvt",
+   "old_package_dir": "/zp_vegeta/scratch_sb/ycsun/verus/build/e1-workers-20261104/w1-rvv-vadd/repo/verification/qcp/verified/f32-f16-vcvt",
+   "A_path": "/zp_vegeta/scratch_sb/ycsun/verus/research/sol-pipeline-comparison-20261030/sources/SALTy-rn/kernels/source/f32-f16-vcvt.c",
+   "A_sha256": "41a081db8c9503ca62f077ad790dd92d92f2fe374e554cef8a9baf35dabd2aaa",
+   "bopt_path": "/zp_vegeta/scratch_sb/ycsun/verus/build/e1-source-pairing-20261104/upstream/optimized-rvv-kernels/f32-f16-vcvt.c",
+   "lowering_json": "/zp_vegeta/scratch_sb/ycsun/verus/build/rvv-ptr-lower-20261104/val6/f32-f16-vcvt/run1/f32-f16-vcvt.lowering.json",
+   "neon": {
+    "status": "compat-modified",
+    "old_neon_proof_targets": "A modulo exact hex->decimal literal respelling (2 per side) [V proof/compatibility.patch]",
+    "normalized_line_diff_vs_A": 4,
+    "token_hunks_vs_A": 2,
+    "changed_tokens_vs_A": 2
+   },
+   "old_rvv_repair": {
+    "repaired": false,
+    "note": "only same literal respelling; VLEN128 e32m8/e16m4 VLMAX32 [V]"
+   },
+   "spec_observation": "EXACT bit equality of uint16 outputs; all binary32; n+3 padding; unaligned 2-byte tail store [V README]",
+   "coq_reusable_modules": {
+    "spec": [
+     "Model.v (f16_* bit ops, f16_arm_add/mul, f16_rvv_*)",
+     "Observation.v",
+     "LiteralModel.v",
+     "Literal.v",
+     "UShortStoreModel.v",
+     "UShortArrayBridge.v",
+     "WordView.v",
+     "PackModel.v",
+     "LaneModel.v"
+    ]
+   },
+   "coq_module_root": "/zp_vegeta/scratch_sb/ycsun/verus/build/e1-workers-20261104/w1-rvv-vadd/repo/verification/qcp/verified/f32-f16-vcvt/proof/coq/",
+   "bopt_ptr_ops": [
+    "vadd_vv_u16m4",
+    "vadd_vx_u32m8",
+    "vand_vx_u16m4",
+    "vand_vx_u32m8",
+    "vfabs_v_f32m8",
+    "vfmadd_vf_f32m8",
+    "vfmul_vf_f32m8",
+    "vle32_v_f32m8",
+    "vmaxu_vx_u32m8",
+    "vnsrl_wx_u16m4",
+    "vor_vv_u16m4",
+    "vreinterpret_v_f32m8_u32m8",
+    "vreinterpret_v_u32m8_f32m8",
+    "vse16_v_u16m4"
+   ],
+   "bopt_ops_exactly_in_old_rvv_main": [
+    "vadd_vv_u16m4",
+    "vadd_vx_u32m8",
+    "vand_vx_u16m4",
+    "vand_vx_u32m8",
+    "vfabs_v_f32m8",
+    "vfmul_vf_f32m8",
+    "vle32_v_f32m8",
+    "vmaxu_vx_u32m8",
+    "vnsrl_wx_u16m4",
+    "vor_vv_u16m4",
+    "vreinterpret_v_f32m8_u32m8",
+    "vreinterpret_v_u32m8_f32m8",
+    "vse16_v_u16m4"
+   ],
+   "bopt_families_absent_from_old_rvv_main": [
+    "vfmadd_vf"
+   ],
+   "rvv_semantics_for_bopt": "13/14 Bopt ops exist in old RVV main; vfmadd_vf_f32m8 new (needs lemma that x*2^-110 is exact so fma==mul+add) [I]",
+   "bopt_mismatch_risk": "HIGH [V grep: Bopt has no NaN mask/merge; A has vnanh 0x7E00 + vbslq]: NaN input -> Bopt writes 0x7C00|sign (Inf) vs A 0x7E00|sign [I]",
+   "pitfalls": "exact-bit observation; NaN path; QCP rejects hex float literals",
+   "e1_outlook": "counterexample likely (NaN input)",
+   "rating": "medium",
+   "rating_reason": "large bit/store model reusable; Bopt drops NaN handling",
+   "evidence_paths_relative_to_verified": [
+    "f32-f16-vcvt/README.zh-CN.md",
+    "f32-f16-vcvt/proof/compatibility.patch",
+    "f32-f16-vcvt/proof/coq/Model.v"
+   ]
+  },
+  {
+   "kernel": "f32-gemm-minmax",
+   "old_package": "f32-gemm-minmax",
+   "old_package_dir": "/zp_vegeta/scratch_sb/ycsun/verus/build/e1-workers-20261104/w1-rvv-vadd/repo/verification/qcp/verified/f32-gemm-minmax",
+   "A_path": "/zp_vegeta/scratch_sb/ycsun/verus/research/sol-pipeline-comparison-20261030/sources/SALTy-rn/kernels/source/f32-gemm-minmax.c",
+   "A_sha256": "b8f827cb5936e5333a0144d793e541730bf3e33ca538d46d42c92f86b9751c61",
+   "bopt_path": "/zp_vegeta/scratch_sb/ycsun/verus/build/e1-source-pairing-20261104/upstream/optimized-rvv-kernels/f32-gemm-minmax.c",
+   "lowering_json": "/zp_vegeta/scratch_sb/ycsun/verus/build/rvv-ptr-lower-20261104/val6/f32-gemm-minmax/run1/f32-gemm-minmax.lowering.json",
+   "neon": {
+    "status": "compat-modified",
+    "old_neon_proof_targets": "A modulo macro prelude + outer do{}while(nc) -> while(nc) (QCP crash); 3 token hunks / 62 tokens; 177-line normalized diff is mostly spacing [V token diff, repair.md, proof/evidence/neon-repair.patch]",
+    "normalized_line_diff_vs_A": 177,
+    "token_hunks_vs_A": 3,
+    "changed_tokens_vs_A": 62
+   },
+   "old_rvv_repair": {
+    "repaired": true,
+    "sides": "RVV only",
+    "reason": "NaN clamp: ARM vminq/vmaxq propagate NaN; RVV vfmin/vfmax minimumNumber/maximumNumber",
+    "counterexample": "mr=N=K=1, kc=4, A[0]=0x7fc00000, bias=0, w=1, lo=-1, hi=1: NEON NaN, RVV 1",
+    "precondition_strengthened": false,
+    "old_config": "VLEN128 e32m4 VLMAX16, VL=min(nc,8), NR8, mr 1..4"
+   },
+   "spec_observation": "numeric eq or both NaN; 1<=mr<=4, kc%4==0, fixed strides; per-output bias then K RNE FMAs, min(hi), max(lo); lo>hi allowed [V spec.c]",
+   "coq_reusable_modules": {
+    "spec": [
+     "GemmSpec/FmaModel.v",
+     "GemmSpec/IntrinsicModel.v",
+     "GemmRepair/ClampRepair.v",
+     "GemmRepair/Observation.v",
+     "F32Admission/Boundary.v",
+     "FullDomainRvv/FullModel.v",
+     "FullGemmGeometry/*",
+     "NanBridge/BridgeLogic.v",
+     "VaddComparator/ComparatorLogic.v"
+    ],
+    "neon": [
+     "FullDomainNeon/*, FullNeon* (~330, mostly generated)"
+    ],
+    "rvv": [
+     "FullGemmPureRvv, GemmFullRvvCalls15 (8-slot struct; not reusable)"
+    ]
+   },
+   "coq_module_root": "/zp_vegeta/scratch_sb/ycsun/verus/build/e1-workers-20261104/w1-rvv-vadd/repo/verification/qcp/verified/f32-gemm-minmax/proof/coq/",
+   "bopt_ptr_ops": [
+    "vfmacc_vf_f32m2",
+    "vfmacc_vf_f32m4",
+    "vfmax_vf_f32m2",
+    "vfmax_vf_f32m4",
+    "vfmin_vf_f32m2",
+    "vfmin_vf_f32m4",
+    "vle32_v_f32m2",
+    "vle32_v_f32m4",
+    "vse32_v_f32m2",
+    "vse32_v_f32m4"
+   ],
+   "bopt_ops_exactly_in_old_rvv_main": [
+    "vfmacc_vf_f32m4",
+    "vfmax_vf_f32m4",
+    "vfmin_vf_f32m4",
+    "vle32_v_f32m4",
+    "vse32_v_f32m4"
+   ],
+   "bopt_families_absent_from_old_rvv_main": [],
+   "rvv_semantics_for_bopt": "vfmacc_vf, vfmin/vfmax_vf, vle/vse m2+m4: semantics in GemmSpec/FmaModel.v + IntrinsicModel.v; shim contracts old m4 struct only [V]",
+   "bopt_mismatch_risk": "HIGH [V grep: 30 vfmax, no NaN mask/merge]: old NaN-clamp witness applies; also switch(mr), 2-tile m2 path, k unrolled x4 (order still sequential) [V]",
+   "pitfalls": "NaN clamp, fused FMA in K order, row-pointer aliasing for mr<4, kc in bytes",
+   "e1_outlook": "counterexample likely (old NaN witness)",
+   "rating": "medium",
+   "rating_reason": "NEON proof applies to A modulo compat and Gemm specs carry over, but Bopt reintroduces NaN-clamp mismatch",
+   "evidence_paths_relative_to_verified": [
+    "f32-gemm-minmax/repair.md",
+    "f32-gemm-minmax/spec.c",
+    "f32-gemm-minmax/proof/coq/GemmSpec/",
+    "f32-gemm-minmax/proof/coq/GemmRepair/"
+   ]
+  },
+  {
+   "kernel": "f32-igemm-minmax",
+   "old_package": "f32-igemm-minmax",
+   "old_package_dir": "/zp_vegeta/scratch_sb/ycsun/verus/build/e1-workers-20261104/w1-rvv-vadd/repo/verification/qcp/verified/f32-igemm-minmax",
+   "A_path": "/zp_vegeta/scratch_sb/ycsun/verus/research/sol-pipeline-comparison-20261030/sources/SALTy-rn/kernels/source/f32-igemm-minmax.c",
+   "A_sha256": "e7a1cb0fa88abfc4588d289781c03daf29832466fbdcc88861fc3f6cf2683b6a",
+   "bopt_path": "/zp_vegeta/scratch_sb/ycsun/verus/build/e1-source-pairing-20261104/upstream/optimized-rvv-kernels/f32-igemm-minmax.c",
+   "lowering_json": "/zp_vegeta/scratch_sb/ycsun/verus/build/rvv-ptr-lower-20261104/val6/f32-igemm-minmax/run1/f32-igemm-minmax.lowering.json",
+   "neon": {
+    "status": "compat-modified",
+    "old_neon_proof_targets": "A modulo two do->while and dropped restrict in cast (QCP SIGSEGV) [V repair.md, proof/evidence/original-neon.c]",
+    "normalized_line_diff_vs_A": 10,
+    "token_hunks_vs_A": 5,
+    "changed_tokens_vs_A": 31
+   },
+   "old_rvv_repair": {
+    "repaired": true,
+    "sides": "RVV semantic (+restrict drop both)",
+    "reason": "NaN clamp",
+    "counterexample": "mr=N=K=entries=1, kc=4, ks=8, input 0x7fc00000, bias 0, w 1, lo=-1, hi=1: NEON 0x7fc00000, RVV 0x3f800000",
+    "precondition_strengthened": false,
+    "old_config": "VLEN128 e32m4 VLMAX16, mr==1, NR8"
+   },
+   "spec_observation": "numeric eq or both NaN; mr==1, kc%4==0, ks%8==0; zero-pointer entries read directly, others +a_offset; overlapping RO windows [V spec.c]",
+   "coq_reusable_modules": {
+    "spec": [
+     "FloatIndirect/InputMapping.v",
+     "FloatIndirect/MatrixModel.v",
+     "FloatIndirect/ClampRepair.v",
+     "FloatIndirect/PublicModel.v",
+     "FloatIndirect/ApiModel.v",
+     "FloatIndirect/ReadOnlyFloatPool.v",
+     "+ shared GemmSpec/GemmRepair/F32Admission/NanBridge"
+    ]
+   },
+   "coq_module_root": "/zp_vegeta/scratch_sb/ycsun/verus/build/e1-workers-20261104/w1-rvv-vadd/repo/verification/qcp/verified/f32-igemm-minmax/proof/coq/",
+   "bopt_ptr_ops": [
+    "vfmacc_vf_f32m4",
+    "vfmax_vv_f32m4",
+    "vfmin_vv_f32m4",
+    "vfmv_v_f_f32m4",
+    "vle32_v_f32m4",
+    "vse32_v_f32m4"
+   ],
+   "bopt_ops_exactly_in_old_rvv_main": [
+    "vfmacc_vf_f32m4",
+    "vfmv_v_f_f32m4",
+    "vle32_v_f32m4",
+    "vse32_v_f32m4"
+   ],
+   "bopt_families_absent_from_old_rvv_main": [
+    "vfmax_vv",
+    "vfmin_vv"
+   ],
+   "rvv_semantics_for_bopt": "vfmin_vv/vfmax_vv new forms but same scalar fp32_min/max_number; vfmv_v_f new contract [V]",
+   "bopt_mismatch_risk": "HIGH [V]: plain vfmin/vfmax (NaN witness); [V/I] Bopt skips FMAs when a0==zero while A computes on zero buffer (arbitrary contents allowed; 0*Inf=NaN)",
+   "pitfalls": "NaN clamp, zero-pointer semantics, a_offset mod-2^64 arithmetic",
+   "e1_outlook": "counterexample likely",
+   "rating": "medium",
+   "rating_reason": "NEON proof+FloatIndirect specs carry; Bopt zero-skip and NaN force spec changes",
+   "evidence_paths_relative_to_verified": [
+    "f32-igemm-minmax/repair.md",
+    "f32-igemm-minmax/spec.c",
+    "f32-igemm-minmax/proof/coq/FloatIndirect/"
+   ]
+  },
+  {
+   "kernel": "f32-maxpool",
+   "old_package": "f32-maxpool",
+   "old_package_dir": "/zp_vegeta/scratch_sb/ycsun/verus/build/e1-workers-20261104/w1-rvv-vadd/repo/verification/qcp/verified/f32-maxpool",
+   "A_path": "/zp_vegeta/scratch_sb/ycsun/verus/research/sol-pipeline-comparison-20261030/sources/SALTy-rn/kernels/source/f32-maxpool.c",
+   "A_sha256": "c90b55eac3dd217b87d0a05a10b1335852a6922e41d8b622fb0eb06c13ad42f5",
+   "bopt_path": "/zp_vegeta/scratch_sb/ycsun/verus/build/e1-source-pairing-20261104/upstream/optimized-rvv-kernels/f32-maxpool.c",
+   "lowering_json": "/zp_vegeta/scratch_sb/ycsun/verus/build/rvv-ptr-lower-20261104/val6/f32-maxpool/run1/f32-maxpool.lowering.json",
+   "neon": {
+    "status": "semantic-repaired",
+    "old_neon_proof_targets": "semantically modified A: int(K)-9 -> unsigned64 guarded count; plus read-table adapter, do-while control, named vmax temporary [V repair.json]",
+    "normalized_line_diff_vs_A": 73,
+    "token_hunks_vs_A": 91,
+    "changed_tokens_vs_A": 373
+   },
+   "old_rvv_repair": {
+    "repaired": true,
+    "sides": "both",
+    "reason": "RVV did not match NEON 9-input max tree; RVV max drops NaN priority",
+    "counterexample": "K=2,C=1 inputs [7fc12345,3f800000]: NEON 7fc12345, RVV 3f800000; linear-order mutant fails at K=9",
+    "precondition_strengthened": false,
+    "old_config": "VLEN128/e32m8/VLMAX32 (same as Bopt)"
+   },
+   "spec_observation": "EXACT binary32 bits incl. NaN payload/quieting and ±0; unwritten cells kept; K=0 fallback [V Model.v mp_observe]",
+   "coq_reusable_modules": {
+    "spec": [
+     "Model.v (mp_arm_bits, mp_rvv_bits, mp_ordered_bits, mp_tree9, mp_scan_more)",
+     "NanFacts.v",
+     "VectorModel.v",
+     "CompareModel.v",
+     "NanArrayModel.v"
+    ]
+   },
+   "coq_module_root": "/zp_vegeta/scratch_sb/ycsun/verus/build/e1-workers-20261104/w1-rvv-vadd/repo/verification/qcp/verified/f32-maxpool/proof/coq/",
+   "bopt_ptr_ops": [
+    "vfmax_vf_f32m8",
+    "vfmax_vv_f32m8",
+    "vfmin_vf_f32m8",
+    "vle32_v_f32m8",
+    "vse32_v_f32m8"
+   ],
+   "bopt_ops_exactly_in_old_rvv_main": [
+    "vle32_v_f32m8",
+    "vse32_v_f32m8"
+   ],
+   "bopt_families_absent_from_old_rvv_main": [
+    "vfmax_vf",
+    "vfmax_vv",
+    "vfmin_vf"
+   ],
+   "rvv_semantics_for_bopt": "vfmax_vv/vfmin_vv/vle/vse contracts in shim/rvv_arithmetic_specs.h, rvv_memory_specs.h; bit semantics mp_rvv_bits; vf forms reuse same function [V]",
+   "bopt_mismatch_risk": "HIGH [V grep: no NaN restoration]: K=2 NaN witness should reproduce [I]; NaN-free case plausibly equivalent [I]; Bopt uses size_t count (no 2^31 UB)",
+   "pitfalls": "NaN payload priority, A int counter UB, K=0 fallback, table aliasing",
+   "e1_outlook": "counterexample likely (NaN witness)",
+   "rating": "medium",
+   "rating_reason": "exact-bit max models/spec reusable; NEON proof on count-repaired A",
+   "evidence_paths_relative_to_verified": [
+    "f32-maxpool/proof/repair.json",
+    "f32-maxpool/proof/original-counterexamples.json",
+    "f32-maxpool/proof/coq/Model.v"
+   ]
+  },
+  {
+   "kernel": "f32-vadd",
+   "old_package": "f32-vadd",
+   "old_package_dir": "/zp_vegeta/scratch_sb/ycsun/verus/build/e1-workers-20261104/w1-rvv-vadd/repo/verification/qcp/verified/f32-vadd",
+   "A_path": "/zp_vegeta/scratch_sb/ycsun/verus/research/sol-pipeline-comparison-20261030/sources/SALTy-rn/kernels/source/f32-vadd.c",
+   "A_sha256": "f7f8f8ffaca807aaa9839ba199fb93bac5cf79700c6c5d2f847731b0ab33eeb5",
+   "bopt_path": "/zp_vegeta/scratch_sb/ycsun/verus/build/e1-source-pairing-20261104/upstream/optimized-rvv-kernels/f32-vadd.c",
+   "lowering_json": "/zp_vegeta/scratch_sb/ycsun/verus/build/rvv-ptr-lower-20261104/val6/f32-vadd/run1/f32-vadd.lowering.json",
+   "neon": {
+    "status": "identical",
+    "old_neon_proof_targets": "A (byte-identical) [V]",
+    "normalized_line_diff_vs_A": 0,
+    "token_hunks_vs_A": 0,
+    "changed_tokens_vs_A": 0
+   },
+   "old_rvv_repair": {
+    "repaired": false,
+    "note": "original m8 RVV, VLEN128/VLMAX32, flat 32-field struct (shared/c-shim/f32/QcpRvv32) [V]"
+   },
+   "spec_observation": "numeric eq or both NaN (+0==-0, payload ignored); batch%4==0, inputs n+3 readable floats, 4 buffers disjoint [V spec.c]",
+   "coq_reusable_modules": {
+    "spec": [
+     "NanBridge/BridgeLogic.v",
+     "NanBridge/ListBridge.v",
+     "relations/VaddSegments.v",
+     "relations/ResultBridge.v",
+     "QcpVadd/VaddBits.v",
+     "VaddComparator/ComparatorLogic.v",
+     "VaddWrapper/WrapperLogic.v"
+    ],
+    "neon": [
+     "QcpNeon/NeonBridge.v",
+     "QcpNeonLoop/*",
+     "ByValue/*"
+    ],
+    "rvv": [
+     "QcpRvv32/* (32-lane only; not reused in E1)"
+    ]
+   },
+   "coq_module_root": "/zp_vegeta/scratch_sb/ycsun/verus/build/e1-workers-20261104/w1-rvv-vadd/repo/verification/qcp/verified/f32-vadd/proof/coq/",
+   "bopt_ptr_ops": [
+    "vfadd_vv_f32m4",
+    "vle32_v_f32m4",
+    "vse32_v_f32m4"
+   ],
+   "bopt_ops_exactly_in_old_rvv_main": [],
+   "bopt_families_absent_from_old_rvv_main": [],
+   "rvv_semantics_for_bopt": "vfadd_vv/vle32/vse32: QcpVadd/VaddBits.v vadd_active_add semantics; old shim fixed to 32 lanes, Bopt m4 -> rebuilt in E1 [V]",
+   "bopt_mismatch_risk": "none known",
+   "pitfalls": "NEON tail over-read needs +3 padding; store macro needs local lvalue",
+   "e1_outlook": "done in E1 (reference example)",
+   "rating": "high",
+   "rating_reason": "E1 already reused NEON proof, spec.c and Coq specs; only RVV rebuilt",
+   "evidence_paths_relative_to_verified": [
+    "f32-vadd/README.zh-CN.md",
+    "f32-vadd/spec.c",
+    "../shared/c-shim/f32/README.zh-CN.md"
+   ]
+  },
+  {
+   "kernel": "f32-vcmul",
+   "old_package": "f32-vcmul",
+   "old_package_dir": "/zp_vegeta/scratch_sb/ycsun/verus/build/e1-workers-20261104/w1-rvv-vadd/repo/verification/qcp/verified/f32-vcmul",
+   "A_path": "/zp_vegeta/scratch_sb/ycsun/verus/research/sol-pipeline-comparison-20261030/sources/SALTy-rn/kernels/source/f32-vcmul.c",
+   "A_sha256": "7423e0c197640edfd66522ce2909e9e3e22571ee23c015b7feea32651b661294",
+   "bopt_path": "/zp_vegeta/scratch_sb/ycsun/verus/build/e1-source-pairing-20261104/upstream/optimized-rvv-kernels/f32-vcmul.c",
+   "lowering_json": "/zp_vegeta/scratch_sb/ycsun/verus/build/rvv-ptr-lower-20261104/val6/f32-vcmul/run1/f32-vcmul.lowering.json",
+   "neon": {
+    "status": "identical",
+    "old_neon_proof_targets": "A [V]",
+    "normalized_line_diff_vs_A": 0,
+    "token_hunks_vs_A": 0,
+    "changed_tokens_vs_A": 0
+   },
+   "old_rvv_repair": {
+    "repaired": false,
+    "note": "VLEN128/e32m4/VLMAX16, flat 16-field struct [V]"
+   },
+   "spec_observation": "numeric eq or both NaN over 2n outputs; real[n]+imag[n]+3 padding; NEON real tail may read into imag region [V]",
+   "coq_reusable_modules": {
+    "spec": [
+     "ComplexModel.v (complex_real/imag, vcmul_values)",
+     "Model.v"
+    ],
+    "neon": [
+     "NeonCalls/NeonPure/NeonMemory/NeonFacts/NeonGate.v",
+     "WindowChecked.v",
+     "WindowMemory.v"
+    ],
+    "rvv": [
+     "RvvPure.v",
+     "RvvFacts.v",
+     "RvvMemoryModel.v",
+     "RvvStoreModel.v (m4)"
+    ]
+   },
+   "coq_module_root": "/zp_vegeta/scratch_sb/ycsun/verus/build/e1-workers-20261104/w1-rvv-vadd/repo/verification/qcp/verified/f32-vcmul/proof/coq/",
+   "bopt_ptr_ops": [
+    "vfadd_vv_f32m2",
+    "vfmul_vv_f32m2",
+    "vfsub_vv_f32m2",
+    "vle32_v_f32m2",
+    "vse32_v_f32m2"
+   ],
+   "bopt_ops_exactly_in_old_rvv_main": [],
+   "bopt_families_absent_from_old_rvv_main": [],
+   "rvv_semantics_for_bopt": "vfmul/vfsub/vfadd in RvvPure.v at m4; Bopt m2. vmla/vmls modeled as two roundings (no FMA) [V]",
+   "bopt_mismatch_risk": "low [I]: Bopt loads next block before storing (relies on disjoint buffers)",
+   "pitfalls": "no FMA contraction allowed; NEON over-read crosses real/imag",
+   "e1_outlook": "equivalence plausible",
+   "rating": "high",
+   "rating_reason": "NEON proof + complex model reusable; same op families",
+   "evidence_paths_relative_to_verified": [
+    "f32-vcmul/README.md",
+    "f32-vcmul/proof/coq/ComplexModel.v"
+   ]
+  },
+  {
+   "kernel": "f32-vdiv",
+   "old_package": "f32-vdiv",
+   "old_package_dir": "/zp_vegeta/scratch_sb/ycsun/verus/build/e1-workers-20261104/w1-rvv-vadd/repo/verification/qcp/verified/f32-vdiv",
+   "A_path": "/zp_vegeta/scratch_sb/ycsun/verus/research/sol-pipeline-comparison-20261030/sources/SALTy-rn/kernels/source/f32-vdiv.c",
+   "A_sha256": "164726f8a2ec091ab058ee19dbdd943d89d0a0eb7b7a72b5a8aa646f83c53aa0",
+   "bopt_path": "/zp_vegeta/scratch_sb/ycsun/verus/build/e1-source-pairing-20261104/upstream/optimized-rvv-kernels/f32-vdiv.c",
+   "lowering_json": "/zp_vegeta/scratch_sb/ycsun/verus/build/rvv-ptr-lower-20261104/val6/f32-vdiv/run1/f32-vdiv.lowering.json",
+   "neon": {
+    "status": "identical",
+    "old_neon_proof_targets": "A [V]",
+    "normalized_line_diff_vs_A": 0,
+    "token_hunks_vs_A": 0,
+    "changed_tokens_vs_A": 0
+   },
+   "old_rvv_repair": {
+    "repaired": false,
+    "note": "vadd template instantiated with fp32_div; m8/32 lanes [V family.json]"
+   },
+   "spec_observation": "same as f32-vadd: numeric eq or both NaN; no divisor/finiteness precondition [V README]",
+   "coq_reusable_modules": {
+    "spec": [
+     "same 87-module vadd layout (NanBridge, relations, QcpVadd, VaddComparator, VaddWrapper); vadd_values instantiated with fp32_div"
+    ],
+    "neon": [
+     "QcpNeon*, ByValue"
+    ],
+    "rvv": [
+     "QcpRvv32 (32-lane)"
+    ]
+   },
+   "coq_module_root": "/zp_vegeta/scratch_sb/ycsun/verus/build/e1-workers-20261104/w1-rvv-vadd/repo/verification/qcp/verified/f32-vdiv/proof/coq/",
+   "bopt_ptr_ops": [
+    "vfdiv_vv_f32m4",
+    "vle32_v_f32m4",
+    "vse32_v_f32m4"
+   ],
+   "bopt_ops_exactly_in_old_rvv_main": [],
+   "bopt_families_absent_from_old_rvv_main": [],
+   "rvv_semantics_for_bopt": "Bopt m4 vs old m8 -> lane count differs, rebuild like vadd",
+   "bopt_mismatch_risk": "none known",
+   "pitfalls": "historical names (rvv_add/vadd_values) reused for other op; disjoint buffers",
+   "e1_outlook": "equivalence plausible",
+   "rating": "high",
+   "rating_reason": "same structure as f32-vadd; follow the vadd E1 recipe",
+   "evidence_paths_relative_to_verified": [
+    "f32-vdiv/family.json",
+    "f32-vdiv/README.zh-CN.md"
+   ]
+  },
+  {
+   "kernel": "f32-vlrelu",
+   "old_package": "f32-vlrelu",
+   "old_package_dir": "/zp_vegeta/scratch_sb/ycsun/verus/build/e1-workers-20261104/w1-rvv-vadd/repo/verification/qcp/verified/f32-vlrelu",
+   "A_path": "/zp_vegeta/scratch_sb/ycsun/verus/research/sol-pipeline-comparison-20261030/sources/SALTy-rn/kernels/source/f32-vlrelu.c",
+   "A_sha256": "4c8689e540b354176daea7b00a01e854917c738f74ba4a3fcca01f944118e3b6",
+   "bopt_path": "/zp_vegeta/scratch_sb/ycsun/verus/build/e1-source-pairing-20261104/upstream/optimized-rvv-kernels/f32-vlrelu.c",
+   "lowering_json": "/zp_vegeta/scratch_sb/ycsun/verus/build/rvv-ptr-lower-20261104/val6/f32-vlrelu/run1/f32-vlrelu.lowering.json",
+   "neon": {
+    "status": "identical",
+    "old_neon_proof_targets": "A [V]",
+    "normalized_line_diff_vs_A": 0,
+    "token_hunks_vs_A": 0,
+    "changed_tokens_vs_A": 0
+   },
+   "old_rvv_repair": {
+    "repaired": false,
+    "note": "VLEN128/e32m8/VLMAX32; old used vmerge [V]"
+   },
+   "spec_observation": "numeric eq or both NaN; all binary32 inputs and slope; n+3 padding [V spec.c]",
+   "coq_reusable_modules": {
+    "spec": [
+     "Model.v (vlrelu_scalar/values/compare_mask/bitselect)",
+     "Bits.v",
+     "BitsChecked.v"
+    ],
+    "neon": [
+     "NeonSelect.v",
+     "NeonResult.v",
+     "NeonPrimitives.v"
+    ],
+    "rvv": [
+     "RvvModel.v (rvv_signed_bits, rvv_mask, rvv_merge)",
+     "RvvPrimitiveMask.v",
+     "RvvPrimitiveReinterpret.v"
+    ]
+   },
+   "coq_module_root": "/zp_vegeta/scratch_sb/ycsun/verus/build/e1-workers-20261104/w1-rvv-vadd/repo/verification/qcp/verified/f32-vlrelu/proof/coq/",
+   "bopt_ptr_ops": [
+    "vfmul_vf_f32m8_mu",
+    "vle32_v_f32m8",
+    "vmslt_vx_i32m8_b4",
+    "vreinterpret_v_f32m8_i32m8",
+    "vse32_v_f32m8"
+   ],
+   "bopt_ops_exactly_in_old_rvv_main": [
+    "vle32_v_f32m8",
+    "vmslt_vx_i32m8_b4",
+    "vreinterpret_v_f32m8_i32m8",
+    "vse32_v_f32m8"
+   ],
+   "bopt_families_absent_from_old_rvv_main": [],
+   "rvv_semantics_for_bopt": "vmslt_vx_i32m8 and vreinterpret f32->i32 modeled; vfmul_vf_f32m8_mu (mask-undisturbed) is new [V]",
+   "bopt_mismatch_risk": "low [I]",
+   "pitfalls": "sign-bit test also selects -0 and negative NaN; inactive-lane +0 is formal-model-only",
+   "e1_outlook": "equivalence plausible",
+   "rating": "high",
+   "rating_reason": "NEON proof, spec, mask/reinterpret models reusable; only _mu multiply new",
+   "evidence_paths_relative_to_verified": [
+    "f32-vlrelu/README.md",
+    "f32-vlrelu/proof/coq/Model.v",
+    "f32-vlrelu/proof/coq/RvvModel.v"
+   ]
+  },
+  {
+   "kernel": "f32-vmax",
+   "old_package": "f32-vmax",
+   "old_package_dir": "/zp_vegeta/scratch_sb/ycsun/verus/build/e1-workers-20261104/w1-rvv-vadd/repo/verification/qcp/verified/f32-vmax",
+   "A_path": "/zp_vegeta/scratch_sb/ycsun/verus/research/sol-pipeline-comparison-20261030/sources/SALTy-rn/kernels/source/f32-vmax.c",
+   "A_sha256": "09e27c12a074f0ebac6fb78c055dc8244be915827771359afa16f70527360552",
+   "bopt_path": "/zp_vegeta/scratch_sb/ycsun/verus/build/e1-source-pairing-20261104/upstream/optimized-rvv-kernels/f32-vmax.c",
+   "lowering_json": "/zp_vegeta/scratch_sb/ycsun/verus/build/rvv-ptr-lower-20261104/val6/f32-vmax/run1/f32-vmax.lowering.json",
+   "neon": {
+    "status": "identical",
+    "old_neon_proof_targets": "A [V]",
+    "normalized_line_diff_vs_A": 0,
+    "token_hunks_vs_A": 0,
+    "changed_tokens_vs_A": 0
+   },
+   "old_rvv_repair": {
+    "repaired": true,
+    "sides": "RVV only",
+    "reason": "Arm FMAX/FMIN propagate NaN; RVV vfmax/vfmin = IEEE maximumNumber/minimumNumber return numeric operand",
+    "counterexample": "121-case replay: 44 mismatching cases (proof/history/original-121-case-replay-status.json)",
+    "fix": "vmfne self-NaN masks + vfadd quiet NaN + vmerge",
+    "precondition_strengthened": false,
+    "old_config": "VLEN128/m8/VLMAX32"
+   },
+   "spec_observation": "numeric eq or both NaN; n+3 padding; disjoint [V]",
+   "coq_reusable_modules": {
+    "spec": [
+     "Model.v (mm_arm_bits/mm_arm FMAX/FMIN with sNaN quieting; mm_rvv_bits = maximumNumber; mm_ordered_bits; mm_canonical_nan)",
+     "VectorModel.v",
+     "NanFacts.v",
+     "Observation.v"
+    ],
+    "neon": [
+     "NeonLoop.v",
+     "NeonMemory.v",
+     "NeonPure.v"
+    ]
+   },
+   "coq_module_root": "/zp_vegeta/scratch_sb/ycsun/verus/build/e1-workers-20261104/w1-rvv-vadd/repo/verification/qcp/verified/f32-vmax/proof/coq/",
+   "bopt_ptr_ops": [
+    "vfmax_vv_f32m8",
+    "vle32_v_f32m8",
+    "vse32_v_f32m8"
+   ],
+   "bopt_ops_exactly_in_old_rvv_main": [
+    "vfmax_vv_f32m8",
+    "vle32_v_f32m8",
+    "vse32_v_f32m8"
+   ],
+   "bopt_families_absent_from_old_rvv_main": [],
+   "rvv_semantics_for_bopt": "vfmax_vv: mm_rvv_bits is a reusable IEEE-754-2019 maximumNumber model (also for vfmax_vf elsewhere)",
+   "bopt_mismatch_risk": "HIGH [V grep]: Bopt is plain vfmax_vv with no vmfne/vmerge NaN repair -> old NaN witnesses apply to A vs Bopt",
+   "pitfalls": "NaN propagation; old repair vfadd may raise flags (unobserved)",
+   "e1_outlook": "counterexample likely (replay old NaN witness on A vs Bopt)",
+   "rating": "medium",
+   "rating_reason": "NEON proof/spec/NaN models reusable, but Bopt drops the repair; equivalence proof would need a NaN-free precondition (not adopted)",
+   "evidence_paths_relative_to_verified": [
+    "f32-vmax/proof/repair.json",
+    "f32-vmax/proof/repair.patch",
+    "f32-vmax/proof/coq/Model.v"
+   ]
+  },
+  {
+   "kernel": "f32-vmin",
+   "old_package": "f32-vmin",
+   "old_package_dir": "/zp_vegeta/scratch_sb/ycsun/verus/build/e1-workers-20261104/w1-rvv-vadd/repo/verification/qcp/verified/f32-vmin",
+   "A_path": "/zp_vegeta/scratch_sb/ycsun/verus/research/sol-pipeline-comparison-20261030/sources/SALTy-rn/kernels/source/f32-vmin.c",
+   "A_sha256": "e7c9e8d03d5bd59bcb91167285c54565a571a406eae8fb9554e86a639a1e7be1",
+   "bopt_path": "/zp_vegeta/scratch_sb/ycsun/verus/build/e1-source-pairing-20261104/upstream/optimized-rvv-kernels/f32-vmin.c",
+   "lowering_json": "/zp_vegeta/scratch_sb/ycsun/verus/build/rvv-ptr-lower-20261104/val6/f32-vmin/run1/f32-vmin.lowering.json",
+   "neon": {
+    "status": "identical",
+    "old_neon_proof_targets": "A [V]",
+    "normalized_line_diff_vs_A": 0,
+    "token_hunks_vs_A": 0,
+    "changed_tokens_vs_A": 0
+   },
+   "old_rvv_repair": {
+    "repaired": true,
+    "sides": "RVV only",
+    "reason": "Arm FMAX/FMIN propagate NaN; RVV vfmax/vfmin = IEEE maximumNumber/minimumNumber return numeric operand",
+    "counterexample": "121-case replay: 44 mismatching cases (proof/history/original-121-case-replay-status.json)",
+    "fix": "vmfne self-NaN masks + vfadd quiet NaN + vmerge",
+    "precondition_strengthened": false,
+    "old_config": "VLEN128/m8/VLMAX32"
+   },
+   "spec_observation": "numeric eq or both NaN; n+3 padding; disjoint [V]",
+   "coq_reusable_modules": {
+    "spec": [
+     "Model.v (mm_arm_bits/mm_arm FMAX/FMIN with sNaN quieting; mm_rvv_bits = minimumNumber; mm_ordered_bits; mm_canonical_nan)",
+     "VectorModel.v",
+     "NanFacts.v",
+     "Observation.v"
+    ],
+    "neon": [
+     "NeonLoop.v",
+     "NeonMemory.v",
+     "NeonPure.v"
+    ]
+   },
+   "coq_module_root": "/zp_vegeta/scratch_sb/ycsun/verus/build/e1-workers-20261104/w1-rvv-vadd/repo/verification/qcp/verified/f32-vmin/proof/coq/",
+   "bopt_ptr_ops": [
+    "vfmin_vv_f32m4",
+    "vle32_v_f32m4",
+    "vse32_v_f32m4"
+   ],
+   "bopt_ops_exactly_in_old_rvv_main": [],
+   "bopt_families_absent_from_old_rvv_main": [],
+   "rvv_semantics_for_bopt": "vfmin_vv: mm_rvv_bits is a reusable IEEE-754-2019 minimumNumber model (also for vfmin_vf elsewhere); Bopt m4 vs old m8",
+   "bopt_mismatch_risk": "HIGH [V grep]: Bopt is plain vfmin_vv with no vmfne/vmerge NaN repair -> old NaN witnesses apply to A vs Bopt",
+   "pitfalls": "NaN propagation; old repair vfadd may raise flags (unobserved)",
+   "e1_outlook": "counterexample likely (replay old NaN witness on A vs Bopt)",
+   "rating": "medium",
+   "rating_reason": "NEON proof/spec/NaN models reusable, but Bopt drops the repair; equivalence proof would need a NaN-free precondition (not adopted)",
+   "evidence_paths_relative_to_verified": [
+    "f32-vmin/proof/repair.json",
+    "f32-vmin/proof/repair.patch",
+    "f32-vmin/proof/coq/Model.v"
+   ]
+  },
+  {
+   "kernel": "f32-vmul",
+   "old_package": "f32-vmul",
+   "old_package_dir": "/zp_vegeta/scratch_sb/ycsun/verus/build/e1-workers-20261104/w1-rvv-vadd/repo/verification/qcp/verified/f32-vmul",
+   "A_path": "/zp_vegeta/scratch_sb/ycsun/verus/research/sol-pipeline-comparison-20261030/sources/SALTy-rn/kernels/source/f32-vmul.c",
+   "A_sha256": "260f2fefce97565f686fe95b968688d9be83c9fe8c6724d9cbab30632df8df6c",
+   "bopt_path": "/zp_vegeta/scratch_sb/ycsun/verus/build/e1-source-pairing-20261104/upstream/optimized-rvv-kernels/f32-vmul.c",
+   "lowering_json": "/zp_vegeta/scratch_sb/ycsun/verus/build/rvv-ptr-lower-20261104/val6/f32-vmul/run1/f32-vmul.lowering.json",
+   "neon": {
+    "status": "identical",
+    "old_neon_proof_targets": "A [V]",
+    "normalized_line_diff_vs_A": 0,
+    "token_hunks_vs_A": 0,
+    "changed_tokens_vs_A": 0
+   },
+   "old_rvv_repair": {
+    "repaired": false,
+    "note": "vadd template instantiated with fp32_mul; m8/32 lanes [V family.json]"
+   },
+   "spec_observation": "same as f32-vadd: numeric eq or both NaN; no divisor/finiteness precondition [V README]",
+   "coq_reusable_modules": {
+    "spec": [
+     "same 87-module vadd layout (NanBridge, relations, QcpVadd, VaddComparator, VaddWrapper); vadd_values instantiated with fp32_mul"
+    ],
+    "neon": [
+     "QcpNeon*, ByValue"
+    ],
+    "rvv": [
+     "QcpRvv32 (32-lane)"
+    ]
+   },
+   "coq_module_root": "/zp_vegeta/scratch_sb/ycsun/verus/build/e1-workers-20261104/w1-rvv-vadd/repo/verification/qcp/verified/f32-vmul/proof/coq/",
+   "bopt_ptr_ops": [
+    "vfmul_vv_f32m8",
+    "vle32_v_f32m8",
+    "vse32_v_f32m8"
+   ],
+   "bopt_ops_exactly_in_old_rvv_main": [
+    "vfmul_vv_f32m8",
+    "vle32_v_f32m8",
+    "vse32_v_f32m8"
+   ],
+   "bopt_families_absent_from_old_rvv_main": [],
+   "rvv_semantics_for_bopt": "vfmul_vv_f32m8: same LMUL and ops as old (3/3)",
+   "bopt_mismatch_risk": "none known",
+   "pitfalls": "historical names (rvv_add/vadd_values) reused for other op; disjoint buffers",
+   "e1_outlook": "equivalence plausible",
+   "rating": "high",
+   "rating_reason": "same structure as f32-vadd; follow the vadd E1 recipe",
+   "evidence_paths_relative_to_verified": [
+    "f32-vmul/family.json",
+    "f32-vmul/README.zh-CN.md"
+   ]
+  },
+  {
+   "kernel": "f32-vmulc",
+   "old_package": "f32-vmulc",
+   "old_package_dir": "/zp_vegeta/scratch_sb/ycsun/verus/build/e1-workers-20261104/w1-rvv-vadd/repo/verification/qcp/verified/f32-vmulc",
+   "A_path": "/zp_vegeta/scratch_sb/ycsun/verus/research/sol-pipeline-comparison-20261030/sources/SALTy-rn/kernels/source/f32-vmulc.c",
+   "A_sha256": "6d44346474e9925f74ff0243cb4fb4e3111afedfb0db976972f5f19ab7419bdb",
+   "bopt_path": "/zp_vegeta/scratch_sb/ycsun/verus/build/e1-source-pairing-20261104/upstream/optimized-rvv-kernels/f32-vmulc.c",
+   "lowering_json": "/zp_vegeta/scratch_sb/ycsun/verus/build/rvv-ptr-lower-20261104/val6/f32-vmulc/run1/f32-vmulc.lowering.json",
+   "neon": {
+    "status": "identical",
+    "old_neon_proof_targets": "A [V]",
+    "normalized_line_diff_vs_A": 0,
+    "token_hunks_vs_A": 0,
+    "changed_tokens_vs_A": 0
+   },
+   "old_rvv_repair": {
+    "repaired": false,
+    "note": "m8, 32 lanes [V]"
+   },
+   "spec_observation": "numeric eq or both NaN; scalar input_b; A has n+3 floats; disjoint [V spec.c]",
+   "coq_reusable_modules": {
+    "spec": [
+     "Model.v (vmulc_values, vmulc_active_mul)",
+     "NeonResult.v",
+     "RvvResult.v",
+     "WrapperHelpers.v",
+     "+ vmul dependency modules"
+    ]
+   },
+   "coq_module_root": "/zp_vegeta/scratch_sb/ycsun/verus/build/e1-workers-20261104/w1-rvv-vadd/repo/verification/qcp/verified/f32-vmulc/proof/coq/",
+   "bopt_ptr_ops": [
+    "vfmul_vf_f32m8",
+    "vle32_v_f32m8",
+    "vse32_v_f32m8"
+   ],
+   "bopt_ops_exactly_in_old_rvv_main": [
+    "vfmul_vf_f32m8",
+    "vle32_v_f32m8",
+    "vse32_v_f32m8"
+   ],
+   "bopt_families_absent_from_old_rvv_main": [],
+   "rvv_semantics_for_bopt": "vfmul_vf_f32m8 identical to old (3/3)",
+   "bopt_mismatch_risk": "none known",
+   "pitfalls": "FastFrame recompile mismatch recorded was a tool issue",
+   "e1_outlook": "equivalence plausible",
+   "rating": "high",
+   "rating_reason": "same intrinsics/LMUL; NEON+spec reusable",
+   "evidence_paths_relative_to_verified": [
+    "f32-vmulc/README.md",
+    "f32-vmulc/proof/coq/Model.v"
+   ]
+  },
+  {
+   "kernel": "f32-vrndne",
+   "old_package": "f32-vrndne",
+   "old_package_dir": "/zp_vegeta/scratch_sb/ycsun/verus/build/e1-workers-20261104/w1-rvv-vadd/repo/verification/qcp/verified/f32-vrndne",
+   "A_path": "/zp_vegeta/scratch_sb/ycsun/verus/research/sol-pipeline-comparison-20261030/sources/SALTy-rn/kernels/source/f32-vrndne.c",
+   "A_sha256": "b02a27bfc9953ba14c6a43c583a566ebf6c41966beebdaa7143042fd4cf319fe",
+   "bopt_path": "/zp_vegeta/scratch_sb/ycsun/verus/build/e1-source-pairing-20261104/upstream/optimized-rvv-kernels/f32-vrndne.c",
+   "lowering_json": "/zp_vegeta/scratch_sb/ycsun/verus/build/rvv-ptr-lower-20261104/val6/f32-vrndne/run1/f32-vrndne.lowering.json",
+   "neon": {
+    "status": "identical",
+    "old_neon_proof_targets": "A [V]",
+    "normalized_line_diff_vs_A": 0,
+    "token_hunks_vs_A": 0,
+    "changed_tokens_vs_A": 0
+   },
+   "old_rvv_repair": {
+    "repaired": false,
+    "note": "old RVV magic-number add/sub algorithm, VLEN128/m8 [V]"
+   },
+   "spec_observation": "numeric eq or both NaN (rndne_observe); separate pure-Coq bitwise equality theorem; n+3 padding; params may be NULL [V]",
+   "coq_reusable_modules": {
+    "spec": [
+     "Model.v (rndne_neon, rndne_rvv, rndne_values, bit ops)",
+     "BitCore.v",
+     "BitFacts.v",
+     "Observation.v",
+     "NanFacts.v"
+    ]
+   },
+   "coq_module_root": "/zp_vegeta/scratch_sb/ycsun/verus/build/e1-workers-20261104/w1-rvv-vadd/repo/verification/qcp/verified/f32-vrndne/proof/coq/",
+   "bopt_ptr_ops": [
+    "vand_vx_i32m8",
+    "vfcvt_f_x_v_f32m8",
+    "vfcvt_x_f_v_i32m8",
+    "vfsgnj_vv_f32m8_mu",
+    "vle32_v_f32m8",
+    "vmsle_vx_i32m8_b4",
+    "vreinterpret_v_f32m8_i32m8",
+    "vse32_v_f32m8"
+   ],
+   "bopt_ops_exactly_in_old_rvv_main": [
+    "vle32_v_f32m8",
+    "vse32_v_f32m8"
+   ],
+   "bopt_families_absent_from_old_rvv_main": [
+    "vand_vx",
+    "vfcvt_f_x_v",
+    "vfcvt_x_f_v",
+    "vmsle_vx"
+   ],
+   "rvv_semantics_for_bopt": "Bopt uses a different algorithm (vand+vmsle mask |x|<=0x4B000000, vfcvt_x_f, vfcvt_f_x, vfsgnj_vv_mu); vfcvt_x_f/f_x, vand_vx_i32, vmsle_vx, masked vfsgnj are new [V ptr_ops]",
+   "bopt_mismatch_risk": "low-medium [I]: vfcvt_x_f uses dynamic frm -> must assume frm=RNE; NaN/Inf/large kept via _mu operand",
+   "pitfalls": "frm dependency; -0 restoration via vfsgnj; sNaN not quieted (ok under both-NaN)",
+   "e1_outlook": "equivalence plausible, needs new rounding-bridge lemma",
+   "rating": "medium",
+   "rating_reason": "NEON+spec reusable; RVV algorithm and 5 families new",
+   "evidence_paths_relative_to_verified": [
+    "f32-vrndne/README.zh-CN.md",
+    "f32-vrndne/proof/coq/Model.v"
+   ]
+  },
+  {
+   "kernel": "f32-vsqrt",
+   "old_package": "f32-vsqrt",
+   "old_package_dir": "/zp_vegeta/scratch_sb/ycsun/verus/build/e1-workers-20261104/w1-rvv-vadd/repo/verification/qcp/verified/f32-vsqrt",
+   "A_path": "/zp_vegeta/scratch_sb/ycsun/verus/research/sol-pipeline-comparison-20261030/sources/SALTy-rn/kernels/source/f32-vsqrt.c",
+   "A_sha256": "b4970661c787e642b8428f213a4b60bd894f4a63704ffc31ec96087beab4ef3e",
+   "bopt_path": "/zp_vegeta/scratch_sb/ycsun/verus/build/e1-source-pairing-20261104/upstream/optimized-rvv-kernels/f32-vsqrt.c",
+   "lowering_json": "/zp_vegeta/scratch_sb/ycsun/verus/build/rvv-ptr-lower-20261104/val6/f32-vsqrt/run1/f32-vsqrt.lowering.json",
+   "neon": {
+    "status": "identical",
+    "old_neon_proof_targets": "A [V originals.json original_tokens_unchanged]",
+    "normalized_line_diff_vs_A": 0,
+    "token_hunks_vs_A": 0,
+    "changed_tokens_vs_A": 0
+   },
+   "old_rvv_repair": {
+    "repaired": false,
+    "note": "VLEN128/m8/VLMAX32, frm=RNE; any-legal-VL model [V]"
+   },
+   "spec_observation": "numeric eq or both NaN; negative inputs and sNaN allowed; params may be NULL; n+3 padding [V]",
+   "coq_reusable_modules": {
+    "spec": [
+     "Model.v (sqrt_core via Flocq RNE, sqrt_arm, sqrt_rvv)",
+     "Observation.v (sqrt_cross_isa)",
+     "NanFacts.v",
+     "KernelFacts.v"
+    ],
+    "other": [
+     "proof/intrinsic-ledger.json"
+    ]
+   },
+   "coq_module_root": "/zp_vegeta/scratch_sb/ycsun/verus/build/e1-workers-20261104/w1-rvv-vadd/repo/verification/qcp/verified/f32-vsqrt/proof/coq/",
+   "bopt_ptr_ops": [
+    "vfsqrt_v_f32m8",
+    "vle32_v_f32m8",
+    "vse32_v_f32m8"
+   ],
+   "bopt_ops_exactly_in_old_rvv_main": [
+    "vfsqrt_v_f32m8",
+    "vle32_v_f32m8",
+    "vse32_v_f32m8"
+   ],
+   "bopt_families_absent_from_old_rvv_main": [],
+   "rvv_semantics_for_bopt": "vfsqrt_v_f32m8 identical (3/3); any-legal-VL model fits Bopt vsetvl pipeline [V]",
+   "bopt_mismatch_risk": "none known",
+   "pitfalls": "negative input: Arm default NaN vs RVV canonical NaN differ in bits; ok only under both-NaN observation",
+   "e1_outlook": "equivalence plausible",
+   "rating": "high",
+   "rating_reason": "both originals verified, same intrinsics, cross-ISA lemma exists",
+   "evidence_paths_relative_to_verified": [
+    "f32-vsqrt/README.zh-CN.md",
+    "f32-vsqrt/proof/coq/Model.v",
+    "f32-vsqrt/proof/coq/Observation.v"
+   ]
+  },
+  {
+   "kernel": "f32-vsub",
+   "old_package": "f32-vsub",
+   "old_package_dir": "/zp_vegeta/scratch_sb/ycsun/verus/build/e1-workers-20261104/w1-rvv-vadd/repo/verification/qcp/verified/f32-vsub",
+   "A_path": "/zp_vegeta/scratch_sb/ycsun/verus/research/sol-pipeline-comparison-20261030/sources/SALTy-rn/kernels/source/f32-vsub.c",
+   "A_sha256": "35f7b6696edf0f22cad1375a3033484f400cf40a8c26d25c163b3bce8c722e2d",
+   "bopt_path": "/zp_vegeta/scratch_sb/ycsun/verus/build/e1-source-pairing-20261104/upstream/optimized-rvv-kernels/f32-vsub.c",
+   "lowering_json": "/zp_vegeta/scratch_sb/ycsun/verus/build/rvv-ptr-lower-20261104/val6/f32-vsub/run1/f32-vsub.lowering.json",
+   "neon": {
+    "status": "identical",
+    "old_neon_proof_targets": "A [V]",
+    "normalized_line_diff_vs_A": 0,
+    "token_hunks_vs_A": 0,
+    "changed_tokens_vs_A": 0
+   },
+   "old_rvv_repair": {
+    "repaired": false,
+    "note": "vadd template instantiated with fp32_sub; m8/32 lanes [V family.json]"
+   },
+   "spec_observation": "same as f32-vadd: numeric eq or both NaN; no divisor/finiteness precondition [V README]",
+   "coq_reusable_modules": {
+    "spec": [
+     "same 87-module vadd layout (NanBridge, relations, QcpVadd, VaddComparator, VaddWrapper); vadd_values instantiated with fp32_sub"
+    ],
+    "neon": [
+     "QcpNeon*, ByValue"
+    ],
+    "rvv": [
+     "QcpRvv32 (32-lane)"
+    ]
+   },
+   "coq_module_root": "/zp_vegeta/scratch_sb/ycsun/verus/build/e1-workers-20261104/w1-rvv-vadd/repo/verification/qcp/verified/f32-vsub/proof/coq/",
+   "bopt_ptr_ops": [
+    "vfsub_vv_f32m8",
+    "vle32_v_f32m8",
+    "vse32_v_f32m8"
+   ],
+   "bopt_ops_exactly_in_old_rvv_main": [
+    "vfsub_vv_f32m8",
+    "vle32_v_f32m8",
+    "vse32_v_f32m8"
+   ],
+   "bopt_families_absent_from_old_rvv_main": [],
+   "rvv_semantics_for_bopt": "Bopt m4 vs old m8 -> lane count differs, rebuild like vadd",
+   "bopt_mismatch_risk": "none known",
+   "pitfalls": "historical names (rvv_add/vadd_values) reused for other op; disjoint buffers",
+   "e1_outlook": "equivalence plausible",
+   "rating": "high",
+   "rating_reason": "same structure as f32-vadd; follow the vadd E1 recipe",
+   "evidence_paths_relative_to_verified": [
+    "f32-vsub/family.json",
+    "f32-vsub/README.zh-CN.md"
+   ]
+  },
+  {
+   "kernel": "qd8-f32-qc4w-gemm-minmax",
+   "old_package": "qd8-f32-qc4w-gemm-minmax",
+   "old_package_dir": "/zp_vegeta/scratch_sb/ycsun/verus/build/e1-workers-20261104/w1-rvv-vadd/repo/verification/qcp/verified/qd8-f32-qc4w-gemm-minmax",
+   "A_path": "/zp_vegeta/scratch_sb/ycsun/verus/research/sol-pipeline-comparison-20261030/sources/SALTy-rn/kernels/source/qd8-f32-qc4w-gemm-minmax.c",
+   "A_sha256": "3a234e610298f7998ea073c3c75940beece0ad5d4f5506394465fd902a647b40",
+   "bopt_path": "/zp_vegeta/scratch_sb/ycsun/verus/build/e1-source-pairing-20261104/upstream/optimized-rvv-kernels/qd8-f32-qc4w-gemm-minmax.c",
+   "lowering_json": "/zp_vegeta/scratch_sb/ycsun/verus/build/rvv-ptr-lower-20261104/val6/qd8-f32-qc4w-gemm-minmax/run1/qd8-f32-qc4w-gemm-minmax.lowering.json",
+   "neon": {
+    "status": "identical",
+    "old_neon_proof_targets": "A (byte-identical; 1206 NEON VCs) [V]",
+    "normalized_line_diff_vs_A": 0,
+    "token_hunks_vs_A": 0,
+    "changed_tokens_vs_A": 0
+   },
+   "old_rvv_repair": {
+    "repaired": true,
+    "sides": "RVV only (+do->while compat)",
+    "reason": "NaN clamp",
+    "counterexample": "mr=N=K=1, zp/weights/bias=0, scale=1, inv_scale=0x7fc00000, lo=-1, hi=1: NEON NaN, RVV -1",
+    "precondition_strengthened": false,
+    "old_config": "VLEN128 e8m2/e16m4/e32m8, 16 active lanes, NR16, mr=1"
+   },
+   "spec_observation": "numeric eq or both NaN; integer part wrap32 MAC of nibble<<4 / nibble&0xF0 then ASR4; float part cvt, *inv_scale, fma(bias,out,scale), max lo, min hi [V README]",
+   "coq_reusable_modules": {
+    "spec": [
+     "QC4W/NibbleModel.v",
+     "QC4W/MatrixModel.v",
+     "QC4W/ApiModel.v",
+     "QC4W/PublicModel.v",
+     "QC4W/Layouts.v",
+     "QC4W/NeonModel.v",
+     "Qd8Phase/IntegerFold.v",
+     "+ GemmSpec/GemmRepair/NanBridge"
+    ]
+   },
+   "coq_module_root": "/zp_vegeta/scratch_sb/ycsun/verus/build/e1-workers-20261104/w1-rvv-vadd/repo/verification/qcp/verified/qd8-f32-qc4w-gemm-minmax/proof/coq/",
+   "bopt_ptr_ops": [
+    "vand_vx_i8m1",
+    "vfcvt_f_x_v_f32m4",
+    "vfmacc_vv_f32m4",
+    "vfmax_vf_f32m4",
+    "vfmin_vf_f32m4",
+    "vfmul_vf_f32m4",
+    "vle32_v_f32m4",
+    "vle32_v_i32m4",
+    "vle8_v_i8m1",
+    "vmul_vx_i32m4",
+    "vse32_v_f32m4",
+    "vsll_vx_i8m1",
+    "vsra_vx_i32m4",
+    "vwadd_wv_i32m4",
+    "vwmul_vx_i16m2"
+   ],
+   "bopt_ops_exactly_in_old_rvv_main": [],
+   "bopt_families_absent_from_old_rvv_main": [
+    "vwadd_wv",
+    "vwmul_vx"
+   ],
+   "rvv_semantics_for_bopt": "vsll/vand (high/low_bitop), vsra(4), vfcvt (fp32_of_Z), vfmul modeled in shim/rvv/api.h at m2/m8 structs; vwmul_vx, vwadd_wv new; i8*i8 fits i16 and wrap32 order independence (IntegerFold) [V/I]",
+   "bopt_mismatch_risk": "HIGH [V grep: no NaN handling]: inv_scale=NaN witness applies; nibble layout and clamp order match A [V]",
+   "pitfalls": "NaN via inv_scale/bounds, wrap32, signed nibble decode, 88 MiB NEON target OOM at 16 GiB",
+   "e1_outlook": "counterexample likely (old NaN witness)",
+   "rating": "medium",
+   "rating_reason": "NEON proof on byte-identical A + full QC4W models reusable, but Bopt NaN clamp mismatch",
+   "evidence_paths_relative_to_verified": [
+    "qd8-f32-qc4w-gemm-minmax/repair.md",
+    "qd8-f32-qc4w-gemm-minmax/shim/rvv/api.h",
+    "qd8-f32-qc4w-gemm-minmax/proof/coq/QC4W/",
+    "qd8-f32-qc4w-gemm-minmax/proof/coq/Qd8Phase/IntegerFold.v"
+   ]
+  },
+  {
+   "kernel": "qs8-f32-vcvt",
+   "old_package": "qs8-f32-vcvt",
+   "old_package_dir": "/zp_vegeta/scratch_sb/ycsun/verus/build/e1-workers-20261104/w1-rvv-vadd/repo/verification/qcp/verified/qs8-f32-vcvt",
+   "A_path": "/zp_vegeta/scratch_sb/ycsun/verus/research/sol-pipeline-comparison-20261030/sources/SALTy-rn/kernels/source/qs8-f32-vcvt.c",
+   "A_sha256": "d8dbc84351f0154858b2bd940ea42a1e3031ec75a03640a4842a164e219a4063",
+   "bopt_path": "/zp_vegeta/scratch_sb/ycsun/verus/build/e1-source-pairing-20261104/upstream/optimized-rvv-kernels/qs8-f32-vcvt.c",
+   "lowering_json": "/zp_vegeta/scratch_sb/ycsun/verus/build/rvv-ptr-lower-20261104/val6/qs8-f32-vcvt/run1/qs8-f32-vcvt.lowering.json",
+   "neon": {
+    "status": "semantic-repaired",
+    "old_neon_proof_targets": "semantically modified A: -zp -> (int16_t)(0U-(uint32_t)zp) removes INT32_MIN negation UB [V]",
+    "normalized_line_diff_vs_A": 2,
+    "token_hunks_vs_A": 3,
+    "changed_tokens_vs_A": 9
+   },
+   "old_rvv_repair": {
+    "repaired": false,
+    "sides": "NEON semantic",
+    "counterexample": "NEON UBSan: zp=INT32_MIN",
+    "precondition_strengthened": false,
+    "old_config": "VLEN128 e8m2/e16m4/e32m8 VLMAX32"
+   },
+   "spec_observation": "cvt_values over full int32 zero_point and all fp32 scale; NanBridge observation (numeric eq or both NaN); input 7 padding bytes [V spec.c]",
+   "coq_reusable_modules": {
+    "spec": [
+     "Model.v (identical in qs8/qu8-f32-vcvt: cvt_seed_equiv, cvt_delta_equiv)",
+     "ProgramModel.v",
+     "Observation.v",
+     "f32-vadd NanBridge"
+    ]
+   },
+   "coq_module_root": "/zp_vegeta/scratch_sb/ycsun/verus/build/e1-workers-20261104/w1-rvv-vadd/repo/verification/qcp/verified/qs8-f32-vcvt/proof/coq/",
+   "bopt_ptr_ops": [
+    "vfmul_vf_f32m8",
+    "vfwcvt_f_x_v_f32m8",
+    "vle8_v_i8m2",
+    "vse32_v_f32m8",
+    "vwsub_vx_i16m4"
+   ],
+   "bopt_ops_exactly_in_old_rvv_main": [
+    "vfmul_vf_f32m8",
+    "vle8_v_i8m2",
+    "vse32_v_f32m8"
+   ],
+   "bopt_families_absent_from_old_rvv_main": [
+    "vfwcvt_f_x_v",
+    "vwsub_vx"
+   ],
+   "rvv_semantics_for_bopt": "Bopt vwsub_vx + vfwcvt_f_x_v (new); old used vsext/vzext+vsub+vfcvt. vfwcvt from int16 is exact (frm irrelevant) [I]",
+   "bopt_mismatch_risk": "MEDIUM [V Bopt line: (int8_t)params->scalar.zero_point]: Bopt truncates zp to int8; old spec allows full int32 -> differs unless zp in int8 range",
+   "pitfalls": "INT32_MIN negation UB in A; zp width truncation in Bopt",
+   "e1_outlook": "needs zp-range precondition or counterexample",
+   "rating": "medium",
+   "rating_reason": "spec/Model/NanBridge reusable; NEON proof is on repaired token variant",
+   "evidence_paths_relative_to_verified": [
+    "qs8-f32-vcvt/proof/repair.json",
+    "qs8-f32-vcvt/spec.c",
+    "qs8-f32-vcvt/proof/coq/Model.v"
+   ]
+  },
+  {
+   "kernel": "qs8-rdsum",
+   "old_package": "qs8-rdsum",
+   "old_package_dir": "/zp_vegeta/scratch_sb/ycsun/verus/build/e1-workers-20261104/w1-rvv-vadd/repo/verification/qcp/verified/qs8-rdsum",
+   "A_path": "/zp_vegeta/scratch_sb/ycsun/verus/research/sol-pipeline-comparison-20261030/sources/SALTy-rn/kernels/source/qs8-rdsum.c",
+   "A_sha256": "63798158b69457fe965a29a3b3371fa3dd7785c13182b75aa4b9c09704dd4d20",
+   "bopt_path": "/zp_vegeta/scratch_sb/ycsun/verus/build/e1-source-pairing-20261104/upstream/optimized-rvv-kernels/qs8-rdsum.c",
+   "lowering_json": "/zp_vegeta/scratch_sb/ycsun/verus/build/rvv-ptr-lower-20261104/val6/qs8-rdsum/run1/qs8-rdsum.lowering.json",
+   "neon": {
+    "status": "semantic-repaired",
+    "old_neon_proof_targets": "semantically modified A: int r->size_t, floor((rows+251)/252)->rdsum_ceil252, *output+= -> modular uint32 add; plus do-while compat [V proof/repair-neon.patch]",
+    "normalized_line_diff_vs_A": 16,
+    "token_hunks_vs_A": 14,
+    "changed_tokens_vs_A": 45
+   },
+   "old_rvv_repair": {
+    "repaired": true,
+    "sides": "both",
+    "reason": "rows>=2^31 int truncation; signed output overflow UB",
+    "counterexample": "proof/original-counterexamples.json (large rows; scalar signed overflow)",
+    "precondition_strengthened": false,
+    "old_config": "VLEN128 e8m2/e16m4/e32m8 VLMAX32"
+   },
+   "spec_observation": "rd_results = column sums + Init, wrapped s32, exact int; rd_zero_condition (zero row); stride 0 and overlapping rows allowed [V ProgramModel.v]",
+   "coq_reusable_modules": {
+    "spec": [
+     "ProgramModel.v (rd_results, rd_column, rd_zero_condition)",
+     "Model.v (shared rsum/rdsum wrap model)",
+     "IntegerFacts.v",
+     "BatchFacts.v",
+     "RowFacts.v",
+     "RowGroupFacts.v",
+     "LaneFacts.v"
+    ]
+   },
+   "coq_module_root": "/zp_vegeta/scratch_sb/ycsun/verus/build/e1-workers-20261104/w1-rvv-vadd/repo/verification/qcp/verified/qs8-rdsum/proof/coq/",
+   "bopt_ptr_ops": [
+    "vadd_vv_i32m8",
+    "vle32_v_i32m8",
+    "vle8_v_i8m2",
+    "vmv_v_x_i16m4",
+    "vmv_v_x_i32m8",
+    "vse32_v_i32m8",
+    "vwadd_wv_i16m4",
+    "vwadd_wv_i32m8"
+   ],
+   "bopt_ops_exactly_in_old_rvv_main": [
+    "vadd_vv_i32m8",
+    "vle32_v_i32m8",
+    "vle8_v_i8m2",
+    "vmv_v_x_i16m4",
+    "vmv_v_x_i32m8",
+    "vse32_v_i32m8",
+    "vwadd_wv_i16m4",
+    "vwadd_wv_i32m8"
+   ],
+   "bopt_families_absent_from_old_rvv_main": [],
+   "rvv_semantics_for_bopt": "all 8 Bopt ops occur in old RVV main (vwadd_wv i16m4/i32m8, vmv, vle/vse32, vadd), but as per-lane struct shims [V]",
+   "bopt_mismatch_risk": "low-medium [I]: 240-row i16 batching fits; signed output accumulation in A is UB unless modular semantics adopted",
+   "pitfalls": "rows int truncation; signed output overflow; zero-row contract",
+   "e1_outlook": "plausible, but must decide A-UB treatment (original A has signed += overflow)",
+   "rating": "medium",
+   "rating_reason": "spec+integer lemmas reusable; NEON proof targets repaired A; Bopt loop structure new",
+   "evidence_paths_relative_to_verified": [
+    "qs8-rdsum/proof/repair.json",
+    "qs8-rdsum/proof/repair-neon.patch",
+    "qs8-rdsum/proof/coq/ProgramModel.v"
+   ]
+  },
+  {
+   "kernel": "qs8-rsum",
+   "old_package": "qs8-rsum",
+   "old_package_dir": "/zp_vegeta/scratch_sb/ycsun/verus/build/e1-workers-20261104/w1-rvv-vadd/repo/verification/qcp/verified/qs8-rsum",
+   "A_path": "/zp_vegeta/scratch_sb/ycsun/verus/research/sol-pipeline-comparison-20261030/sources/SALTy-rn/kernels/source/qs8-rsum.c",
+   "A_sha256": "a9c2c61d1872d119dec43fa4f6b5caae5916a4d0ae396b8deff4517448a3f9a5",
+   "bopt_path": "/zp_vegeta/scratch_sb/ycsun/verus/build/e1-source-pairing-20261104/upstream/optimized-rvv-kernels/qs8-rsum.c",
+   "lowering_json": "/zp_vegeta/scratch_sb/ycsun/verus/build/rvv-ptr-lower-20261104/val6/qs8-rsum/run1/qs8-rsum.lowering.json",
+   "neon": {
+    "status": "semantic-repaired",
+    "old_neon_proof_targets": "semantically modified A: *output += -> uint32 modular add; plus compat (static removed, trailing comma) [V]",
+    "normalized_line_diff_vs_A": 6,
+    "token_hunks_vs_A": 5,
+    "changed_tokens_vs_A": 16
+   },
+   "old_rvv_repair": {
+    "repaired": true,
+    "sides": "both (same modular add)",
+    "counterexample": "n=1, Init=INT32_MAX -> signed overflow UB both sides (UBSan)",
+    "precondition_strengthened": false,
+    "old_config": "VLEN128 e8m2/e32m8 VLMAX32; e32m1 VLMAX4; 15 padding bytes"
+   },
+   "spec_observation": "output = rs_s32(Init + rs_prefix(A,batch)), exact int, full int32 Init [V spec.c]",
+   "coq_reusable_modules": {
+    "spec": [
+     "Model.v (shared)",
+     "IntegerFacts.v",
+     "PrefixFacts.v",
+     "VectorFacts.v"
+    ],
+    "neon": [
+     "NeonTailFacts.v",
+     "NeonFacts.v"
+    ]
+   },
+   "coq_module_root": "/zp_vegeta/scratch_sb/ycsun/verus/build/e1-workers-20261104/w1-rvv-vadd/repo/verification/qcp/verified/qs8-rsum/proof/coq/",
+   "bopt_ptr_ops": [
+    "vadd_vv_i32m1",
+    "vadd_vv_i32m2",
+    "vadd_vv_i32m4",
+    "vget_v_i32m2_i32m1",
+    "vget_v_i32m4_i32m2",
+    "vget_v_i32m8_i32m4",
+    "vle8_v_i8m2",
+    "vmv_v_x_i16m4",
+    "vmv_v_x_i32m1",
+    "vmv_v_x_i32m8",
+    "vmv_x_s_i32m1_i32",
+    "vredsum_vs_i32m1_i32m1",
+    "vwadd_wv_i16m4_tu",
+    "vwadd_wv_i32m8"
+   ],
+   "bopt_ops_exactly_in_old_rvv_main": [
+    "vle8_v_i8m2",
+    "vmv_v_x_i32m1",
+    "vmv_v_x_i32m8",
+    "vmv_x_s_i32m1_i32"
+   ],
+   "bopt_families_absent_from_old_rvv_main": [
+    "vget_v",
+    "vwadd_wv"
+   ],
+   "rvv_semantics_for_bopt": "Bopt vwadd_wv_i16m4_tu, vwadd_wv_i32m8, vget m8->m1 tree, vadd m4/m2/m1, vredsum_i32m1, vmv_x_s: vget/vwadd new; rs_fold_s32 covers reassociation [I]",
+   "bopt_mismatch_risk": "MEDIUM [V Bopt line 104: *output += ...]: Bopt keeps signed += (UB at old witness); A original also UB",
+   "pitfalls": "signed output overflow UB on both A and Bopt; i16 accumulation bound",
+   "e1_outlook": "needs explicit UB policy / no-overflow precondition",
+   "rating": "medium",
+   "rating_reason": "Model/lemmas reusable; NEON proof targets modular variant",
+   "evidence_paths_relative_to_verified": [
+    "qs8-rsum/proof/repair.json",
+    "qs8-rsum/proof/repair-neon.patch",
+    "qs8-rsum/spec.c"
+   ]
+  },
+  {
+   "kernel": "qs8-vadd-minmax",
+   "old_package": "qs8-vadd-minmax",
+   "old_package_dir": "/zp_vegeta/scratch_sb/ycsun/verus/build/e1-workers-20261104/w1-rvv-vadd/repo/verification/qcp/verified/qs8-vadd-minmax",
+   "A_path": "/zp_vegeta/scratch_sb/ycsun/verus/research/sol-pipeline-comparison-20261030/sources/SALTy-rn/kernels/source/qs8-vadd-minmax.c",
+   "A_sha256": "01a0bdcc9344c5f095a47a79ce0d346bd44e937ceceefd1f12e275f9091456f3",
+   "bopt_path": "/zp_vegeta/scratch_sb/ycsun/verus/build/e1-source-pairing-20261104/upstream/optimized-rvv-kernels/qs8-vadd-minmax.c",
+   "lowering_json": "/zp_vegeta/scratch_sb/ycsun/verus/build/rvv-ptr-lower-20261104/val6/qs8-vadd-minmax/run1/qs8-vadd-minmax.lowering.json",
+   "neon": {
+    "status": "semantic-repaired",
+    "old_neon_proof_targets": "semantically modified A: -shift -> canonical low-byte decode (INT32_MIN negation UB + QCP cast elision) [V]",
+    "normalized_line_diff_vs_A": 5,
+    "token_hunks_vs_A": 2,
+    "changed_tokens_vs_A": 45
+   },
+   "old_rvv_repair": {
+    "repaired": true,
+    "sides": "both",
+    "reason": "RVV shift control did not match NEON SRSHL low-byte semantics (shift>=32, negative/large counts); NEON INT32_MIN UB",
+    "counterexample": "5 concrete mismatches + NEON UBSan (proof/evidence/original-counterexamples.json)",
+    "precondition_strengthened": false,
+    "old_config": "VLEN128 VLMAX32"
+   },
+   "spec_observation": "qa_values over full int32 params; exact byte equality [V spec.c]",
+   "coq_reusable_modules": {
+    "spec": [
+     "Model.v",
+     "ShiftFacts.v (dyadic round, RNU, shift_equiv)",
+     "ControlFacts.v",
+     "ProgramModel.v"
+    ]
+   },
+   "coq_module_root": "/zp_vegeta/scratch_sb/ycsun/verus/build/e1-workers-20261104/w1-rvv-vadd/repo/verification/qcp/verified/qs8-vadd-minmax/proof/coq/",
+   "bopt_ptr_ops": [
+    "vle8_v_i8m2",
+    "vmacc_vx_i32m8",
+    "vmadd_vx_i32m8",
+    "vmax_vx_i8m2",
+    "vmin_vx_i8m2",
+    "vmv_v_x_i32m8",
+    "vnclip_wx_i16m4",
+    "vnclip_wx_i8m2",
+    "vse8_v_i8m2",
+    "vsext_vf4_i32m8"
+   ],
+   "bopt_ops_exactly_in_old_rvv_main": [
+    "vle8_v_i8m2",
+    "vmacc_vx_i32m8",
+    "vmax_vx_i8m2",
+    "vmin_vx_i8m2",
+    "vmv_v_x_i32m8",
+    "vnclip_wx_i16m4",
+    "vnclip_wx_i8m2",
+    "vse8_v_i8m2"
+   ],
+   "bopt_families_absent_from_old_rvv_main": [
+    "vmadd_vx",
+    "vsext_vf4"
+   ],
+   "rvv_semantics_for_bopt": "vnclip(u)_wx/VXRM: old shim contracts fixed (d==0 && rm==2), ShiftFacts RNU defs reusable; vmadd_vx, vsext_vf4 new [V]",
+   "bopt_mismatch_risk": "MEDIUM-HIGH [I]: Bopt folds (int64)ozp<<shift into int32 bias, saturation order changes (sat16 then +ozp vs after)",
+   "pitfalls": "shift range, VXRM, int32 wrap of bias, QCP u16->s16 cast elision",
+   "e1_outlook": "needs narrow shift/ozp preconditions or counterexample",
+   "rating": "medium",
+   "rating_reason": "rich shift/rounding lemmas reusable; Bopt reassociation needs new lemmas+narrower domain",
+   "evidence_paths_relative_to_verified": [
+    "qs8-vadd-minmax/proof/repair.json",
+    "qs8-vadd-minmax/proof/coq/ShiftFacts.v",
+    "qs8-vadd-minmax/spec.c"
+   ]
+  },
+  {
+   "kernel": "qs8-vcvt",
+   "old_package": "qs8-vcvt",
+   "old_package_dir": "/zp_vegeta/scratch_sb/ycsun/verus/build/e1-workers-20261104/w1-rvv-vadd/repo/verification/qcp/verified/qs8-vcvt",
+   "A_path": "/zp_vegeta/scratch_sb/ycsun/verus/research/sol-pipeline-comparison-20261030/sources/SALTy-rn/kernels/source/qs8-vcvt.c",
+   "A_sha256": "715bd7cd48e9241c1a56b287cbfc2c7e2fbbc100e22226abea93d438b137530d",
+   "bopt_path": "/zp_vegeta/scratch_sb/ycsun/verus/build/e1-source-pairing-20261104/upstream/optimized-rvv-kernels/qs8-vcvt.c",
+   "lowering_json": "/zp_vegeta/scratch_sb/ycsun/verus/build/rvv-ptr-lower-20261104/val6/qs8-vcvt/run1/qs8-vcvt.lowering.json",
+   "neon": {
+    "status": "semantic-repaired",
+    "old_neon_proof_targets": "semantically modified A: -multiplier -> (int16_t)(0u-(uint32_t)m) [V]",
+    "normalized_line_diff_vs_A": 2,
+    "token_hunks_vs_A": 3,
+    "changed_tokens_vs_A": 9
+   },
+   "old_rvv_repair": {
+    "repaired": true,
+    "sides": "both",
+    "reason": "RVV signed32 doubled-product wrap; fixed by rounding exact product at 15 bits before sat16",
+    "counterexample": "n=1, input=-128, izp=128, m=32768: NEON 127, original RVV -128; plus m=INT32_MIN UB",
+    "precondition_strengthened": false,
+    "old_config": "VLEN128"
+   },
+   "spec_observation": "qcv_values over full int16 izp/ozp, full int32 m; exact bytes [V]",
+   "coq_reusable_modules": {
+    "spec": [
+     "Model.v (shared with qs8-vlrelu: qcv_neon_qrdmulh, qcv_rvv_clip15, qcv_qrdmulh_equiv, sat8/16)",
+     "KernelSemanticBounds.v",
+     "KernelRangeFacts.v"
+    ]
+   },
+   "coq_module_root": "/zp_vegeta/scratch_sb/ycsun/verus/build/e1-workers-20261104/w1-rvv-vadd/repo/verification/qcp/verified/qs8-vcvt/proof/coq/",
+   "bopt_ptr_ops": [
+    "vle8_v_i8m4",
+    "vnclip_wx_i8m4",
+    "vsadd_vx_i8m4",
+    "vse8_v_i8m4",
+    "vsmul_vx_i16m8",
+    "vwsub_vx_i16m8"
+   ],
+   "bopt_ops_exactly_in_old_rvv_main": [],
+   "bopt_families_absent_from_old_rvv_main": [
+    "vsmul_vx",
+    "vwsub_vx"
+   ],
+   "rvv_semantics_for_bopt": "vsmul_vx_i16m8 (RNU) ~ qcv_rvv_clip15 [I]; vwsub_vx, vnclip_wx_i8m4, vsadd_vx_i8m4 at m8/m4 new [V]",
+   "bopt_mismatch_risk": "HIGH [V Bopt lines 18-36: izp/ozp cast to int8, m<<7 in int16, vnclip to i8 then vsadd ozp]; hand-computed: x=127, izp=-128, m=255, ozp=-100 -> NEON 127, Bopt 27 [I, not executed]",
+   "pitfalls": "VXRM, int8 truncation of params, saturation order",
+   "e1_outlook": "counterexample likely",
+   "rating": "low",
+   "rating_reason": "qrdmulh/vsmul lemma useful but Bopt likely non-equivalent without very narrow precondition",
+   "evidence_paths_relative_to_verified": [
+    "qs8-vcvt/proof/repair.json",
+    "qs8-vcvt/proof/coq/Model.v"
+   ]
+  },
+  {
+   "kernel": "qs8-vlrelu",
+   "old_package": "qs8-vlrelu",
+   "old_package_dir": "/zp_vegeta/scratch_sb/ycsun/verus/build/e1-workers-20261104/w1-rvv-vadd/repo/verification/qcp/verified/qs8-vlrelu",
+   "A_path": "/zp_vegeta/scratch_sb/ycsun/verus/research/sol-pipeline-comparison-20261030/sources/SALTy-rn/kernels/source/qs8-vlrelu.c",
+   "A_sha256": "b855a4d1ecc42155b81c2355ce28f221a884bf732625c53e1000ca596abf9d4f",
+   "bopt_path": "/zp_vegeta/scratch_sb/ycsun/verus/build/e1-source-pairing-20261104/upstream/optimized-rvv-kernels/qs8-vlrelu.c",
+   "lowering_json": "/zp_vegeta/scratch_sb/ycsun/verus/build/rvv-ptr-lower-20261104/val6/qs8-vlrelu/run1/qs8-vlrelu.lowering.json",
+   "neon": {
+    "status": "semantic-repaired",
+    "old_neon_proof_targets": "semantically modified A: 2 multiplier negations made modular; compat vzero hoist [V]",
+    "normalized_line_diff_vs_A": 9,
+    "token_hunks_vs_A": 7,
+    "changed_tokens_vs_A": 35
+   },
+   "old_rvv_repair": {
+    "repaired": true,
+    "sides": "both (same negation fix)",
+    "counterexample": "4 UBSan witnesses with multiplier INT32_MIN",
+    "precondition_strengthened": false,
+    "old_config": "VLEN128 VLMAX32"
+   },
+   "spec_observation": "qlr_values over full int32 params; exact bytes [V]",
+   "coq_reusable_modules": {
+    "spec": [
+     "Model.v (shared with qs8-vcvt)",
+     "LreluModel.v",
+     "LreluFacts.v",
+     "LreluActiveModel.v",
+     "LreluSelectionChecked.v"
+    ]
+   },
+   "coq_module_root": "/zp_vegeta/scratch_sb/ycsun/verus/build/e1-workers-20261104/w1-rvv-vadd/repo/verification/qcp/verified/qs8-vlrelu/proof/coq/",
+   "bopt_ptr_ops": [
+    "vle8_v_i8m4",
+    "vmerge_vxm_i16m8",
+    "vmsgt_vx_i8m4_b2",
+    "vmv_v_x_i16m8",
+    "vnclip_wx_i8m4",
+    "vsadd_vx_i16m8",
+    "vse8_v_i8m4",
+    "vsll_vx_i16m8",
+    "vsmul_vv_i16m8",
+    "vwsub_vx_i16m8"
+   ],
+   "bopt_ops_exactly_in_old_rvv_main": [],
+   "bopt_families_absent_from_old_rvv_main": [
+    "vmsgt_vx",
+    "vsmul_vv",
+    "vwsub_vx"
+   ],
+   "rvv_semantics_for_bopt": "vsmul_vv RNU ~ qcv_rvv_clip15 [I]; vwsub_vx, vmsgt_vx, vmerge_vxm_i16m8, vsll, vsadd_i16m8, vnclip new forms [V]",
+   "bopt_mismatch_risk": "MEDIUM [I]: Bopt uses multipliers without negation -> m == -32768 mod 2^16 flips sign (x=1,izp=0,PM=32768: NEON 127, Bopt -128, hand-computed); izp cast to int8",
+   "pitfalls": "multiplier -32768, izp width, VXRM",
+   "e1_outlook": "needs precondition or counterexample",
+   "rating": "medium",
+   "rating_reason": "structure close to NEON; Model/Lrelu lemmas reusable",
+   "evidence_paths_relative_to_verified": [
+    "qs8-vlrelu/proof/repair.json",
+    "qs8-vlrelu/proof/coq/LreluModel.v"
+   ]
+  },
+  {
+   "kernel": "qs8-vmul-minmax-fp32",
+   "old_package": "qs8-vmul-minmax-fp32",
+   "old_package_dir": "/zp_vegeta/scratch_sb/ycsun/verus/build/e1-workers-20261104/w1-rvv-vadd/repo/verification/qcp/verified/qs8-vmul-minmax-fp32",
+   "A_path": "/zp_vegeta/scratch_sb/ycsun/verus/research/sol-pipeline-comparison-20261030/sources/SALTy-rn/kernels/source/qs8-vmul-minmax-fp32.c",
+   "A_sha256": "cb4168849636fc68af462e57bcf80141316833b34dca0c7861f1b6dfa26cb390",
+   "bopt_path": "/zp_vegeta/scratch_sb/ycsun/verus/build/e1-source-pairing-20261104/upstream/optimized-rvv-kernels/qs8-vmul-minmax-fp32.c",
+   "lowering_json": "/zp_vegeta/scratch_sb/ycsun/verus/build/rvv-ptr-lower-20261104/val6/qs8-vmul-minmax-fp32/run1/qs8-vmul-minmax-fp32.lowering.json",
+   "neon": {
+    "status": "identical",
+    "old_neon_proof_targets": "A [V]",
+    "normalized_line_diff_vs_A": 0,
+    "token_hunks_vs_A": 0,
+    "changed_tokens_vs_A": 0
+   },
+   "old_rvv_repair": {
+    "repaired": true,
+    "sides": "RVV only",
+    "reason": "adopted magic-bias add/reinterpret/saturating-subtract; vfsgnj restores NaN scale sign; record/compute helpers for QCP",
+    "counterexample": "scale 0x1.b972e4p+21, a=8, b=-57, az=64, bz=-97, oz=-13783; scale 0xffc00001/0xff800001 (proof/native/counterexamples.c)",
+    "precondition_strengthened": false,
+    "old_config": "VLEN128 VLMAX32"
+   },
+   "spec_observation": "qm_values: az/bz int8, oz int16, unordered lo/hi, all fp32 scale; exact bytes [V]",
+   "coq_reusable_modules": {
+    "spec": [
+     "Model.v (qm_arm_nan, quiet, classifiers)",
+     "ArithmeticFacts.v (magic bias, NaN)",
+     "NaNQuantization.v",
+     "ScalarBitsFacts",
+     "ProgramModel.v (qm_lane, qm_values_equivalence)"
+    ],
+    "neon": [
+     "NEON proofs on original A"
+    ]
+   },
+   "coq_module_root": "/zp_vegeta/scratch_sb/ycsun/verus/build/e1-workers-20261104/w1-rvv-vadd/repo/verification/qcp/verified/qs8-vmul-minmax-fp32/proof/coq/",
+   "bopt_ptr_ops": [
+    "vfcvt_f_x_v_f32m8",
+    "vfmadd_vf_f32m8",
+    "vfmv_v_f_f32m8",
+    "vfncvt_x_f_w_i16m4",
+    "vle8_v_i8m2",
+    "vmax_vx_i8m2",
+    "vmin_vx_i8m2",
+    "vnclip_wx_i8m2",
+    "vse8_v_i8m2",
+    "vwmul_vv_i32m8",
+    "vwsub_vx_i16m4"
+   ],
+   "bopt_ops_exactly_in_old_rvv_main": [
+    "vse8_v_i8m2"
+   ],
+   "bopt_families_absent_from_old_rvv_main": [
+    "vfcvt_f_x_v",
+    "vfmadd_vf",
+    "vfmv_v_f",
+    "vfncvt_x_f_w",
+    "vle8_v",
+    "vmax_vx",
+    "vmin_vx",
+    "vnclip_wx",
+    "vwmul_vv",
+    "vwsub_vx"
+   ],
+   "rvv_semantics_for_bopt": "vwmul_vv_i32m8, vfcvt_f_x, vfmadd_vf (fused), vfncvt_x_f_w_i16m4 (frm, saturating), vnclip, vmax/vmin: all new [V]",
+   "bopt_mismatch_risk": "HIGH [I]: fused fma(acc,scale,ozp) rounds once vs NEON magic-bias path; large/NaN scale differ (old witnesses)",
+   "pitfalls": "frm must be RNE; NaN scale; ties",
+   "e1_outlook": "counterexample likely (replay old scale witnesses)",
+   "rating": "medium",
+   "rating_reason": "NEON proof+spec fully reusable; Bopt FP path new and likely divergent",
+   "evidence_paths_relative_to_verified": [
+    "qs8-vmul-minmax-fp32/proof/repair.json",
+    "qs8-vmul-minmax-fp32/proof/native/counterexamples.c",
+    "qs8-vmul-minmax-fp32/proof/coq/ArithmeticFacts.v"
+   ]
+  },
+  {
+   "kernel": "qu8-f32-vcvt",
+   "old_package": "qu8-f32-vcvt",
+   "old_package_dir": "/zp_vegeta/scratch_sb/ycsun/verus/build/e1-workers-20261104/w1-rvv-vadd/repo/verification/qcp/verified/qu8-f32-vcvt",
+   "A_path": "/zp_vegeta/scratch_sb/ycsun/verus/research/sol-pipeline-comparison-20261030/sources/SALTy-rn/kernels/source/qu8-f32-vcvt.c",
+   "A_sha256": "eaeb29597359201f0e2e13a964c0e883f08af9120ae4ee95360a96cadfbe8fd1",
+   "bopt_path": "/zp_vegeta/scratch_sb/ycsun/verus/build/e1-source-pairing-20261104/upstream/optimized-rvv-kernels/qu8-f32-vcvt.c",
+   "lowering_json": "/zp_vegeta/scratch_sb/ycsun/verus/build/rvv-ptr-lower-20261104/val6/qu8-f32-vcvt/run1/qu8-f32-vcvt.lowering.json",
+   "neon": {
+    "status": "semantic-repaired",
+    "old_neon_proof_targets": "semantically modified A: -zp -> (int16_t)(0U-(uint32_t)zp) removes INT32_MIN negation UB [V]",
+    "normalized_line_diff_vs_A": 2,
+    "token_hunks_vs_A": 3,
+    "changed_tokens_vs_A": 9
+   },
+   "old_rvv_repair": {
+    "repaired": true,
+    "sides": "NEON semantic + RVV tool-compat (comma for-step moved)",
+    "counterexample": "NEON UBSan: zp=INT32_MIN",
+    "precondition_strengthened": false,
+    "old_config": "VLEN128 e8m2/e16m4/e32m8 VLMAX32"
+   },
+   "spec_observation": "cvt_values over full int32 zero_point and all fp32 scale; NanBridge observation (numeric eq or both NaN); input 7 padding bytes [V spec.c]",
+   "coq_reusable_modules": {
+    "spec": [
+     "Model.v (identical in qs8/qu8-f32-vcvt: cvt_seed_equiv, cvt_delta_equiv)",
+     "ProgramModel.v",
+     "Observation.v",
+     "f32-vadd NanBridge",
+     "UnsignedModel.v",
+     "ForStepBridge.v"
+    ]
+   },
+   "coq_module_root": "/zp_vegeta/scratch_sb/ycsun/verus/build/e1-workers-20261104/w1-rvv-vadd/repo/verification/qcp/verified/qu8-f32-vcvt/proof/coq/",
+   "bopt_ptr_ops": [
+    "vfmul_vf_f32m8",
+    "vfwcvt_f_x_v_f32m8",
+    "vle8_v_u8m2",
+    "vreinterpret_v_u16m4_i16m4",
+    "vse32_v_f32m8",
+    "vwsubu_vx_u16m4"
+   ],
+   "bopt_ops_exactly_in_old_rvv_main": [
+    "vfmul_vf_f32m8",
+    "vle8_v_u8m2",
+    "vreinterpret_v_u16m4_i16m4",
+    "vse32_v_f32m8"
+   ],
+   "bopt_families_absent_from_old_rvv_main": [
+    "vfwcvt_f_x_v",
+    "vwsubu_vx"
+   ],
+   "rvv_semantics_for_bopt": "Bopt vwsubu_vx + vfwcvt_f_x_v (new); old used vsext/vzext+vsub+vfcvt. vfwcvt from int16 is exact (frm irrelevant) [I]",
+   "bopt_mismatch_risk": "MEDIUM [V Bopt line: (uint8_t)params->scalar.zero_point]: Bopt truncates zp to uint8; old spec allows full int32 -> differs unless zp in uint8 range",
+   "pitfalls": "INT32_MIN negation UB in A; zp width truncation in Bopt",
+   "e1_outlook": "needs zp-range precondition or counterexample",
+   "rating": "medium",
+   "rating_reason": "spec/Model/NanBridge reusable; NEON proof is on repaired token variant",
+   "evidence_paths_relative_to_verified": [
+    "qu8-f32-vcvt/proof/repair.json",
+    "qu8-f32-vcvt/spec.c",
+    "qu8-f32-vcvt/proof/coq/Model.v"
+   ]
+  },
+  {
+   "kernel": "qu8-rdsum",
+   "old_package": "qu8-rdsum",
+   "old_package_dir": "/zp_vegeta/scratch_sb/ycsun/verus/build/e1-workers-20261104/w1-rvv-vadd/repo/verification/qcp/verified/qu8-rdsum",
+   "A_path": "/zp_vegeta/scratch_sb/ycsun/verus/research/sol-pipeline-comparison-20261030/sources/SALTy-rn/kernels/source/qu8-rdsum.c",
+   "A_sha256": "513063b3667ea19323f67b1c8076e6aa34be3a475adaf7e22e9cd1c8701f6054",
+   "bopt_path": "/zp_vegeta/scratch_sb/ycsun/verus/build/e1-source-pairing-20261104/upstream/optimized-rvv-kernels/qu8-rdsum.c",
+   "lowering_json": "/zp_vegeta/scratch_sb/ycsun/verus/build/rvv-ptr-lower-20261104/val6/qu8-rdsum/run1/qu8-rdsum.lowering.json",
+   "neon": {
+    "status": "semantic-repaired",
+    "old_neon_proof_targets": "semantically modified A: size_t rows, overflow-free ceil, do-while->while [V]",
+    "normalized_line_diff_vs_A": 18,
+    "token_hunks_vs_A": 11,
+    "changed_tokens_vs_A": 31
+   },
+   "old_rvv_repair": {
+    "repaired": true,
+    "sides": "both",
+    "reason": "rows>=2^31 int truncation",
+    "counterexample": "large rows",
+    "precondition_strengthened": false,
+    "old_config": "VLEN128 VLMAX32"
+   },
+   "spec_observation": "rd_results with u32 wrap; zero-row size rule; stride 0/overlap allowed [V]",
+   "coq_reusable_modules": {
+    "spec": [
+     "ProgramModel.v",
+     "Model.v (shared)",
+     "IntegerFacts.v",
+     "IndexFacts.v",
+     "BatchFacts.v",
+     "RowFacts.v"
+    ]
+   },
+   "coq_module_root": "/zp_vegeta/scratch_sb/ycsun/verus/build/e1-workers-20261104/w1-rvv-vadd/repo/verification/qcp/verified/qu8-rdsum/proof/coq/",
+   "bopt_ptr_ops": [
+    "vadd_vv_u16m4",
+    "vadd_vv_u32m8",
+    "vle32_v_u32m8",
+    "vle8_v_u8m2",
+    "vmv_v_x_u16m4",
+    "vmv_v_x_u32m8",
+    "vse32_v_u32m8",
+    "vwaddu_vv_u16m4",
+    "vwaddu_wv_u32m8",
+    "vzext_vf2_u16m4"
+   ],
+   "bopt_ops_exactly_in_old_rvv_main": [
+    "vadd_vv_u32m8",
+    "vle32_v_u32m8",
+    "vle8_v_u8m2",
+    "vmv_v_x_u16m4",
+    "vmv_v_x_u32m8",
+    "vse32_v_u32m8",
+    "vwaddu_wv_u32m8"
+   ],
+   "bopt_families_absent_from_old_rvv_main": [
+    "vwaddu_vv",
+    "vzext_vf2"
+   ],
+   "rvv_semantics_for_bopt": "vwaddu_vv_u16m4, vzext_vf2_u16m4 new; vwaddu_wv, vmv, vadd, vle/vse32 exist [V]",
+   "bopt_mismatch_risk": "low [I]: check u16 partial-sum bound per batch",
+   "pitfalls": "rows truncation in A",
+   "e1_outlook": "equivalence plausible (modulo A int rows for >=2^31)",
+   "rating": "medium",
+   "rating_reason": "spec reusable; NEON proof on size_t-repaired variant",
+   "evidence_paths_relative_to_verified": [
+    "qu8-rdsum/proof/repair.json",
+    "qu8-rdsum/proof/coq/ProgramModel.v"
+   ]
+  },
+  {
+   "kernel": "qu8-rsum",
+   "old_package": "qu8-rsum",
+   "old_package_dir": "/zp_vegeta/scratch_sb/ycsun/verus/build/e1-workers-20261104/w1-rvv-vadd/repo/verification/qcp/verified/qu8-rsum",
+   "A_path": "/zp_vegeta/scratch_sb/ycsun/verus/research/sol-pipeline-comparison-20261030/sources/SALTy-rn/kernels/source/qu8-rsum.c",
+   "A_sha256": "47afcdb91951923a487ed321e63f283bf3d9a97bb006ce16b165f62f7378e09b",
+   "bopt_path": "/zp_vegeta/scratch_sb/ycsun/verus/build/e1-source-pairing-20261104/upstream/optimized-rvv-kernels/qu8-rsum.c",
+   "lowering_json": "/zp_vegeta/scratch_sb/ycsun/verus/build/rvv-ptr-lower-20261104/val6/qu8-rsum/run1/qu8-rsum.lowering.json",
+   "neon": {
+    "status": "compat-modified",
+    "old_neon_proof_targets": "A modulo QCP compat (static table -> automatic, trailing comma) [V repair.json variant neon-compatibility-repaired]",
+    "normalized_line_diff_vs_A": 4,
+    "token_hunks_vs_A": 2,
+    "changed_tokens_vs_A": 2
+   },
+   "old_rvv_repair": {
+    "repaired": false,
+    "note": "no RVV repair; VLEN128 [V]"
+   },
+   "spec_observation": "output = rs_u32(Init + rs_prefix), full u32 Init, exact [V]",
+   "coq_reusable_modules": {
+    "spec": [
+     "Model.v (shared)",
+     "IntegerFacts.v (rs_u32_*)",
+     "PrefixFacts.v",
+     "VectorFacts.v",
+     "NeonBounds.v"
+    ]
+   },
+   "coq_module_root": "/zp_vegeta/scratch_sb/ycsun/verus/build/e1-workers-20261104/w1-rvv-vadd/repo/verification/qcp/verified/qu8-rsum/proof/coq/",
+   "bopt_ptr_ops": [
+    "vle8_v_u8m2",
+    "vmv_v_x_u16m4",
+    "vmv_v_x_u32m1",
+    "vmv_x_s_u32m1_u32",
+    "vwaddu_vx_u16m4",
+    "vwaddu_wv_u16m4",
+    "vwredsumu_vs_u16m4_u32m1"
+   ],
+   "bopt_ops_exactly_in_old_rvv_main": [
+    "vle8_v_u8m2",
+    "vmv_v_x_u32m1",
+    "vmv_x_s_u32m1_u32"
+   ],
+   "bopt_families_absent_from_old_rvv_main": [
+    "vwaddu_vx",
+    "vwaddu_wv",
+    "vwredsumu_vs"
+   ],
+   "rvv_semantics_for_bopt": "Bopt vwaddu_vx_u16m4, vwaddu_wv_u16m4, vwredsumu_vs_u16m4_u32m1 all new (old: vzext_vf4 + vredsum_u32m8) [V]",
+   "bopt_mismatch_risk": "low [I]: check u16 lane bound per pinned chunk",
+   "pitfalls": "QCP rejects static locals/trailing comma -> same compat edit needed on A",
+   "e1_outlook": "equivalence plausible",
+   "rating": "high",
+   "rating_reason": "NEON differs only by forced QCP compat; spec+wrap lemmas reusable; only RVV rebuilt",
+   "evidence_paths_relative_to_verified": [
+    "qu8-rsum/proof/repair.json",
+    "qu8-rsum/spec.c"
+   ]
+  },
+  {
+   "kernel": "qu8-vadd-minmax",
+   "old_package": "qu8-vadd-minmax",
+   "old_package_dir": "/zp_vegeta/scratch_sb/ycsun/verus/build/e1-workers-20261104/w1-rvv-vadd/repo/verification/qcp/verified/qu8-vadd-minmax",
+   "A_path": "/zp_vegeta/scratch_sb/ycsun/verus/research/sol-pipeline-comparison-20261030/sources/SALTy-rn/kernels/source/qu8-vadd-minmax.c",
+   "A_sha256": "7f6435954cc0ac4ab31881da9ff8b16f04abdfc8da0c1a945b15b64f3bcb2294",
+   "bopt_path": "/zp_vegeta/scratch_sb/ycsun/verus/build/e1-source-pairing-20261104/upstream/optimized-rvv-kernels/qu8-vadd-minmax.c",
+   "lowering_json": "/zp_vegeta/scratch_sb/ycsun/verus/build/rvv-ptr-lower-20261104/val6/qu8-vadd-minmax/run1/qu8-vadd-minmax.lowering.json",
+   "neon": {
+    "status": "semantic-repaired",
+    "old_neon_proof_targets": "semantically modified A: -shift -> canonical low-byte decode (INT32_MIN negation UB + QCP cast elision) [V]",
+    "normalized_line_diff_vs_A": 5,
+    "token_hunks_vs_A": 2,
+    "changed_tokens_vs_A": 45
+   },
+   "old_rvv_repair": {
+    "repaired": true,
+    "sides": "both",
+    "reason": "RVV shift control did not match NEON SRSHL low-byte semantics (shift>=32, negative/large counts); NEON INT32_MIN UB",
+    "counterexample": "5 concrete mismatches + NEON UBSan (proof/evidence/original-counterexamples.json)",
+    "precondition_strengthened": false,
+    "old_config": "VLEN128 VLMAX32"
+   },
+   "spec_observation": "qu_values over full int32 params; exact byte equality [V spec.c]",
+   "coq_reusable_modules": {
+    "spec": [
+     "Model.v",
+     "ShiftFacts.v (dyadic round, RNU, shift_equiv)",
+     "ControlFacts.v",
+     "ProgramModel.v",
+     "UnsignedModel.v",
+     "UnsignedDecodeFacts.v"
+    ]
+   },
+   "coq_module_root": "/zp_vegeta/scratch_sb/ycsun/verus/build/e1-workers-20261104/w1-rvv-vadd/repo/verification/qcp/verified/qu8-vadd-minmax/proof/coq/",
+   "bopt_ptr_ops": [
+    "vle8_v_u8m2",
+    "vmacc_vx_i32m8",
+    "vmadd_vx_i32m8",
+    "vmaxu_vx_u8m2",
+    "vminu_vx_u8m2",
+    "vmv_v_x_i32m8",
+    "vnclipu_wx_u8m2",
+    "vnsra_wx_i16m4",
+    "vreinterpret_v_i16m4_u16m4",
+    "vreinterpret_v_u32m8_i32m8",
+    "vse8_v_u8m2",
+    "vwaddu_vv_u16m4",
+    "vzext_vf2_u32m8",
+    "vzext_vf4_u32m8"
+   ],
+   "bopt_ops_exactly_in_old_rvv_main": [
+    "vle8_v_u8m2",
+    "vmacc_vx_i32m8",
+    "vmaxu_vx_u8m2",
+    "vminu_vx_u8m2",
+    "vmv_v_x_i32m8",
+    "vnclipu_wx_u8m2",
+    "vreinterpret_v_i16m4_u16m4",
+    "vse8_v_u8m2"
+   ],
+   "bopt_families_absent_from_old_rvv_main": [
+    "vmadd_vx",
+    "vnsra_wx",
+    "vwaddu_vv",
+    "vzext_vf2",
+    "vzext_vf4"
+   ],
+   "rvv_semantics_for_bopt": "vnclip(u)_wx/VXRM: old shim contracts fixed (d==0 && rm==2), ShiftFacts RNU defs reusable; vmadd_vx, vsext_vf4, vnsra_wx, vwaddu_vv, vzext_vf2/vf4 new [V]",
+   "bopt_mismatch_risk": "HIGH [I]: different algorithm; negative int16 reinterpreted as u16 then vnclipu -> 255 vs NEON vqmovun 0; vnsra truncates where NEON saturates",
+   "pitfalls": "shift range, VXRM, int32 wrap of bias, QCP u16->s16 cast elision",
+   "e1_outlook": "counterexample likely (test natively first)",
+   "rating": "low",
+   "rating_reason": "lemmas exist but Bopt likely non-equivalent on much of the domain",
+   "evidence_paths_relative_to_verified": [
+    "qu8-vadd-minmax/proof/repair.json",
+    "qu8-vadd-minmax/proof/coq/ShiftFacts.v",
+    "qu8-vadd-minmax/spec.c"
+   ]
+  },
+  {
+   "kernel": "s8-vclamp",
+   "old_package": "s8-vclamp",
+   "old_package_dir": "/zp_vegeta/scratch_sb/ycsun/verus/build/e1-workers-20261104/w1-rvv-vadd/repo/verification/qcp/verified/s8-vclamp",
+   "A_path": "/zp_vegeta/scratch_sb/ycsun/verus/research/sol-pipeline-comparison-20261030/sources/SALTy-rn/kernels/source/s8-vclamp.c",
+   "A_sha256": "4edb4d3c7d185bb0c969664c7408e7161b01a7d0f52cc651d2919c9d9e6bda7f",
+   "bopt_path": "/zp_vegeta/scratch_sb/ycsun/verus/build/e1-source-pairing-20261104/upstream/optimized-rvv-kernels/s8-vclamp.c",
+   "lowering_json": "/zp_vegeta/scratch_sb/ycsun/verus/build/rvv-ptr-lower-20261104/val6/s8-vclamp/run1/s8-vclamp.lowering.json",
+   "neon": {
+    "status": "identical",
+    "old_neon_proof_targets": "A [V]",
+    "normalized_line_diff_vs_A": 0,
+    "token_hunks_vs_A": 0,
+    "changed_tokens_vs_A": 0
+   },
+   "old_rvv_repair": {
+    "repaired": true,
+    "sides": "RVV only",
+    "reason": "NEON: max-then-min on floor(n/64)*64 bulk, min-then-max on tail; original RVV always max-then-min",
+    "counterexample": "n=1, x=0, min=1, max=0: NEON 1, RVV 0",
+    "fix": "copy u8 bulk-64/tail schedule",
+    "precondition_strengthened": false,
+    "old_config": "VLEN128 e8m8 VLMAX128"
+   },
+   "spec_observation": "byte-exact; RawLo/RawHi any int32 truncated to s8; lo<=hi NOT required; input n+7 readable bytes [V]",
+   "coq_reusable_modules": {
+    "spec": [
+     "Model.v (s8_narrow, s8_bulk_lane, s8_tail_lane, s8_values)",
+     "SignedWindow.v",
+     "ByteBridge.v"
+    ],
+    "neon": [
+     "NeonKernel*.v"
+    ],
+    "rvv": [
+     "RvvModel.v",
+     "RvvKernelModel.v"
+    ]
+   },
+   "coq_module_root": "/zp_vegeta/scratch_sb/ycsun/verus/build/e1-workers-20261104/w1-rvv-vadd/repo/verification/qcp/verified/s8-vclamp/proof/coq/",
+   "bopt_ptr_ops": [
+    "vle8_v_i8m8",
+    "vmax_vx_i8m8",
+    "vmin_vx_i8m8",
+    "vse8_v_i8m8"
+   ],
+   "bopt_ops_exactly_in_old_rvv_main": [
+    "vle8_v_i8m8",
+    "vmax_vx_i8m8",
+    "vmin_vx_i8m8",
+    "vse8_v_i8m8"
+   ],
+   "bopt_families_absent_from_old_rvv_main": [],
+   "rvv_semantics_for_bopt": "vmax_vx/vmin_vx_i8m8 identical (4/4)",
+   "bopt_mismatch_risk": "HIGH [V grep: Bopt max-then-min everywhere incl. tail]: recorded witness applies unless lo<=hi assumed",
+   "pitfalls": "clamp order with lo>hi",
+   "e1_outlook": "counterexample likely (old witness)",
+   "rating": "medium",
+   "rating_reason": "NEON proof+Model reusable; Bopt reintroduces order bug",
+   "evidence_paths_relative_to_verified": [
+    "s8-vclamp/proof/repair.json",
+    "s8-vclamp/proof/coq/Model.v"
+   ]
+  },
+  {
+   "kernel": "u8-vclamp",
+   "old_package": "u8-vclamp",
+   "old_package_dir": "/zp_vegeta/scratch_sb/ycsun/verus/build/e1-workers-20261104/w1-rvv-vadd/repo/verification/qcp/verified/u8-vclamp",
+   "A_path": "/zp_vegeta/scratch_sb/ycsun/verus/research/sol-pipeline-comparison-20261030/sources/SALTy-rn/kernels/source/u8-vclamp.c",
+   "A_sha256": "e52c7c97805aec65922f07f19c7496015596e375b17306258f9e5f4805528f57",
+   "bopt_path": "/zp_vegeta/scratch_sb/ycsun/verus/build/e1-source-pairing-20261104/upstream/optimized-rvv-kernels/u8-vclamp.c",
+   "lowering_json": "/zp_vegeta/scratch_sb/ycsun/verus/build/rvv-ptr-lower-20261104/val6/u8-vclamp/run1/u8-vclamp.lowering.json",
+   "neon": {
+    "status": "identical",
+    "old_neon_proof_targets": "A [V]",
+    "normalized_line_diff_vs_A": 0,
+    "token_hunks_vs_A": 0,
+    "changed_tokens_vs_A": 0
+   },
+   "old_rvv_repair": {
+    "repaired": false,
+    "note": "original RVV already follows bulk-64/tail order; optional AVL<=128 variant (proof/rvv-avl128.patch) is not a bug fix; 128 byte lanes packed as 32 uint32 words [V]"
+   },
+   "spec_observation": "byte-exact; lo/hi = raw mod 256; prefix p=floor(n/64)*64 min(max(x,lo),hi), suffix max(min(x,hi),lo); lo<=hi not required [V FullU8/U8Logic.v]",
+   "coq_reusable_modules": {
+    "spec": [
+     "FullU8/U8Logic.v",
+     "FullU8/U8KernelLogic.v"
+    ],
+    "rvv": [
+     "RvvRepair/Policy.v (legal_vl per RVV 1.0)"
+    ]
+   },
+   "coq_module_root": "/zp_vegeta/scratch_sb/ycsun/verus/build/e1-workers-20261104/w1-rvv-vadd/repo/verification/qcp/verified/u8-vclamp/proof/coq/",
+   "bopt_ptr_ops": [
+    "vle8_v_u8m8",
+    "vmaxu_vx_u8m8",
+    "vminu_vx_u8m8",
+    "vse8_v_u8m8"
+   ],
+   "bopt_ops_exactly_in_old_rvv_main": [
+    "vle8_v_u8m8",
+    "vmaxu_vx_u8m8",
+    "vminu_vx_u8m8",
+    "vse8_v_u8m8"
+   ],
+   "bopt_families_absent_from_old_rvv_main": [],
+   "rvv_semantics_for_bopt": "vmaxu_vx/vminu_vx_u8m8 identical (4/4); packed-word RVV model awkward for pointer-form shim [V]",
+   "bopt_mismatch_risk": "HIGH [V grep: Bopt max-then-min incl. tail]: n=1,x=0,lo=1,hi=0 -> NEON 1, Bopt 0 [I]",
+   "pitfalls": "tail clamp order with lo>hi",
+   "e1_outlook": "counterexample likely",
+   "rating": "medium",
+   "rating_reason": "spec/logic+NEON reusable; Bopt breaks tail order",
+   "evidence_paths_relative_to_verified": [
+    "u8-vclamp/repair.md",
+    "u8-vclamp/proof/coq/FullU8/U8Logic.v",
+    "u8-vclamp/proof/coq/RvvRepair/Policy.v"
+   ]
+  },
+  {
+   "kernel": "x32-packw-gemm-goi",
+   "old_package": "x32-packw-gemm-goi",
+   "old_package_dir": "/zp_vegeta/scratch_sb/ycsun/verus/build/e1-workers-20261104/w1-rvv-vadd/repo/verification/qcp/verified/x32-packw-gemm-goi",
+   "A_path": "/zp_vegeta/scratch_sb/ycsun/verus/research/sol-pipeline-comparison-20261030/sources/SALTy-rn/kernels/source/x32-packw-gemm-goi.c",
+   "A_sha256": "3804caddb205c82d2b27a8f882a1774380c55802e974c43f7bf845870d6db143",
+   "bopt_path": "/zp_vegeta/scratch_sb/ycsun/verus/build/e1-source-pairing-20261104/upstream/optimized-rvv-kernels/x32-packw-gemm-goi.c",
+   "lowering_json": "/zp_vegeta/scratch_sb/ycsun/verus/build/rvv-ptr-lower-20261104/val6/x32-packw-gemm-goi/run1/x32-packw-gemm-goi.lowering.json",
+   "neon": {
+    "status": "compat-modified (heavy)",
+    "old_neon_proof_targets": "refactored A: header/KC loops into shim helpers, vld2_lane split to 2x vld1_lane (LaneLoadBridge.v), explicit counters, do->while; whole_original_C_refinement_proved=false [V repair.json]",
+    "normalized_line_diff_vs_A": 102,
+    "token_hunks_vs_A": 34,
+    "changed_tokens_vs_A": 381
+   },
+   "old_rvv_repair": {
+    "repaired": false,
+    "note": "compat only: vcreate+vsseg2e32 tuple store decomposed into 2 vsse32; no semantic counterexample; VLEN128 e32m4 [V]"
+   },
+   "spec_observation": "exact u32 full-state equality: ordered fold of word writes, unwritten holes keep OLD; nr=2,kr=1,sr=1; bias may alias weights [V spec.c]",
+   "coq_reusable_modules": {
+    "spec": [
+     "PackwModel.v",
+     "ProgramModel.v (pw_program)",
+     "TileModel.v",
+     "LayoutModel.v",
+     "StateObservation.v",
+     "ProgramIdempotence.v",
+     "ObservationModel.v",
+     "StridedPairFacts.v",
+     "LaneLoadBridge.v"
+    ],
+    "rvv": [
+     "TupleRecordChecked.v, tuple_record_def.v (abandoned tuple probes)"
+    ]
+   },
+   "coq_module_root": "/zp_vegeta/scratch_sb/ycsun/verus/build/e1-workers-20261104/w1-rvv-vadd/repo/verification/qcp/verified/x32-packw-gemm-goi/proof/coq/",
+   "bopt_ptr_ops": [
+    "vle32_v_u32m1",
+    "vle32_v_u32m2",
+    "vmv_v_x_u32m1",
+    "vmv_v_x_u32m2",
+    "vse32_v_u32m1",
+    "vset_v_u32m2_u32m2x2",
+    "vsseg2e32_v_u32m2x2",
+    "vundefined_u32m2x2"
+   ],
+   "bopt_ops_exactly_in_old_rvv_main": [],
+   "bopt_families_absent_from_old_rvv_main": [
+    "vle32_v",
+    "vmv_v_x",
+    "vse32_v",
+    "vset_v",
+    "vsseg2e32_v",
+    "vundefined"
+   ],
+   "rvv_semantics_for_bopt": "vsseg2e32 m2x2, vset/vundefined tuples new (old avoided tuples); vle32/vmv/vse32 m1/m2 contracts new [V]",
+   "bopt_mismatch_risk": "MEDIUM-HIGH [V]: odd-nc tail Bopt vsseg2 writes 0 into hole slot that A leaves untouched -> mismatch under full-state observation",
+   "pitfalls": "holes/gaps observed, bias alias, QCP tuple-type gaps",
+   "e1_outlook": "needs observation restricted to A-written cells or counterexample",
+   "rating": "medium",
+   "rating_reason": "packing models reusable; NEON proof on refactored variant; RVV tuple path new",
+   "evidence_paths_relative_to_verified": [
+    "x32-packw-gemm-goi/proof/repair.json",
+    "x32-packw-gemm-goi/spec.c",
+    "x32-packw-gemm-goi/proof/coq/ProgramModel.v"
+   ]
+  },
+  {
+   "kernel": "x32transpose",
+   "old_package": "x32-transposec",
+   "old_package_dir": "/zp_vegeta/scratch_sb/ycsun/verus/build/e1-workers-20261104/w1-rvv-vadd/repo/verification/qcp/verified/x32-transposec",
+   "A_path": "/zp_vegeta/scratch_sb/ycsun/verus/research/sol-pipeline-comparison-20261030/sources/SALTy-rn/kernels/source/x32-transposec.c",
+   "A_sha256": "8493c77a023aa7d43fdbf559c7316a242cb5ed529b56b63c66bc2a7693b2fd3a",
+   "bopt_path": "/zp_vegeta/scratch_sb/ycsun/verus/build/e1-source-pairing-20261104/upstream/optimized-rvv-kernels/x32transpose.c",
+   "lowering_json": "/zp_vegeta/scratch_sb/ycsun/verus/build/rvv-ptr-lower-20261104/val6/x32transpose/run1/x32transpose.lowering.json",
+   "neon": {
+    "status": "compat-modified",
+    "old_neon_proof_targets": "modified A: height0 early return, width0->1, do->while, vzip_u32().val -> vzip1/vzip2 (ZipBridge.v); original_source_refinement_proved=false [V]",
+    "normalized_line_diff_vs_A": 18,
+    "token_hunks_vs_A": 11,
+    "changed_tokens_vs_A": 80
+   },
+   "old_rvv_repair": {
+    "repaired": true,
+    "sides": "RVV semantic",
+    "reason": "width 0 edge: NEON do-loop runs once, RVV writes nothing",
+    "counterexample": "width 0, height 1, input 0xa1234567: NEON writes it, RVV leaves 0x55ab21de",
+    "precondition_strengthened": false,
+    "old_config": "VLEN128 e32m8 VLMAX32, vle32 + vsse32"
+   },
+   "spec_observation": "exact u32 at written addresses, unwritten kept; u64 strides mod 2^64; duplicate input rows allowed; active strided store addresses distinct [V spec.c]",
+   "coq_reusable_modules": {
+    "spec": [
+     "Geometry.v",
+     "ProgramModel.v (xt_effective_width)",
+     "StrideModel.v",
+     "SignedStrideFacts.v",
+     "StateObservation.v",
+     "TransposeObservation.v",
+     "ObservationModel.v",
+     "CursorFacts.v",
+     "ZipBridge.v"
+    ]
+   },
+   "coq_module_root": "/zp_vegeta/scratch_sb/ycsun/verus/build/e1-workers-20261104/w1-rvv-vadd/repo/verification/qcp/verified/x32-transposec/proof/coq/",
+   "bopt_ptr_ops": [
+    "vget_v_u32m2x2_u32m2",
+    "vget_v_u32m2x3_u32m2",
+    "vget_v_u32m2x4_u32m2",
+    "vlse32_v_u32m2",
+    "vlsseg2e32_v_u32m2x2",
+    "vlsseg3e32_v_u32m2x3",
+    "vlsseg4e32_v_u32m2x4",
+    "vse32_v_u32m2"
+   ],
+   "bopt_ops_exactly_in_old_rvv_main": [],
+   "bopt_families_absent_from_old_rvv_main": [
+    "vget_v",
+    "vlse32_v",
+    "vlsseg2e32_v",
+    "vlsseg3e32_v",
+    "vlsseg4e32_v",
+    "vse32_v"
+   ],
+   "rvv_semantics_for_bopt": "vlse32, vlsseg2/3/4e32 m2 tuples, vget x2/x3/x4, vse32 m2 all new; SignedStrideFacts/StrideModel apply to addressing [V]",
+   "bopt_mismatch_risk": "HIGH [V]: no width-0 handling -> old witness returns; Bopt asserts stronger stride non-overlap; function name differs (xnn_x32_transposec_ukernel__8xv2_rvv)",
+   "pitfalls": "width/height 0 edges, overlapping outputs, stride sign conversion, QCP tuple types",
+   "e1_outlook": "counterexample likely (width 0) or domain restriction",
+   "rating": "medium",
+   "rating_reason": "geometry/stride/observation models reusable; RVV families all new",
+   "evidence_paths_relative_to_verified": [
+    "x32-transposec/proof/repair.json",
+    "x32-transposec/spec.c",
+    "x32-transposec/proof/coq/SignedStrideFacts.v"
+   ]
+  }
+ ]
+}

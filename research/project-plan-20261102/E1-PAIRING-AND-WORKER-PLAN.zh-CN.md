@@ -71,3 +71,28 @@
 2. 需要用户决定：证明 profile 用 **VLEN512/DLEN256**（与性能测量一致，推荐）还是沿用 VLEN128（复用更多，但验证版本与测量配置不一致）。
 3. 向 Keagan 索取 Autocomp RVV backend、FireSim 配置与计时 harness，以及每个最终文件的实际 baseline。
 4. 若要评估弱模型：先配置 DeepSeek 等入口，修好 Claude 代理，再做第 5 节的受控对比。
+
+## 8. 补充（2026-11-04 晚）：VLEN512 与当前 RVV 向量表示的规模冲突
+
+当前共享 RVV shim（`c-shim-v2` 的 `shared/c-shim/f32/QcpRvv32/`、`ByvalueRvv/`）把一个向量寄存器表示成**每个 lane 一个 struct 字段**，合同里逐字段列出 `store(&(a->s0),float,x0) * … * s31`。VLEN128、e32m8 是 32 字段；旧 README 已记载通用 tactic 在 96 个字段上超时。
+
+按最终版实际使用的 SEW/LMUL 计算 VLEN512 下单个向量的 lane 数（`e1-pairing-20261104` 方法同上，按源码中出现的最大类型）：
+
+| 每向量最大 lane 数 | kernel 数 | 例子 |
+|---|---:|---|
+| 512 | 2 | u8-vclamp、s8-vclamp（e8m8） |
+| 256 | 2 | qs8-vlrelu、qs8-vcvt（e16m8） |
+| 128 | 19 | f32 逐元素 m8、量化 e32m8、maxpool、argmaxpool、f32-f16-vcvt |
+| 64 | 8 | vadd、vdiv、vmin、gemm、igemm、dwconv、qd8-gemm |
+| ≤32 | 4 | transpose、packw、vcmul、conv-hwc2chw |
+
+结论：**在逐字段表示下，VLEN512 对 23/35 个 kernel 需要 ≥128 字段的向量，规模是旧证明的 4–16 倍，大概率不可行。** 要按 VLEN512 验证，需要先把 RVV 向量改成参数化表示（例如向量值作为长度为 VLMAX 的 Coq list，由单一数组谓词持有），这是共享基础设施改动，需单独审查并对已有 intrinsic 合同重新验证。改成参数化表示后，VLEN 可以作为参数，甚至可能对一族 VLEN 同时成立。这是推断，尚未实现或测试。
+
+## 9. 补充（2026-11-04 深夜）：规则式指针化改写工具与 E1 RVV 侧试点
+
+- 用户决定：允许为 QCP 改写 RVV 源码，但必须由工具链中的规则式确定性工具完成，不能由 LLM 改写；`impl/` 保留两份原版代码，证明目录放改写后的程序。
+- 工具：`tools/rvv_ptr_lower/`。clang 20 类型驱动，规则 R1–R13，规则外的构造一律明确拒绝。35/35 个 Bopt 改写成功，确定性、幂等性、QEMU 三种 VLEN 下的差分测试全部通过。详见 [rvv-ptr-lower-20261104/RESULTS.zh-CN.md](rvv-ptr-lower-20261104/RESULTS.zh-CN.md)。
+- 顺带发现（待分诊，不直接算反例）：
+  - 6 个 Bopt 在上游 SALTy harness 中与标量参考不一致：f32-f16-vcvt、f32-igemm-minmax、qd8-f32-qc4w-gemm-minmax（仅 VLEN 256/512）、qs8-vmul-minmax-fp32、qu8-vadd-minmax、x32-packw-gemm-goi；
+  - u8-vclamp 自带的 params 布局与 XNNPACK 不同。
+- 23:36 启动 W1（Codex CLI，gpt-6-astra，workspace-write 沙箱，整个进程限 16 GiB）。任务：数组字段指针 shim，以及改写后 Bopt f32-vadd 的整核证明（VLEN512，并在 128/256 复检）。目录：`build/e1-workers-20261104/w1-rvv-vadd/`，brief 在同一目录。尚无结果。
