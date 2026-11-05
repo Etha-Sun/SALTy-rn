@@ -1,0 +1,75 @@
+Program: `p3/p3_mixed.c`
+Start to parse strategies file int_array
+File Path: /zp_vegeta/scratch_sb/ycsun/verus/.local/qcp/QCP-V2.1.4/QCP_examples/QCP_demos_human/int_array.strategies
+Finish parsing strategies file int_array
+Start to parse strategies file uint_array
+File Path: /zp_vegeta/scratch_sb/ycsun/verus/.local/qcp/QCP-V2.1.4/QCP_examples/QCP_demos_human/uint_array.strategies
+Finish parsing strategies file uint_array
+Start to parse strategies file undef_uint_array
+File Path: /zp_vegeta/scratch_sb/ycsun/verus/.local/qcp/QCP-V2.1.4/QCP_examples/QCP_demos_human/undef_uint_array.strategies
+Finish parsing strategies file undef_uint_array
+Start to parse strategies file array_shape
+File Path: /zp_vegeta/scratch_sb/ycsun/verus/.local/qcp/QCP-V2.1.4/QCP_examples/QCP_demos_human/array_shape.strategies
+Finish parsing strategies file array_shape
+Start to parse strategies file common
+File Path: builtin/common.strategies
+Finish parsing strategies file common
+Start to parse strategies file string_literal
+File Path: builtin/string_literal.strategies
+Finish parsing strategies file string_literal
+Start to parse strategies file int_array
+File Path: builtin/int_array.strategies
+Finish parsing strategies file int_array
+Start to parse strategies file undef_int_array
+File Path: builtin/undef_int_array.strategies
+Finish parsing strategies file undef_int_array
+Start to parse strategies file mixed_int_array
+File Path: builtin/mixed_int_array.strategies
+Finish parsing strategies file mixed_int_array
+Start to parse strategies file int_array_shape
+File Path: builtin/int_array_shape.strategies
+Finish parsing strategies file int_array_shape
+Function `vload`
+End of function `vload`
+Function `vstore`
+End of function `vstore`
+Function `vload_v`
+End of function `vload_v`
+Start to parse function declaration of function vmax
+Function `vmax_v`
+End of function `vmax_v`
+Function `max_kernel`
+[1;31mfatal error: [0mCannot derive the precondition of function vmax_v for spec (default) in p3/p3_mixed.c:76:34
+Function call failed because the caller assertion does not entail the callee Require assertion after substituting actual arguments.
+Function call argument bindings:
+  argument 1: a <- v_552_addr
+  argument 2: b <- v_552_addr
+Callee precondition after substituting actual arguments:
+EX B_570_free 
+PROP[]
+LOCAL[]
+SEP[
+  IntArray.full (&(v_552_addr->s), 128, B_570_free) ]
+
+Caller current assertion:
+EX w_564_addr T_558 
+PROP[
+  Zlength(Z_1, T_558) == (128 - vl_536_pre);
+  0 <= vl_536_pre;
+  vl_536_pre <= 128 ]
+LOCAL[
+  Temp w w_564_addr;
+  Temp v v_552_addr;
+  Temp dst dst_543_addr;
+  Temp src src_540_addr;
+  Temp vl vl_537_addr ]
+SEP[
+  UndefStructPredvint32m8_t (w_564_addr);
+  IntArray.full (&(v_552_addr->s), 128, app(Z_1, L_544_free, T_558));
+  IntArray.full (&(retval_559->s), 128, app(Z_1, L_544_free, T_558));
+  IntArray.full (src_539_pre, vl_536_pre, L_544_free);
+  store(dst_543_addr, dst_542_pre, signed int*);
+  store(src_540_addr, src_539_pre, signed int*);
+  store(vl_537_addr, vl_536_pre, signed int);
+  IntArray.undef_full (dst_542_pre, vl_536_pre) ]
+

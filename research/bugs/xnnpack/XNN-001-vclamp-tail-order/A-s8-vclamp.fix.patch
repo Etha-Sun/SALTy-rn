@@ -1,0 +1,21 @@
+--- research/bugs/xnnpack/XNN-001-vclamp-tail-order/A-s8-vclamp.original.c	2026-11-05 00:36:37.570548861 -0600
++++ research/bugs/xnnpack/XNN-001-vclamp-tail-order/A-s8-vclamp.fixed.c	2026-11-05 00:36:45.418620603 -0600
+@@ -45,16 +45,16 @@
+   for (; batch >= 8; batch -= 8) {
+     int8x8_t vacc = vld1_s8(input); input += 8;
+ 
+-    vacc = vmin_s8(vacc, vget_low_s8(voutput_max));
+     vacc = vmax_s8(vacc, vget_low_s8(voutput_min));
++    vacc = vmin_s8(vacc, vget_low_s8(voutput_max));
+ 
+     vst1_s8(output, vacc); output += 8;
+   }
+   if XNN_UNLIKELY(batch != 0) {
+     int8x8_t vacc = vld1_s8(input); input += 8;
+ 
+-    vacc = vmin_s8(vacc, vget_low_s8(voutput_max));
+     vacc = vmax_s8(vacc, vget_low_s8(voutput_min));
++    vacc = vmin_s8(vacc, vget_low_s8(voutput_max));
+ 
+     if (batch & 4) {
+       vst1_lane_u32((void*) output, vreinterpret_u32_s8(vacc), 0); output += 4;

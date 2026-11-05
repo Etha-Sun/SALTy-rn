@@ -1,0 +1,1377 @@
+bf16_f32_gemm_minmax
+   X86      asm_amd64_avx512bf16_broadcast
+f16_avgpool_minmax
+   ARM64    neonfp16arith_u8
+   X86      f16c_u8
+f16_conv_hwc2chw
+   ARM      neonfp16arith_2x2
+   ARM64    neonfp16arith_2x2
+f16_dwconv2d_chw
+   ARM      neonfp16arith_1x8 neonfp16arith_2x8
+   ARM64    neonfp16arith_1x8 neonfp16arith_2x8
+f16_dwconv_minmax
+   ARM      neonfp16arith neonfp16arith_acc2
+   ARM64    neonfp16arith neonfp16arith_acc2
+   RISCV    rvvfp16arith
+   X86      fma3 fma3_acc2
+f16_f32_vcvt
+   ARM      neon_int16_u16 neonfp16_u16 scalar_u4
+   ARM64    neonfp16_u16
+   ELSE     scalar_u4
+   RISCV    rvvfp16arith_u4v
+   WASM     wasmrelaxedsimd_int16_u16 wasmsimd_int16_u16
+   X86      avx512skx_u16 avx_int16_u16 f16c_u16 scalar_u4 sse2_int16_u32 sse41_int16_u16
+f16_f32acc_gemm_minmax
+   X86      avx2_broadcast
+f16_f32acc_igemm_minmax
+   X86      avx2_broadcast
+f16_f32acc_rdsum
+   ARM64    neonfp16arith_u16
+   RISCV    rvvfp16arith_u4v
+   X86      avx512skx_u64 f16c_u32
+f16_f32acc_rdsum2
+   ARM64    neonfp16arith_u16
+   RISCV    rvvfp16arith_u4v
+   X86      avx512skx_u64 f16c_u32
+f16_f32acc_rsum
+   ARM64    neonfp16arith_u32_acc4
+   RISCV    rvvfp16arith_u4v
+   X86      avx512skx_u32_acc2 f16c_u32_acc4
+f16_f32acc_rsum2
+   ARM64    neonfp16arith_u32_acc4
+   RISCV    rvvfp16arith_u4v
+   X86      avx512skx_u32_acc2 f16c_u24_acc3
+f16_gemm_minmax
+   ARM      neonfp16arith_ld64
+   ARM64    asm_aarch64_neonfp16arith_cortex_a55 asm_aarch64_neonfp16arith_cortex_a55r0 asm_aarch64_neonfp16arith_cortex_a75 asm_aarch64_neonfp16arith_ld64 neonfp16arith_ld64
+   RISCV    rvvfp16arith
+f16_ibilinear
+   ARM      neonfp16arith_u8
+   ARM64    neonfp16arith_u8
+   X86      fma3_u8
+f16_ibilinear_chw
+   ARM      neonfp16arith_p8
+   ARM64    neonfp16arith_p8
+f16_igemm_minmax
+   ARM      neonfp16arith_ld64
+   ARM64    asm_aarch64_neonfp16arith_cortex_a55 asm_aarch64_neonfp16arith_cortex_a55r0 asm_aarch64_neonfp16arith_cortex_a75 asm_aarch64_neonfp16arith_ld64 neonfp16arith_ld64
+   RISCV    rvvfp16arith
+f16_maxpool_minmax
+   ARM      neonfp16arith_u8
+   ARM64    neonfp16arith_u8
+   X86      avx2_u16 sse41_u8
+f16_qs8_vcvt
+   ARM64    neonfp16arith_u32
+   ELSE     scalar_imagic_u4
+f16_qu8_vcvt
+   NOARCH   scalar_imagic_u4
+f16_raddstoreexpminusmax
+   ARM      neonfp16arith_rr2_p2_u32
+   ARM64    neonfp16arith_rr2_p2_u32
+   X86      avx2_rr1_p2_u32
+f16_rdmax
+   ARM64    neonfp16arith_u32 scalar_u2
+   ELSE     scalar_u2
+   RISCV    rvvfp16arith_u8v scalar_u2
+   X86      scalar_u2
+f16_rdmin
+   ARM64    neonfp16arith_u32 scalar_u2
+   ELSE     scalar_u2
+   RISCV    rvvfp16arith_u8v scalar_u2
+   X86      scalar_u2
+f16_rmax
+   ARM64    neonfp16arith_u32_acc4 scalar_u2_acc2
+   ELSE     scalar_u2_acc2
+   RISCV    rvvfp16arith_u8v scalar_u2_acc2
+   X86      avx512fp16_u128_acc4 avx512skx_u64_acc4 f16c_u32 scalar_u2_acc2
+f16_rmin
+   ARM64    neonfp16arith_u32_acc4 scalar_u2_acc2
+   ELSE     scalar_u2_acc2
+   RISCV    rvvfp16arith_u8v scalar_u2_acc2
+   X86      avx512fp16_u128_acc4 avx512skx_u64_acc4 scalar_u2_acc2
+f16_rminmax
+   ARM64    neonfp16arith_u32_acc4 scalar_u2_acc2
+   ELSE     scalar_u2_acc2
+   RISCV    rvvfp16arith_u8v scalar_u2_acc2
+   X86      avx512fp16_u128_acc4 avx512skx_u64_acc4 scalar_u2_acc2
+f16_spmm_minmax
+   ARM      neonfp16arith_pipelined
+   ARM64    neonfp16arith_pipelined
+   RISCV    rvvfp16arith
+f16_vabs
+   ARM      neonfp16arith_u16
+   ARM64    neonfp16arith_u16
+   RISCV    rvvfp16arith_u8v
+   X86      sse2_u16
+f16_vadd
+   ARM      neonfp16arith_u16
+   ARM64    neonfp16arith_u16
+   RISCV    rvvfp16arith_u8v
+   X86      avx512fp16_u64 f16c_u16
+f16_vaddc
+   ARM      neonfp16arith_u16
+   ARM64    neonfp16arith_u16
+   RISCV    rvvfp16arith_u8v
+   X86      avx512fp16_u64 f16c_u16
+f16_vapproxgelu
+   ARM      neonfp16arith_rational_6_4_div_u16
+   ELSE     scalar_rational_6_4_div_u4
+f16_vclamp
+   ARM      neonfp16arith_u16
+   ARM64    neonfp16arith_u16
+   RISCV    rvvfp16arith_u8v
+   X86      f16c_u16
+f16_vcmul
+   ARM64    neonfp16arith_u16
+f16_vcos
+   ARM      neonfp16arith_rational_3_2_div_u16
+   ELSE     scalar_rational_3_2_div_u4
+f16_vdiv
+   ARM      fp16arith_u2
+   ARM64    aarch64_neonfp16arith_u8
+   RISCV    rvvfp16arith_u8v
+   X86      avx512fp16_u64 f16c_u8
+f16_vdivc
+   ARM      fp16arith_u2
+   ARM64    aarch64_neonfp16arith_u8
+   RISCV    rvvfp16arith_u8v
+   X86      avx512fp16_u64 f16c_u8
+f16_velu
+   ARM      neonfp16arith_rr1_p3_u16
+   ARM64    neonfp16arith_rr1_p3_u16
+   X86      avx2_rr1_p3_u16
+f16_vexp
+   ARM      neonfp16arith_poly_3_u32
+   ELSE     scalar_poly_3_u4
+f16_vgelu
+   ARM      neonfp16arith_rational_6_4_div_u16
+   ELSE     scalar_rational_6_4_div_u4
+f16_vhswish
+   ARM      neonfp16arith_u16
+   ARM64    neonfp16arith_u16
+   X86      f16c_u16
+f16_vlrelu
+   ARM      neonfp16arith_u16
+   ARM64    neonfp16arith_u16
+   X86      f16c_u16
+f16_vmax
+   ARM      neonfp16arith_u16
+   ARM64    neonfp16arith_u16
+   RISCV    rvvfp16arith_u8v
+   X86      avx512fp16_u64 f16c_u16
+f16_vmaxc
+   ARM      neonfp16arith_u16
+   ARM64    neonfp16arith_u16
+   RISCV    rvvfp16arith_u8v
+   X86      avx512fp16_u64 f16c_u16
+f16_vmin
+   ARM      neonfp16arith_u16
+   ARM64    neonfp16arith_u16
+   RISCV    rvvfp16arith_u8v
+   X86      avx512fp16_u64 f16c_u16
+f16_vminc
+   ARM      neonfp16arith_u16
+   ARM64    neonfp16arith_u16
+   RISCV    rvvfp16arith_u8v
+   X86      avx512fp16_u64 f16c_u16
+f16_vmul
+   ARM      neonfp16arith_u16
+   ARM64    neonfp16arith_u16
+   RISCV    rvvfp16arith_u8v
+   X86      avx512fp16_u64 f16c_u16
+f16_vmulc
+   ARM      neonfp16arith_u16
+   ARM64    neonfp16arith_u16
+   RISCV    rvvfp16arith_u8v
+   X86      avx512fp16_u64 f16c_u16
+f16_vmulcaddc_minmax
+   ARM      neonfp16arith_2x
+   ARM64    neonfp16arith_2x
+   X86      fma3_2x
+f16_vneg
+   ARM      neonfp16arith_u16
+   ARM64    neonfp16arith_u16
+   RISCV    rvvfp16arith_u8v
+   X86      sse2_u16
+f16_vprelu
+   ARM      neonfp16arith_u16
+   ARM64    neonfp16arith_u16
+   RISCV    rvvfp16arith_u8v
+   X86      avx512fp16_u64 f16c_u16
+f16_vpreluc
+   ARM      neonfp16arith_u16
+   ARM64    neonfp16arith_u16
+   RISCV    rvvfp16arith_u8v
+   X86      avx512fp16_u64 f16c_u16
+f16_vrdivc
+   ARM      fp16arith_u2
+   ARM64    aarch64_neonfp16arith_u8
+   RISCV    rvvfp16arith_u8v
+   X86      avx512fp16_u64 f16c_u8
+f16_vrndd
+   ARM      neonfp16arith_u16
+   ARM64    neonfp16arith_u16
+   X86      f16c_u16
+f16_vrndne
+   ARM      neonfp16arith_u16
+   ARM64    neonfp16arith_u16
+   X86      f16c_u16
+f16_vrndu
+   ARM      neonfp16arith_u16
+   ARM64    neonfp16arith_u16
+   X86      f16c_u16
+f16_vrndz
+   ARM      neonfp16arith_u16
+   ARM64    neonfp16arith_u16
+   X86      f16c_u16
+f16_vrpreluc
+   ARM      neonfp16arith_u16
+   ARM64    neonfp16arith_u16
+   RISCV    rvvfp16arith_u8v
+   X86      avx512fp16_u64 f16c_u16
+f16_vrsqrt
+   ARM      neonfp16arith_rsqrt_u16
+   ARM64    neonfp16arith_rsqrt_u16
+   X86      f16c_rsqrt_u32
+f16_vrsubc
+   ARM      neonfp16arith_u16
+   ARM64    neonfp16arith_u16
+   RISCV    rvvfp16arith_u8v
+   X86      avx512fp16_u64 f16c_u16
+f16_vsigmoid
+   ARM      neonfp16arith_rr2_p2_nr1recps_u16
+   ARM64    neonfp16arith_rr2_p2_nr1fma_u32
+   X86      avx2_rr1_p2_rcp_u32
+f16_vsin
+   ARM      neonfp16arith_rational_3_2_div_u16
+   ELSE     scalar_rational_3_2_div_u4
+f16_vsqr
+   ARM      neonfp16arith_u16
+   ARM64    neonfp16arith_u16
+   RISCV    rvvfp16arith_u8v
+   X86      f16c_u16
+f16_vsqrdiff
+   ARM      neonfp16arith_u16
+   ARM64    neonfp16arith_u16
+   RISCV    rvvfp16arith_u8v
+   X86      avx512fp16_u64 f16c_u16
+f16_vsqrdiffc
+   ARM      neonfp16arith_u16
+   ARM64    neonfp16arith_u16
+   RISCV    rvvfp16arith_u8v
+   X86      avx512fp16_u64 f16c_u16
+f16_vsqrt
+   ARM      neonfp16arith_nr1fma1adj_u8
+   ARM64    aarch64_neonfp16arith_sqrt_u8
+   X86      f16c_rsqrt_u32
+f16_vsub
+   ARM      neonfp16arith_u16
+   ARM64    neonfp16arith_u16
+   RISCV    rvvfp16arith_u8v
+   X86      avx512fp16_u64 f16c_u16
+f16_vsubc
+   ARM      neonfp16arith_u16
+   ARM64    neonfp16arith_u16
+   RISCV    rvvfp16arith_u8v
+   X86      avx512fp16_u64 f16c_u16
+f16_vtanh
+   ARM      neonfp16arith_expm1minus_rr1_p3h2ts_nr1fma_u32
+   ARM64    aarch64_neonfp16arith_expm1minus_rr1_p3h2ts_div_u32
+   X86      f16c_expm1minus_rr1_p3h2ts_rcp_u24 fma3_polynomial_p19h9t2_u32
+f32_argmaxpool
+   ARM      neon_c4 scalar_c1
+   ARM64    neon_c4
+   ELSE     scalar_c1
+   RISCV    rvv_u1v
+   WASM     wasmsimd_c4
+   X86      scalar_c1 sse2_c4
+f32_avgpool_minmax
+   ARM      neon_u4 scalar_u1
+   ARM64    neon_u4
+   ELSE     scalar_u1
+   HEXAGON  hvx_u32
+   WASM     wasmsimd_u4
+   X86      avx512f_u16 avx_u8 scalar_u1 sse2_u4
+f32_conv_hwc2chw
+   ARM      neon_2x2 scalar_1x1
+   ARM64    aarch64_neonfma_2x2
+   ELSE     scalar_1x1
+   RISCV    rvv_2x2
+   WASM     wasmsimd_2x2
+   X86      scalar_1x1 sse_2x2
+f32_dwconv
+   ARM      scalar_acc2
+   ELSE     scalar_acc2
+   RISCV    rvv
+   WASM     wasmrelaxedsimd_fma wasmsimd
+   X86      scalar_acc2
+f32_dwconv2d_chw
+   ARM      neon_1x4 neon_2x4 scalar_2x1_acc2 scalar_4x1
+   ARM64    aarch64_neonfma_1x4_acc2 aarch64_neonfma_2x4_acc2 aarch64_neonfma_3x4 aarch64_neonfma_4x4
+   ELSE     scalar_1x1_acc2 scalar_1x1_acc5 scalar_2x1_acc2
+   RISCV    rvv_2x2v rvv_7x1v scalar_1x1_acc5
+   WASM     wasmsimd_arm_loadsplat_2x4 wasmsimd_arm_splat_1x4_acc2 wasmsimd_arm_splat_1x4_acc4 wasmsimd_arm_splat_3x4 wasmsimd_x86_loadsplat_2x4 wasmsimd_x86_splat_1x4_acc2 wasmsimd_x86_splat_3x4
+   X86      scalar_2x1_acc2 scalar_4x1 sse_1x4_acc3 sse_2x4 sse_2x4_acc2 sse_4x4 ssse3_2x4_acc2
+f32_dwconv_minmax
+   ARM      neon scalar_acc2
+   ARM64    asm_aarch64_neonfma_cortex_a55 neonfma neonfma_acc2
+   ELSE     scalar_acc2
+   HEXAGON  hvx
+   RISCV    rvv
+   WASM     wasmrelaxedsimd_fma wasmsimd_arm wasmsimd_x86
+   X86      avx avx512f fma3 scalar_acc2 sse
+f32_f16_vcvt
+   ARM      neon_u8 neonfp16_u16 scalar_fabsf_u2
+   ARM64    neonfp16_u16
+   ELSE     scalar_fabsf_u2
+   RISCV    rvvfp16arith_u8v
+   WASM     wasmrelaxedsimd_u24 wasmsimd_u24
+   X86      avx512skx_u16 avx_u24 f16c_u16 scalar_fabsf_u2 sse2_u16 sse41_u8
+f32_gemm
+   ARM      scalar
+   ELSE     scalar
+   WASM     wasmrelaxedsimd_fma wasmrelaxedsimd_fma_loadsplat wasmrelaxedsimd_fma_splat wasmsimd wasmsimd_loadsplat wasmsimd_splat
+f32_gemm_minmax
+   ARM      asm_aarch32_neon_cortex_a53 asm_aarch32_neon_cortex_a53_prfm asm_aarch32_neon_cortex_a55 asm_aarch32_neon_cortex_a7 asm_aarch32_neon_cortex_a75 asm_aarch32_neon_cortex_a75_prfm neon_lane_ld128 neon_lane_ld64 scalar
+   ARM64    aarch64_neonfma_lane_ld128 aarch64_neonfma_lane_ld64 asm_aarch64_neonfma_cortex_a53 asm_aarch64_neonfma_cortex_a53_prfm asm_aarch64_neonfma_cortex_a55 asm_aarch64_neonfma_cortex_a73 asm_aarch64_neonfma_cortex_a75 asm_aarch64_neonfma_cortex_
+   ELSE     scalar
+   HEXAGON  hvx_broadcast
+   RISCV    rvv
+   WASM     wasmrelaxedsimd_fma wasmrelaxedsimd_fma_loadsplat wasmrelaxedsimd_fma_splat wasmsimd_arm wasmsimd_arm_splat wasmsimd_x86 wasmsimd_x86_loadsplat wasmsimd_x86_splat
+   X86      asm_amd64_avx512f_broadcast asm_amd64_fma3_broadcast avx512f_broadcast avx_broadcast fma3_broadcast sse sse_load1
+f32_gemm_relu
+   ARM      scalar
+   ELSE     scalar
+   WASM     wasmrelaxedsimd_fma_loadsplat wasmrelaxedsimd_fma_splat wasmsimd_loadsplat wasmsimd_splat
+f32_ibilinear
+   ARM      neon_u8 scalar_u2
+   ARM64    neonfma_u8
+   ELSE     scalar_u2
+   WASM     wasmrelaxedsimd_u8 wasmsimd_u8
+   X86      scalar_u2 sse_u8
+f32_ibilinear_chw
+   ARM      neon_p8 scalar_p4
+   ARM64    neonfma_p8
+   ELSE     scalar_p4
+   WASM     wasmsimd_p8
+   X86      scalar_p4 sse_p8
+f32_igemm
+   ARM      scalar
+   ELSE     scalar
+   WASM     wasmrelaxedsimd_fma wasmrelaxedsimd_fma_loadsplat wasmrelaxedsimd_fma_splat wasmsimd wasmsimd_loadsplat wasmsimd_splat
+f32_igemm_minmax
+   ARM      asm_aarch32_neon_cortex_a53 asm_aarch32_neon_cortex_a53_prfm asm_aarch32_neon_cortex_a55 asm_aarch32_neon_cortex_a7 asm_aarch32_neon_cortex_a75 asm_aarch32_neon_cortex_a75_prfm neon_lane_ld128 neon_lane_ld64 scalar
+   ARM64    aarch64_neonfma_lane_ld128 aarch64_neonfma_lane_ld64 asm_aarch64_neonfma_cortex_a53 asm_aarch64_neonfma_cortex_a53_prfm asm_aarch64_neonfma_cortex_a55 asm_aarch64_neonfma_cortex_a73 asm_aarch64_neonfma_cortex_a75 asm_aarch64_neonfma_cortex_
+   ELSE     scalar
+   HEXAGON  hvx_broadcast
+   RISCV    rvv
+   WASM     wasmrelaxedsimd_fma wasmrelaxedsimd_fma_loadsplat wasmrelaxedsimd_fma_splat wasmsimd_arm wasmsimd_arm_splat wasmsimd_x86 wasmsimd_x86_loadsplat wasmsimd_x86_splat
+   X86      avx512f_broadcast avx_broadcast fma3_broadcast fma3_broadcast_prfm sse sse_load1
+f32_igemm_relu
+   ARM      scalar
+   ELSE     scalar
+   WASM     wasmrelaxedsimd_fma_loadsplat wasmrelaxedsimd_fma_splat wasmsimd_loadsplat wasmsimd_splat
+f32_maxpool_minmax
+   ARM      neon_u4 scalar_u1
+   ARM64    neon_u4
+   ELSE     scalar_u1
+   HEXAGON  hvx_u32
+   RISCV    rvv_u2v
+   WASM     wasmsimd_u4
+   X86      sse2_u4
+f32_qc4w_gemm_minmax
+   ARM      neon_lane_ld64 scalar
+   ARM64    aarch64_neonfma_lane_ld128
+   ELSE     scalar
+   X86      avx2_broadcast avx512skx_broadcast avx_broadcast fma3_broadcast sse41_dup
+f32_qc8w_gemm
+   WASM     wasmrelaxedsimd_fma_loadsplat wasmrelaxedsimd_fma_splat wasmsimd_splat
+f32_qc8w_gemm_minmax
+   ARM      neon_lane_ld64 scalar
+   ARM64    aarch64_neonfma_lane_ld64 asm_aarch64_neonfma_ld128 asm_aarch64_neonfma_ld128_acc4
+   ELSE     scalar
+   WASM     wasmrelaxedsimd_fma_loadsplat wasmrelaxedsimd_fma_splat wasmsimd_arm_splat wasmsimd_x86_splat
+   X86      avx2_broadcast avx512skx_broadcast avx_broadcast fma3_broadcast sse41_dup
+f32_qc8w_gemm_relu
+   WASM     wasmrelaxedsimd_fma_loadsplat wasmrelaxedsimd_fma_splat wasmsimd_splat
+f32_qs8_vcvt
+   ARM      neon_u32 neonv8_u32 scalar_imagic_u4
+   ARM64    neonv8_u32
+   ELSE     scalar_lrintf_u4
+   HEXAGON  hvx_u256
+   RISCV    rvv_u2v
+   WASM     wasmsimd_magic_u32
+   X86      avx2_u64 avx512skx_u128 avx_u32 scalar_lrintf_u4 sse2_u32 sse41_u32
+f32_qu8_vcvt
+   ARM      neon_u32 neonv8_u32 scalar_imagic_u4
+   ARM64    neonv8_u32
+   ELSE     scalar_lrintf_u4
+   RISCV    rvv_u2v
+   WASM     wasmsimd_magic_u32
+   X86      avx2_u64 avx512skx_u128 avx_u32 scalar_lrintf_u4 sse2_u32
+f32_raddstoreexpminusmax
+   ARM      neonfma_rr1_lut64_p2_u16_acc2 scalar_rr2_p5_u4_acc2
+   ARM64    neonfma_rr1_lut64_p2_u16_acc2
+   ELSE     scalar_rr2_p5_u4_acc2
+   HEXAGON  hvx_rr2_p5_u128_acc2
+   RISCV    rvv_rr2_p6_u4v
+   WASM     wasmrelaxedsimd_rr2_p5_u16_acc2 wasmsimd_rr2_p5_u16_acc2
+   X86      avx256skx_rr2_p5_u32_acc2 avx2_rr2_p5_u32_acc2 avx512f_rr2_p5_u64_acc2 scalar_rr2_p5_u4_acc2 sse2_rr2_p5_u16_acc2
+f32_rdmax
+   ARM      neon_u32 scalar_u2
+   ARM64    neon_u32
+   ELSE     scalar_u2
+   HEXAGON  hvx_u32
+   RISCV    rvv_u8v
+   WASM     wasmsimd_u32
+   X86      avx512f_u32 avx_u32 scalar_u2 sse2_u32
+f32_rdmin
+   ARM      neon_u32 scalar_u2
+   ARM64    neon_u32
+   ELSE     scalar_u2
+   HEXAGON  hvx_u32
+   RISCV    rvv_u8v
+   WASM     wasmsimd_u32
+   X86      avx512f_u32 avx_u32 sse2_u32
+f32_rdsum
+   ARM      neon_u16 scalar_u4
+   ARM64    neon_u16
+   ELSE     scalar_u4
+   HEXAGON  hvx_u128
+   RISCV    rvv_u4v
+   WASM     wasmsimd_u16
+   X86      avx512f_u64 avx_u32 sse2_u16
+f32_rdsum2
+   ARM      neon_u16 scalar_u4
+   ARM64    neon_u16
+   ELSE     scalar_u4
+   RISCV    rvv_u4v
+   WASM     wasmsimd_u16
+   X86      avx512f_u64 avx_u32 sse2_u16
+f32_rmax
+   ARM      neon_u16_acc4 scalar_u4_acc4
+   ARM64    neon_u16_acc4
+   ELSE     scalar_u4_acc4
+   HEXAGON  hvx_u64_acc2
+   RISCV    rvv_u8v
+   WASM     wasmsimd_pminmax_u16_acc4
+   X86      avx512f_u64_acc4 avx_u32_acc4 scalar_u4_acc4 sse_u16_acc4
+f32_rmin
+   ARM      neon_u16_acc4 scalar_u4_acc4
+   ARM64    neon_u16_acc4
+   ELSE     scalar_u4_acc4
+   HEXAGON  hvx_u64_acc2
+   RISCV    rvv_u8v
+   WASM     wasmsimd_minmax_u16_acc4
+   X86      avx512f_u64_acc4 avx_u32_acc4 sse_u16_acc4
+f32_rminmax
+   ARM      neon_u16_acc4 scalar_u4_acc4
+   ARM64    neon_u16_acc4
+   ELSE     scalar_u4_acc4
+   HEXAGON  hvx_u64_acc2
+   RISCV    rvv_u8v
+   WASM     wasmsimd_minmax_u16_acc4
+   X86      avx512f_u64_acc4 avx_u32_acc4 scalar_u4_acc4 sse_u16_acc4
+f32_rsum
+   ARM      neon_u16_acc4 scalar_u4_acc4
+   ARM64    neon_u16_acc4
+   ELSE     scalar_u4_acc4
+   HEXAGON  hvx_u64_acc2
+   RISCV    rvv_u4v
+   WASM     wasmsimd_u16_acc4
+   X86      avx512f_u32_acc2 avx_u32_acc4 sse2_u16_acc4
+f32_rsum2
+   ARM      neon_u16_acc4 scalar_u4_acc4
+   ARM64    neon_u16_acc4
+   ELSE     scalar_u4_acc4
+   RISCV    rvv_u4v
+   WASM     wasmsimd_u16_acc4
+   X86      avx512f_u64_acc4 avx_u32_acc4 sse2_u16_acc4
+f32_spmm_minmax
+   ARM      neon scalar
+   ARM64    aarch64_neonfma neonfma_pipelined
+   ELSE     scalar
+   HEXAGON  hvx_pipelined_u2
+   RISCV    rvv
+   WASM     wasmrelaxedsimd_arm wasmrelaxedsimd_x86 wasmsimd_arm wasmsimd_x86
+   X86      sse
+f32_vabs
+   ARM      neon_u8 scalar_u4
+   ARM64    neon_u8
+   ELSE     scalar_u4
+   HEXAGON  hvx_u128
+   RISCV    rvv_u8v
+   WASM     wasmsimd_u8
+   X86      avx512f_u16 avx_u16 scalar_u4 sse2_u8
+f32_vadd
+   ARM      neon_u8 scalar_u8
+   ARM64    neon_u8
+   ELSE     scalar_u8
+   HEXAGON  hvx_u128
+   RISCV    rvv_u8v
+   WASM     wasmsimd_u16
+   X86      avx512f_u32 avx_u16 scalar_u8 sse_u8
+f32_vaddc
+   ARM      neon_u8 scalar_u8
+   ARM64    neon_u8
+   ELSE     scalar_u8
+   HEXAGON  hvx_u128
+   RISCV    rvv_u8v
+   WASM     wasmsimd_u16
+   X86      avx512f_u32 avx_u16 scalar_u8 sse_u8
+f32_vapproxgelu
+   ARM      neon_rational_12_10_div_u8
+   ARM64    neon_rational_12_10_div_u8
+   ELSE     scalar_rational_12_10_div_u1
+   HEXAGON  hvx_rational_12_10_div_u128
+   WASM     wasmsimd_rational_12_10_div_u12
+   X86      avx512f_rational_12_10_div_u32 avx_rational_12_10_div_u16 fma3_rational_12_10_div_u16 scalar_rational_12_10_div_u1 sse2_rational_12_10_div_u12 sse2fma_rational_12_10_div_u8
+f32_vclamp
+   ARM      neon_u16 scalar_u4
+   ARM64    neon_u16
+   ELSE     scalar_u4
+   HEXAGON  hvx_u128
+   RISCV    rvv_u8v
+   WASM     wasmrelaxedsimd_u8 wasmsimd_u8
+   X86      avx512f_u32 avx_u16 scalar_u4 sse2_u8
+f32_vcmul
+   ARM      neon_u8 scalar_u4
+   ARM64    neon_u8
+   ELSE     scalar_u4
+   RISCV    rvv_u2v
+   WASM     wasmsimd_u8
+   X86      avx512f_u32 fma3_u16 scalar_u4 sse_u8
+f32_vcopysign
+   ARM      neon_u8 scalar_u2
+   ARM64    neon_u8
+   ELSE     scalar_u2
+   HEXAGON  hvx_u128
+   WASM     wasmsimd_u16
+   X86      avx512f_u32 avx_u16 scalar_u2 sse2_u8
+f32_vcopysignc
+   ARM      neon_u8 scalar_u2
+   ARM64    neon_u8
+   ELSE     scalar_u2
+   HEXAGON  hvx_u128
+   WASM     wasmsimd_u16
+   X86      avx512f_u32 avx_u16 scalar_u2 sse2_u8
+f32_vcos
+   ARM      neon_rational_5_4_div_u16 scalar_rational_5_4_div_u4
+   ARM64    neon_rational_5_4_div_u16
+   ELSE     scalar_rational_5_4_div_u1
+   HEXAGON  hvx_rational_5_4_div_u128
+   WASM     wasmsimd_rational_5_4_div_u16 wasmsimd_rational_5_4_div_u8
+   X86      avx512f_rational_5_4_div_u32 avx_rational_5_4_div_u16 fma3_rational_5_4_div_u16 scalar_rational_5_4_div_u1 sse2_rational_5_4_div_u8 sse2fma_rational_5_4_div_u8
+f32_vdiv
+   ARM      scalar_u2
+   ARM64    aarch64_neon_u8
+   ELSE     scalar_u2
+   HEXAGON  hvx_u128
+   RISCV    rvv_u8v
+   WASM     wasmsimd_u16
+   X86      avx512f_u32 avx_u16 scalar_u2 sse_u8
+f32_vdivc
+   ARM      scalar_u2
+   ARM64    aarch64_neon_u8
+   ELSE     scalar_u2
+   HEXAGON  hvx_u128
+   RISCV    rvv_u8v
+   WASM     wasmsimd_u16
+   X86      avx512f_u32 avx_u16 scalar_u2 sse_u8
+f32_velu
+   ARM      neon_rr2_lut16_p3_u8 neonfma_rr1_p6_u8 scalar_rr2_lut16_p3_u4
+   ARM64    neonfma_rr1_lut16_p3_u16
+   ELSE     scalar_rr2_lut16_p3_u4
+   RISCV    scalar_rr2_lut16_p3_u4
+   WASM     wasmrelaxedsimd_fma_rr2_p6_u16 wasmsimd_arm_rr2_p6_u16 wasmsimd_x86_rr2_p6_u16
+   X86      avx2_rr1_lut4_p4_perm_u32 avx512f_rr1_p6_u64 avx_rr2_lut4_p4_perm_u32 scalar_rr2_lut16_p3_u4 sse2_rr2_lut16_p3_u12
+f32_vexp
+   ARM      neon_rational_3_2_div_u16 scalar_rational_3_2_div_u4
+   ARM64    neon_rational_3_2_div_u16
+   ELSE     scalar_rational_3_2_div_u4
+   HEXAGON  hvx_rational_3_2_div_u128
+   WASM     wasmsimd_rational_3_2_div_u12
+   X86      avx512f_rational_3_2_div_u16 avx_rational_3_2_div_u24 fma3_rational_3_2_div_u32 scalar_rational_3_2_div_u4 sse2_rational_3_2_div_u16 sse2fma_rational_3_2_div_u8
+f32_vgelu
+   ARM      neon_rational_12_10_div_u8
+   ARM64    neon_rational_12_10_div_u8
+   ELSE     scalar_rational_12_10_div_u1
+   HEXAGON  hvx_rational_12_10_div_u128
+   WASM     wasmsimd_rational_12_10_div_u12
+   X86      avx512f_rational_12_10_div_u32 avx_rational_12_10_div_u16 fma3_rational_12_10_div_u16 scalar_rational_12_10_div_u1 sse2_rational_12_10_div_u12 sse2fma_rational_12_10_div_u8
+f32_vhswish
+   ARM      neon_u16 scalar_u4
+   ARM64    neon_u16
+   ELSE     scalar_u4
+   HEXAGON  hvx_u128
+   RISCV    rvv_u4v
+   WASM     wasmrelaxedsimd_u4 wasmsimd_u8
+   X86      avx512f_u32 avx_u16 fma3_u16 scalar_u4 sse2_u8 sse2fma_u8
+f32_vlog
+   ARM      neon_rational_3_3_div_u8 scalar_rational_3_3_div_u1
+   ARM64    neon_rational_3_3_div_u8
+   ELSE     scalar_rational_3_3_div_u1
+   HEXAGON  hvx_rational_3_3_div_u128
+   WASM     wasmsimd_rational_3_3_div_u8
+   X86      avx2_rational_3_3_div_u16 avx512f_rational_3_3_div_u16 fma3_rational_3_3_div_u16 scalar_rational_3_3_div_u1 sse2_rational_3_3_div_u8 sse2fma_rational_3_3_div_u8
+f32_vlrelu
+   ARM      neon_u8 scalar_u4
+   ARM64    neon_u8
+   ELSE     scalar_u4
+   RISCV    rvv_u4v
+   WASM     wasmrelaxedsimd_iminmax_u4 wasmrelaxedsimd_laneselect_u4 wasmsimd_iminmax_u8 wasmsimd_laneselect_u8
+   X86      avx512f_u16 avx_u16 scalar_u4 sse41_u8 sse_u8
+f32_vmax
+   ARM      neon_u8 scalar_u8
+   ARM64    neon_u8
+   ELSE     scalar_u8
+   HEXAGON  hvx_u128
+   RISCV    rvv_u8v
+   WASM     wasmsimd_arm_u16 wasmsimd_x86_u16
+   X86      avx512f_u32 avx_u16 scalar_u8 sse_u8
+f32_vmaxc
+   ARM      neon_u8 scalar_u8
+   ARM64    neon_u8
+   ELSE     scalar_u8
+   HEXAGON  hvx_u128
+   RISCV    rvv_u8v
+   WASM     wasmsimd_arm_u16 wasmsimd_x86_u16
+   X86      avx512f_u32 avx_u16 scalar_u8 sse_u8
+f32_vmin
+   ARM      neon_u8 scalar_u8
+   ARM64    neon_u8
+   ELSE     scalar_u8
+   HEXAGON  hvx_u128
+   RISCV    rvv_u8v
+   WASM     wasmsimd_arm_u16 wasmsimd_x86_u16
+   X86      avx512f_u32 avx_u16 scalar_u8 sse_u8
+f32_vminc
+   ARM      neon_u8 scalar_u8
+   ARM64    neon_u8
+   ELSE     scalar_u8
+   HEXAGON  hvx_u128
+   RISCV    rvv_u8v
+   WASM     wasmsimd_arm_u16 wasmsimd_x86_u16
+   X86      avx512f_u32 avx_u16 scalar_u8 sse_u8
+f32_vmul
+   ARM      neon_u8 scalar_u8
+   ARM64    neon_u8
+   ELSE     scalar_u8
+   HEXAGON  hvx_u128
+   RISCV    rvv_u8v
+   WASM     wasmsimd_u16
+   X86      avx512f_u32 avx_u16 scalar_u8 sse_u8
+f32_vmulc
+   ARM      neon_u8 scalar_u8
+   ARM64    neon_u8
+   ELSE     scalar_u8
+   HEXAGON  hvx_u128
+   RISCV    rvv_u8v
+   WASM     wasmsimd_u16
+   X86      avx512f_u32 avx_u16 scalar_u8 sse_u8
+f32_vmulcaddc_minmax
+   ARM      neon_2x scalar_2x
+   ARM64    neonfma_2x
+   ELSE     scalar_2x
+   WASM     wasmrelaxedsimd_fma_2x wasmsimd_arm_2x wasmsimd_x86_2x
+   X86      sse_2x
+f32_vneg
+   ARM      neon_u8 scalar_u4
+   ARM64    neon_u8
+   ELSE     scalar_u4
+   HEXAGON  hvx_u128
+   RISCV    rvv_u8v
+   WASM     wasmsimd_u8
+   X86      avx512f_u16 avx_u16 scalar_u4 sse2_u8
+f32_vprelu
+   ARM      neon_u8 scalar_u8
+   ARM64    neon_u8
+   ELSE     scalar_u8
+   HEXAGON  hvx_u128
+   RISCV    rvv_u8v
+   WASM     wasmsimd_u16
+   X86      avx512f_u32 avx_u16 scalar_u8 sse2_u8
+f32_vpreluc
+   ARM      neon_u8 scalar_u8
+   ARM64    neon_u8
+   ELSE     scalar_u8
+   HEXAGON  hvx_u128
+   RISCV    rvv_u8v
+   WASM     wasmsimd_u16
+   X86      avx512f_u32 avx_u16 scalar_u8 sse2_u8
+f32_vrcopysignc
+   ARM      neon_u8 scalar_u2
+   ARM64    neon_u8
+   ELSE     scalar_u2
+   HEXAGON  hvx_u128
+   WASM     wasmsimd_u16
+   X86      avx512f_u32 avx_u16 scalar_u2 sse2_u8
+f32_vrdivc
+   ARM      scalar_u2
+   ARM64    aarch64_neon_u8
+   ELSE     scalar_u2
+   HEXAGON  hvx_u128
+   RISCV    rvv_u8v
+   WASM     wasmsimd_u16
+   X86      avx512f_u32 avx_u16 scalar_u2 sse_u8
+f32_vrndd
+   ARM      neon_u8 neonv8_u8 scalar_libm_u1
+   ARM64    neonv8_u8
+   ELSE     scalar_libm_u1
+   HEXAGON  hvx_u128
+   RISCV    rvv_u4v
+   WASM     wasmsimd_u8
+   X86      avx512f_u16 avx_u16 scalar_libm_u1 sse2_u8 sse41_u8
+f32_vrndne
+   ARM      neon_u8 neonv8_u8 scalar_libm_u1
+   ARM64    neonv8_u8
+   ELSE     scalar_libm_u1
+   HEXAGON  hvx_u128
+   RISCV    rvv_u4v
+   WASM     wasmsimd_u8
+   X86      avx512f_u16 avx_u16 scalar_libm_u1 sse2_u8 sse41_u8
+f32_vrndu
+   ARM      neon_u8 neonv8_u8 scalar_libm_u1
+   ARM64    neonv8_u8
+   ELSE     scalar_libm_u1
+   HEXAGON  hvx_u128
+   RISCV    rvv_u4v
+   WASM     wasmsimd_u8
+   X86      avx512f_u16 avx_u16 scalar_libm_u1 sse2_u8 sse41_u8
+f32_vrndz
+   ARM      neon_u8 neonv8_u8 scalar_libm_u1
+   ARM64    neonv8_u8
+   ELSE     scalar_libm_u1
+   HEXAGON  hvx_u128
+   RISCV    rvv_u4v
+   WASM     wasmsimd_u8
+   X86      avx512f_u16 avx_u16 scalar_libm_u1 sse2_u8 sse41_u8
+f32_vrpreluc
+   ARM      neon_u8 scalar_u8
+   ARM64    neon_u8
+   ELSE     scalar_u8
+   HEXAGON  hvx_u128
+   RISCV    rvv_u8v
+   WASM     wasmsimd_u16
+   X86      avx512f_u32 avx_u16 scalar_u8 sse2_u8
+f32_vrsqrt
+   ARM      neon_rsqrt_u16 scalar_rsqrt_u1
+   ELSE     scalar_sqrt_u4
+   RISCV    rvv_rsqrt_u4v
+   X86      avx512f_rsqrt_u32 avx512f_sqrt_u48 avx_rsqrt_u16 avx_sqrt_u16 scalar_sqrt_u4 sse2_rsqrt_u8 sse2_sqrt_u8
+f32_vrsubc
+   ARM      neon_u8 scalar_u8
+   ARM64    neon_u8
+   ELSE     scalar_u8
+   HEXAGON  hvx_u128
+   RISCV    rvv_u8v
+   WASM     wasmsimd_u16
+   X86      avx512f_u32 avx_u16 scalar_u8 sse_u8
+f32_vsigmoid
+   ARM      neon_rr2_lut64_p2_nr2recps_u8 scalar_rr2_lut64_p2_div_u2
+   ARM64    neonfma_rr1_lut64_p2_nr2recps_u16
+   ELSE     scalar_rr2_lut64_p2_div_u2
+   WASM     wasmrelaxedsimd_fma_rr2_p5_div_u16 wasmsimd_rr2_p5_div_u16
+   X86      avx2_rr1_p5_div_u16 avx512f_rr2_lut32_p2_perm2_scalef_div_u64 avx_rr2_p5_div_u16 scalar_rr2_lut64_p2_div_u2 sse2_rr2_lut64_p2_div_u8 sse41_rr2_lut64_p2_div_u8 sse41_rr2_p5_div_u8
+f32_vsin
+   ARM      neon_rational_5_4_div_u16 scalar_rational_5_4_div_u4
+   ARM64    neon_rational_5_4_div_u16
+   ELSE     scalar_rational_5_4_div_u1
+   HEXAGON  hvx_rational_5_4_div_u128
+   WASM     wasmsimd_rational_5_4_div_u16 wasmsimd_rational_5_4_div_u8
+   X86      avx512f_rational_5_4_div_u32 avx_rational_5_4_div_u16 fma3_rational_5_4_div_u16 scalar_rational_5_4_div_u1 sse2_rational_5_4_div_u8 sse2fma_rational_5_4_div_u8
+f32_vsqr
+   ARM      neon_u8 scalar_u4
+   ARM64    neon_u8
+   ELSE     scalar_u4
+   HEXAGON  hvx_u128
+   RISCV    rvv_u8v
+   WASM     wasmsimd_u8
+   X86      avx512f_u16 avx_u16 scalar_u4 sse2_u8
+f32_vsqrdiff
+   ARM      neon_u8 scalar_u8
+   ARM64    neon_u8
+   ELSE     scalar_u8
+   HEXAGON  hvx_u128
+   RISCV    rvv_u8v
+   WASM     wasmsimd_u16
+   X86      avx512f_u32 avx_u16 scalar_u8 sse_u8
+f32_vsqrdiffc
+   ARM      neon_u8 scalar_u8
+   ARM64    neon_u8
+   ELSE     scalar_u8
+   HEXAGON  hvx_u128
+   RISCV    rvv_u8v
+   WASM     wasmsimd_u16
+   X86      avx512f_u32 avx_u16 scalar_u8 sse_u8
+f32_vsqrt
+   ARM64    aarch64_neon_sqrt_u4
+   ELSE     scalar_sqrt_u1
+   RISCV    rvv_sqrt_u8v
+   WASM     wasmsimd_sqrt_u8
+   X86      avx512f_rsqrt_u16 avx_rsqrt_u16 avx_sqrt_u8 sse2_rsqrt_u8 sse2_sqrt_u8
+f32_vsub
+   ARM      neon_u8 scalar_u8
+   ARM64    neon_u8
+   ELSE     scalar_u8
+   HEXAGON  hvx_u128
+   RISCV    rvv_u8v
+   WASM     wasmsimd_u16
+   X86      avx512f_u32 avx_u16 scalar_u8 sse_u8
+f32_vsubc
+   ARM      neon_u8 scalar_u8
+   ARM64    neon_u8
+   ELSE     scalar_u8
+   HEXAGON  hvx_u128
+   RISCV    rvv_u8v
+   WASM     wasmsimd_u16
+   X86      avx512f_u32 avx_u16 scalar_u8 sse_u8
+f32_vtanh
+   ARM      neon_rational_9_8_div_u16 scalar_rational_9_8_div_u4
+   ARM64    neon_rational_9_8_div_u16
+   ELSE     scalar_rational_9_8_div_u1
+   HEXAGON  hvx_rational_9_8_div_u128
+   WASM     wasmsimd_rational_9_8_div_u16 wasmsimd_rational_9_8_div_u8
+   X86      avx512f_rational_9_8_div_u32 avx_rational_9_8_div_u16 fma3_rational_9_8_div_u16 scalar_rational_9_8_div_u1 sse2_rational_9_8_div_u8 sse2fma_rational_9_8_div_u8
+pf16_f16_igemm_minmax_fp16
+   ARM64    neonsme neonsme2
+pf16_gemm_minmax
+   ARM64    neonsme neonsme2 neonsme2_get_mr neonsme2_get_nr neonsme_get_mr neonsme_get_nr
+pf32_gemm_minmax
+   ARM64    neonsme neonsme2 neonsme2_get_mr neonsme2_get_nr neonsme_get_mr neonsme_get_nr
+pf32_igemm_minmax
+   ARM64    neonsme neonsme2
+pqs8_qc8w_gemm_minmax
+   ARM64    neonsme neonsme2 neonsme2_get_mr neonsme2_get_nr neonsme_get_mr neonsme_get_nr
+pqs8_qc8w_igemm_minmax_fp32
+   ARM64    neonsme neonsme2
+qb4_packw_gemm_goi
+   ARM64    aarch64_neondot
+qd8_f16_qb4w_gemm_minmax
+   ARM      neondotfp16arith neonfp16arith_mlal_lane
+   ARM64    neondotfp16arith neonfp16arith_mlal_lane neoni8mm
+   X86      avx2
+qd8_f16_qc2w_gemm_minmax
+   ARM64    neondotfp16arith scalar
+   ELSE     scalar
+   X86      avx2_madd avxvnni
+qd8_f16_qc4w_gemm_minmax
+   ARM      neondotfp16arith neonfp16arith_mlal_lane
+   ARM64    neondotfp16arith neonfp16arith_mlal_lane neoni8mm
+   X86      avx256skx_madd_prfm avx256vnni avx2_madd_prfm avxvnni_prfm
+qd8_f16_qc8w_gemm_minmax
+   ARM      asm_aarch32_neondotfp16arith_cortex_a55 asm_aarch32_neonfp16arith_ld64_2 neondotfp16arith neonfp16arith
+   ARM64    asm_aarch64_neondotfp16arith_cortex_a55 asm_aarch64_neondotfp16arith_ld128 neondotfp16arith neonfp16arith neoni8mm
+   X86      avx2 avx256skx avx256vnni avx512amx avxvnni_prfm
+qd8_f16_qc8w_igemm_minmax
+   ARM      asm_aarch32_neondotfp16arith_cortex_a55 neondotfp16arith neonfp16arith
+   ARM64    asm_aarch64_neondotfp16arith_cortex_a55 asm_aarch64_neondotfp16arith_ld128 neondotfp16arith neonfp16arith neoni8mm
+   X86      avx2 avx256skx avx256vnni avx512amx avxvnni_prfm
+qd8_f32_qb4w_gemm_minmax
+   ARM      neon_mlal_lane neondot scalar
+   ARM64    neon_mlal_lane neondot neoni8mm
+   ELSE     scalar
+   X86      avx2 avx512vnni_prfm avx512vnnigfni_prfm avx_ld128 sse2_ld128 sse41_ld128
+qd8_f32_qc2w_gemm_minmax
+   ARM64    neondot scalar
+   ELSE     scalar
+   X86      avx2_madd avxvnni
+qd8_f32_qc4w_gemm_minmax
+   ARM      asm_aarch32_neonmlal_ld64_2 neon_mlal_lane neondot scalar
+   ARM64    neon_mlal_lane neondot neoni8mm
+   ELSE     scalar
+   RISCV    rvv
+   WASM     wasmsimd_dot16x2_ld64
+   X86      avx256skx_madd_prfm avx2_madd_prfm avx512amx avx512skx_madd_prfm avx512vnni_prfm avx512vnnigfni_prfm avxvnni_prfm sse2_ld128 ssse3_madd_prfm
+qd8_f32_qc8w_gemm_minmax
+   ARM      asm_aarch32_neondot_cortex_a55 asm_aarch32_neonmlal_ld64_2 neon_mlal neondot scalar
+   ARM64    asm_aarch64_neondot_cortex_a55 asm_aarch64_neondot_ld128 neon_mlal neon_mlal_lane_prfm neondot neoni8mm
+   ELSE     scalar
+   RISCV    rvv
+   WASM     wasmsdot wasmsdot_u2 wasmsimd_dot16x2_ld128 wasmusdot_u2
+   X86      asm_amd64_avx512vnni avx2 avx256skx avx512amx avx512skx_prfm avx512vnni_prfm avxvnni_prfm sse2_ld64 sse41_ld64
+qd8_f32_qc8w_igemm_minmax
+   ARM      asm_aarch32_neondot_cortex_a55 neon_mlal neon_mlal_lane neondot scalar
+   ARM64    asm_aarch64_neondot_cortex_a55 asm_aarch64_neondot_ld128 neon_mlal neon_mlal_lane_prfm neondot neoni8mm
+   ELSE     scalar
+   RISCV    rvv
+   WASM     wasmsdot wasmsdot_u2 wasmsimd_dot16x2_ld128 wasmusdot_u2
+   X86      avx2 avx256skx avx512amx avx512skx_prfm avx512vnni_prfm avxvnni_prfm sse2_ld64 sse41_ld64
+qp8_f32_qb4w_gemm_minmax
+   ARM64    aarch64_neondot neoni8mm_mstep4
+qp8_f32_qc4w_gemm_minmax
+   ARM64    aarch64_neondot aarch64_neondot_mstep4 neoni8mm_mstep2 neonsme2 neonsme2_get_mr neonsme2_get_nr
+qp8_f32_qc8w_gemm_minmax
+   ARM64    aarch64_neondot aarch64_neondot_mstep4 neoni8mm_mstep4 neonsme neonsme2 neonsme2_get_mr neonsme2_get_nr neonsme_get_mr neonsme_get_nr
+qs8_dwconv_minmax_fp32
+   ARM      scalar_fmagic
+   ELSE     scalar_lrintf
+   RISCV    rvv
+   WASM     wasmsimd_mul16_add16
+   X86      avx2_mul32 avx512skx_mul32 avx_mul16_add16 sse2_mul16_add16 sse41_mul16_add16
+qs8_dwconv_minmax_rndnu
+   ARM      neon_mla8_ld64
+   ARM64    neon_mla8_ld64
+qs8_f16_vcvt
+   ARM64    neonfp16arith_u32
+   X86      avx2_u16
+qs8_f32_vcvt
+   ARM      neon_u32 scalar_u4
+   ARM64    neon_u32
+   ELSE     scalar_u4
+   RISCV    rvv_u2v
+   WASM     wasmsimd_u32
+   X86      avx2_u16 avx512skx_u32 avx_u32 scalar_u4 sse2_u32 sse41_u16
+qs8_packw_gemm_gio
+   HEXAGON  scalar
+   X86      scalar
+qs8_packw_gemm_goi
+   HEXAGON  scalar
+   X86      avx256vnni_prfm avx2_madd avxvnni avxvnni_prfm scalar
+qs8_qc2w_gemm_minmax_fp32
+   ARM64    neondot scalar_fmagic
+   ELSE     scalar_fmagic
+   X86      avx256skx_madd avx2_madd avxvnni scalar_fmagic
+qs8_qc4w_gemm_minmax_fp32
+   ARM64    asm_aarch64_neondot_ld128_2
+   NOARCH   scalar_fmagic
+   X86      asm_amd64_avx512vnni avx256skx_madd_prfm avx256vnni_prfm avx2_madd_prfm avx512skx_madd_prfm avx512vnnigfni_prfm avx_madd_prfm avxvnni_prfm ssse3_madd_prfm
+qs8_qc8w_dwconv_minmax_fp32
+   ARM      neon_mla8_ld128 neon_mla8_ld64 neonv8_mla8_ld64 scalar_fmagic
+   ARM64    neonv8_mla8_ld128 neonv8_mla8_ld64
+   ELSE     scalar_lrintf
+   RISCV    rvv
+   WASM     wasmsimd_mul16_add16
+   X86      avx2_mul32 avx512skx_mul32 avx_mul16_add16 sse2_mul16 sse41_mul16
+qs8_qc8w_gemm_minmax_fp32
+   ARM      armsimd32 asm_aarch32_neon_mlal_lane_cortex_a7 asm_aarch32_neon_mlal_lane_cortex_a7_prfm asm_aarch32_neon_mlal_lane_ld64 asm_aarch32_neondot_cortex_a55 asm_aarch32_neondot_ld64 asm_aarch32_neonv8_mlal_lane_cortex_a35 asm_aarch32_neonv8_mlal
+   ARM64    asm_aarch64_neon_mlal asm_aarch64_neon_mlal_cortex_a53_prfm asm_aarch64_neon_mlal_lane_cortex_a53_prfm asm_aarch64_neon_mlal_lane_ld64 asm_aarch64_neon_mlal_prfm asm_aarch64_neondot_cortex_a55 asm_aarch64_neondot_ld128 neondot neoni8mm neon
+   ELSE     scalar_lrintf
+   HEXAGON  hvx
+   RISCV    rvv
+   WASM     wasmsdot wasmsdot_u2 wasmsimd_dot16x2 wasmsimd_dot16x2_ld128 wasmusdot_u2
+   X86      avx2 avx256skx avx512amx avx512skx_prfm avx512vnni_prfm avx_ld128 avxvnni_prfm avxvnniint8_prfm sse2_ld64 sse41_ld64
+qs8_qc8w_igemm_minmax_fp32
+   ARM      armsimd32 asm_aarch32_neon_mlal_lane_cortex_a7 asm_aarch32_neon_mlal_lane_cortex_a7_prfm asm_aarch32_neon_mlal_lane_ld64 asm_aarch32_neondot_cortex_a55 asm_aarch32_neondot_ld64 asm_aarch32_neonv8_mlal_lane_cortex_a35 asm_aarch32_neonv8_mlal
+   ARM64    asm_aarch64_neon_mlal asm_aarch64_neon_mlal_cortex_a53_prfm asm_aarch64_neon_mlal_lane_cortex_a53_prfm asm_aarch64_neon_mlal_lane_ld64 asm_aarch64_neon_mlal_prfm asm_aarch64_neondot_cortex_a55 asm_aarch64_neondot_ld128 neondot neoni8mm neon
+   ELSE     scalar_lrintf
+   HEXAGON  hvx
+   RISCV    rvv
+   WASM     wasmsdot wasmsdot_u2 wasmsimd_dot16x2 wasmsimd_dot16x2_ld128 wasmusdot_u2
+   X86      avx2 avx256skx avx512amx avx512skx_prfm avx512vnni_prfm avx_ld128 avxvnni_prfm avxvnniint8_prfm sse2_ld64 sse41_ld64
+qs8_rdsum
+   ARM      neon_u32 scalar_u4
+   ARM64    neon_u32
+   ELSE     scalar_u4
+   RISCV    rvv_u2v
+   WASM     wasmsimd_u32
+   X86      avx2_u64 avx512skx_u64 scalar_u4 sse41_u64
+qs8_rsum
+   ARM      neon_u32_acc2 neondot_u32_acc2 scalar_u4
+   ARM64    neon_u32_acc2 neondot_u32_acc2
+   ELSE     scalar_u4
+   RISCV    rvv_u2v
+   WASM     wasmrelaxedsimd_u64_acc4 wasmsimd_u32_acc4
+   X86      avx256skx_u64_acc2 avx2_u64_acc2 avx512skx_u128_acc2 avx512vnni_u128_acc2 avxvnni_u128_acc2 ssse3_u32_acc2
+qs8_to_qu8_packw_gemm_goi
+   X86      avx256vnni avxvnni scalar
+qs8_vadd_minmax
+   ARM      neon_ld64_u16 scalar_u1
+   ARM64    neon_ld64_u32
+   ELSE     scalar_u4
+   HEXAGON  hvx_u128
+   RISCV    rvv_u2v
+   WASM     wasmsimd_u32
+   X86      avx2_mul32_ld64_u16 avx512skx_mul32_ld128_u16 avx_mul32_ld32_u8 sse2_mul16_ld64_u8 sse41_mul16_ld64_u8
+qs8_vaddc_minmax
+   ARM      neon_ld64_u16 scalar_u1
+   ARM64    neon_ld64_u32
+   ELSE     scalar_u4
+   HEXAGON  hvx_u128
+   RISCV    rvv_u2v
+   WASM     wasmsimd_u32
+   X86      avx2_mul32_ld64_u16 avx512skx_mul32_ld128_u16 avx_mul32_ld32_u8 sse2_mul16_ld64_u8 sse41_mul16_ld64_u8
+qs8_vcvt
+   ARM      armsimd32_u8 neon_u32
+   ARM64    neon_u32
+   ELSE     scalar_u4
+   RISCV    rvv_u4v scalar_u4
+   WASM     wasmrelaxedsimd_u32 wasmsimd_u16
+   X86      avx2_u32 avx_u32 scalar_u4 sse2_u32 sse41_u32 ssse3_u32
+qs8_vlrelu
+   ARM      armsimd32_u4 neon_u32
+   ARM64    neon_u32
+   ELSE     scalar_andxor_u4
+   RISCV    rvv_u2v
+   WASM     wasmrelaxedsimd_arm_u32 wasmrelaxedsimd_x86_u32 wasmsimd_arm_u32 wasmsimd_x86_u16
+   X86      avx2_u32 avx_u32 scalar_andxor_u4 sse2_u32 sse41_u32 ssse3_u32
+qs8_vmul_minmax_fp32
+   ARM      scalar_u4
+   ELSE     scalar_u4
+   RISCV    rvv_u2v
+   WASM     wasmsimd_mul32_ld64_u8
+   X86      avx_mul16_ld64_u16 sse2_mul16_ld64_u8 sse41_mul16_ld64_u16
+qs8_vmul_minmax_rndnu
+   ARM      neon_ld64_u16
+   ARM64    neon_ld64_u16
+qs8_vmulc_minmax_fp32
+   ARM      scalar_u4
+   ELSE     scalar_u4
+   RISCV    rvv_u2v
+   WASM     wasmsimd_mul32_ld64_u8
+   X86      avx_mul16_ld64_u16 sse2_mul16_ld64_u8 sse41_mul16_ld64_u16
+qs8_vmulc_minmax_rndnu
+   ARM      neon_ld64_u16
+   ARM64    neon_ld64_u16
+qs8_vprelu
+   ELSE     scalar_u8
+   X86      avx2_u16 scalar_u8
+qs8_vpreluc
+   ELSE     scalar_u8
+   X86      avx2_u16 scalar_u8
+qs8_vrpreluc
+   ELSE     scalar_u8
+   X86      avx2_u16 scalar_u8
+qu8_dwconv_minmax_fp32
+   ARM      scalar_fmagic
+   ELSE     scalar_lrintf
+   RISCV    rvv
+   WASM     wasmsimd_mul16
+   X86      avx2_mul32 avx512skx_mul32 avx_mul16 sse2_mul16 sse41_mul16
+qu8_dwconv_minmax_rndnu
+   ARM      neon_mul8
+   ARM64    neon_mul8
+qu8_f32_vcvt
+   ARM      neon_u32 scalar_u4
+   ARM64    neon_u32
+   ELSE     scalar_u4
+   RISCV    rvv_u2v
+   WASM     wasmsimd_u32
+   X86      avx2_u16 avx512skx_u32 avx_u32 scalar_u4 sse2_u32 sse41_u16
+qu8_gemm_minmax_fp32
+   ARM      armsimd32
+   ELSE     scalar_lrintf
+   WASM     wasmsimd_dot16x2_ld128
+   X86      avx2 avx512skx_prfm avx_ld128 sse2_ld64 sse41_ld64
+qu8_gemm_minmax_rndnu
+   ARM      asm_aarch32_neon_mlal_lane_cortex_a53 asm_aarch32_neon_mlal_lane_cortex_a53_prfm asm_aarch32_neon_mlal_lane_cortex_a7 asm_aarch32_neon_mlal_lane_cortex_a7_prfm asm_aarch32_neon_mlal_lane_ld64 asm_aarch32_neon_mlal_lane_ld64_prfm neon_mlal_l
+   ARM64    asm_aarch64_neon_mlal_lane_cortex_a53_prfm asm_aarch64_neon_mlal_lane_cortex_a75 asm_aarch64_neon_mlal_lane_cortex_a75_prfm neon_mlal_lane
+qu8_gemm_minmax_rndnu16
+   ARM64    asm_aarch64_neon_mlal_lane_cortex_a53_prfm neon_mlal_lane
+qu8_igemm_minmax_fp32
+   ARM      armsimd32
+   ELSE     scalar_lrintf
+   WASM     wasmsimd_dot16x2_ld128
+   X86      avx2 avx512skx_prfm avx_ld128 sse2_ld64 sse41_ld64
+qu8_igemm_minmax_rndnu
+   ARM      asm_aarch32_neon_mlal_lane_cortex_a53 asm_aarch32_neon_mlal_lane_cortex_a53_prfm asm_aarch32_neon_mlal_lane_cortex_a7 asm_aarch32_neon_mlal_lane_cortex_a7_prfm asm_aarch32_neon_mlal_lane_ld64 asm_aarch32_neon_mlal_lane_ld64_prfm neon_mlal_l
+   ARM64    asm_aarch64_neon_mlal_lane_cortex_a53_prfm asm_aarch64_neon_mlal_lane_cortex_a75 asm_aarch64_neon_mlal_lane_cortex_a75_prfm neon_mlal_lane
+qu8_igemm_minmax_rndnu16
+   ARM64    asm_aarch64_neon_mlal_lane_cortex_a53_prfm neon_mlal_lane
+qu8_rdsum
+   ARM      neon_u32 scalar_u4
+   ARM64    neon_u16
+   ELSE     scalar_u4
+   RISCV    rvv_u2v
+   WASM     wasmsimd_u32
+   X86      scalar_u4 ssse3_u64
+qu8_rsum
+   ARM      neon_u32_acc2 scalar_u4
+   ARM64    neon_u32_acc2
+   ELSE     scalar_u4
+   RISCV    rvv_u2v
+   WASM     wasmsimd_u32_acc4
+   X86      avx2_u64_acc2 scalar_u4 sse2_u32_acc2
+qu8_vadd_minmax
+   ARM      neon_ld64_u16 scalar_u1
+   ARM64    neon_ld64_u32
+   ELSE     scalar_u4
+   RISCV    rvv_u2v
+   WASM     wasmsimd_u32
+   X86      avx2_mul32_ld64_u16 avx512skx_mul32_ld128_u16 avx_mul32_ld32_u8 sse2_mul16_ld64_u8 sse41_mul16_ld64_u8
+qu8_vaddc_minmax
+   ARM      neon_ld64_u16 scalar_u1
+   ARM64    neon_ld64_u32
+   ELSE     scalar_u4
+   RISCV    rvv_u2v
+   WASM     wasmsimd_u32
+   X86      avx2_mul32_ld64_u16 avx512skx_mul32_ld128_u16 avx_mul32_ld32_u8 sse2_mul16_ld64_u8 sse41_mul16_ld64_u8
+qu8_vcvt
+   ARM      armsimd32_u8 neon_u32
+   ARM64    neon_u32
+   ELSE     scalar_u4
+   RISCV    rvv_u4v scalar_u4
+   WASM     wasmrelaxedsimd_u32 wasmsimd_u16
+   X86      avx2_u32 avx_u32 scalar_u4 sse2_u32 sse41_u32 ssse3_u32
+qu8_vlrelu
+   ARM      armsimd32_u4 neon_u32
+   ARM64    neon_u32
+   ELSE     scalar_andxor_u4
+   RISCV    rvv_u2v
+   WASM     wasmrelaxedsimd_arm_u32 wasmrelaxedsimd_x86_u32 wasmsimd_arm_u32 wasmsimd_x86_u16
+   X86      avx2_u32 avx_u32 scalar_andxor_u4 sse2_u32 sse41_u32 ssse3_u32
+qu8_vmul_minmax_fp32
+   ARM      scalar_u4
+   ELSE     scalar_u4
+   RISCV    rvv_u2v
+   WASM     wasmsimd_mul32_ld64_u8
+   X86      avx_mul16_ld64_u16 sse2_mul16_ld64_u8 sse41_mul16_ld64_u16
+qu8_vmul_minmax_rndnu
+   ARM      neon_ld64_u16
+   ARM64    neon_ld64_u16
+qu8_vmulc_minmax_fp32
+   ARM      scalar_u4
+   ELSE     scalar_u4
+   RISCV    rvv_u2v
+   WASM     wasmsimd_mul32_ld64_u8
+   X86      avx_mul16_ld64_u16 sse2_mul16_ld64_u8 sse41_mul16_ld64_u16
+qu8_vmulc_minmax_rndnu
+   ARM      neon_ld64_u16
+   ARM64    neon_ld64_u16
+qu8_vprelu
+   ELSE     scalar_u8
+   X86      avx2_u16 scalar_u8
+qu8_vpreluc
+   ELSE     scalar_u8
+   X86      avx2_u16 scalar_u8
+qu8_vrpreluc
+   ELSE     scalar_u8
+   X86      avx2_u16 scalar_u8
+s8_ibilinear
+   ARM      neon_u8 scalar_u1
+   ARM64    neon_u16
+   ELSE     scalar_u1
+   WASM     wasmsimd_dot16x2_u8
+   X86      scalar_u1 sse2_u8 sse41_u16
+s8_maxpool_minmax
+   ARM      neon_u16 scalar_u1
+   ARM64    neon_u16
+   ELSE     scalar_u1
+   WASM     wasmsimd_u16
+   X86      scalar_u1 sse41_u16
+s8_rdmax
+   ARM      neon_u32 scalar_u2
+   ARM64    neon_u32
+   ELSE     scalar_u2
+   HEXAGON  hvx_u128
+   RISCV    rvv_u8v scalar_u2
+   WASM     wasmsimd_u32
+   X86      scalar_u2 sse41_u32
+s8_rdmin
+   ARM      neon_u32 scalar_u2
+   ARM64    neon_u32
+   ELSE     scalar_u2
+   HEXAGON  hvx_u128
+   RISCV    rvv_u8v scalar_u2
+   WASM     wasmsimd_u32
+   X86      scalar_u2 sse41_u32
+s8_rmax
+   ARM      neon_u32_acc2 scalar_u2_acc2
+   ARM64    neon_u32_acc2
+   ELSE     scalar_u2_acc2
+   HEXAGON  hvx_u256_acc2
+   RISCV    rvv_u8v scalar_u2_acc2
+   WASM     wasmsimd_u32_acc2
+   X86      scalar_u2_acc2 sse41_u32_acc2
+s8_rmin
+   ARM      neon_u32_acc2 scalar_u2_acc2
+   ARM64    neon_u32_acc2
+   ELSE     scalar_u2_acc2
+   HEXAGON  hvx_u256_acc2
+   RISCV    rvv_u8v scalar_u2_acc2
+   WASM     wasmsimd_u32_acc2
+   X86      scalar_u2_acc2 sse41_u32_acc2
+s8_rminmax
+   ARM      neon_u32_acc2 scalar_u2_acc2
+   ARM64    neon_u32_acc2
+   ELSE     scalar_u2_acc2
+   HEXAGON  hvx_u256_acc2
+   RISCV    rvv_u8v scalar_u2_acc2
+   WASM     wasmsimd_u32_acc2
+   X86      scalar_u2_acc2 sse41_u32_acc2
+s8_vclamp
+   ARM      neon_u64 scalar_u4
+   ARM64    neon_u64
+   ELSE     scalar_u4
+   RISCV    rvv_u4v
+   WASM     wasmsimd_u64
+   X86      avx2_u128 avx512skx_u256 scalar_u4 sse2_u64 sse41_u64
+u8_ibilinear
+   ARM      neon_u8 scalar_u1
+   ARM64    neon_u16
+   ELSE     scalar_u1
+   WASM     wasmsimd_dot16x2_u8
+   X86      scalar_u1 sse2_u8 sse41_u16
+u8_lut32norm
+   NOARCH   scalar
+u8_maxpool_minmax
+   ARM      neon_u16 scalar_u1
+   ARM64    neon_u16
+   ELSE     scalar_u1
+   WASM     wasmsimd_u16
+   X86      sse2_u16
+u8_rdmax
+   ARM      neon_u32 scalar_u2
+   ARM64    neon_u32
+   ELSE     scalar_u2
+   HEXAGON  hvx_u128
+   RISCV    rvv_u8v scalar_u2
+   WASM     wasmsimd_u32
+   X86      scalar_u2 sse2_u32
+u8_rdmin
+   ARM      neon_u32 scalar_u2
+   ARM64    neon_u32
+   ELSE     scalar_u2
+   HEXAGON  hvx_u128
+   RISCV    rvv_u8v scalar_u2
+   WASM     wasmsimd_u32
+   X86      sse2_u32
+u8_rmax
+   ARM      neon_u32_acc2 scalar_u2_acc2
+   ARM64    neon_u32_acc2
+   ELSE     scalar_u2_acc2
+   HEXAGON  hvx_u256_acc2
+   RISCV    rvv_u8v scalar_u2_acc2
+   WASM     wasmsimd_u32_acc2
+   X86      scalar_u2_acc2 sse2_u32_acc2
+u8_rmin
+   ARM      neon_u32_acc2 scalar_u2_acc2
+   ARM64    neon_u32_acc2
+   ELSE     scalar_u2_acc2
+   HEXAGON  hvx_u256_acc2
+   RISCV    rvv_u8v scalar_u2_acc2
+   WASM     wasmsimd_u32_acc2
+   X86      sse2_u32_acc2
+u8_rminmax
+   ARM      neon_u32_acc2 scalar_u2_acc2
+   ARM64    neon_u32_acc2
+   ELSE     scalar_u2_acc2
+   HEXAGON  hvx_u256_acc2
+   RISCV    rvv_u8v scalar_u2_acc2
+   WASM     wasmsimd_u32_acc2
+   X86      sse2_u32_acc2
+u8_vclamp
+   ARM      neon_u64 scalar_u4
+   ARM64    neon_u64
+   ELSE     scalar_u4
+   RISCV    rvv_u4v scalar_u4
+   WASM     wasmsimd_u64
+   X86      avx2_u128 avx512skx_u256 scalar_u4 sse2_u64
+x16_pack_lh
+   ARM64    igemm_neonsme igemm_neonsme2 neonsme neonsme2
+x16_packw_gemm_goi
+   ARM      neon_ld4lane_u8_prfm
+   ARM64    neon_ld4lane_u8_prfm
+   X86      avx2_u16_prfm
+x16_transposec
+   ARM      2x4_scalar_int 8x8_reuse_dec_zip_neon
+   ARM64    8x8_reuse_dec_zip_neon
+   ELSE     2x4_scalar_int
+   HEXAGON  2x4_scalar_int
+   RISCV    2x4_scalar_int
+   WASM     8x8_reuse_mov_wasmsimd
+   X86      16x16_reuse_switch_avx2 2x4_scalar_int 8x8_reuse_multi_sse2
+x16_x32_packw_gemm_gio
+   X86      scalar
+x16_x32_packw_gemm_goi
+   X86      scalar
+x24_transposec
+   ARM      1x2_scalar 2x2_neon_tbl64
+   ARM64    4x4_aarch64_neon_tbl128
+   ELSE     1x2_scalar
+   HEXAGON  1x2_scalar
+   RISCV    1x2_scalar
+   WASM     1x2_scalar
+   X86      1x2_scalar 4x4_ssse3
+x32_pack_lh
+   ARM64    igemm_neonsme igemm_neonsme2 neonsme neonsme2
+x32_packw_gemm_gio
+   ARM      neon_u2 scalar
+   ARM64    neon_u2
+   ELSE     scalar
+   HEXAGON  hvx_u2
+   X86      avx512f_u8 avx_u8
+x32_packw_gemm_goi
+   ARM      neon_ld2lane_u2_prfm neon_ld4lane_u4_prfm scalar_float_u4
+   ARM64    neon_ld2lane_u2_prfm neon_ld4lane_u4_prfm
+   ELSE     scalar_float_u4
+   HEXAGON  scalar_int_u2
+   RISCV    rvv_u8
+   WASM     wasmsimd_u4
+   X86      avx512f_u4_prfm avx_u4 sse2_u4
+x32_transposec
+   ARM      2x4_scalar_int 4x4_reuse_dec_zip_neon
+   ARM64    4x4_aarch64_neon_tbl128
+   ELSE     2x4_scalar_int
+   HEXAGON  2x4_scalar_int 32x32_multi_multi_hvx
+   RISCV    16x8_rvv 2x4_scalar_int 32x8_rvv 4x4_rvv 8x8_rvv
+   WASM     4x4_reuse_mov_wasmsimd
+   X86      2x4_scalar_int 4x4_sse 8x8_reuse_multi_avx
+x32_unpool
+   ARM      neon scalar
+   ARM64    neon
+   ELSE     scalar
+   WASM     wasmsimd
+   X86      scalar sse2
+x64_transposec
+   ARM      2x2_reuse_dec_zip_neon 4x2_scalar_int
+   ARM64    2x2_multi_dec_zip_neon
+   ELSE     4x2_scalar_int
+   HEXAGON  4x2_scalar_int
+   RISCV    4x2_scalar_int
+   WASM     4x2_scalar_int
+   X86      2x2_multi_mov_sse2 4x2_scalar_int 4x4_reuse_multi_avx
+x8_lut
+   ARM      scalar_u4
+   ARM64    aarch64_neon_tbx128x4_u64
+   ELSE     scalar_u4
+   WASM     scalar_u4 wasmpshufb_u32 wasmsimd_u32
+   X86      avx2_u128 avx512skx_vpshufb_u64 avx512vbmi_vpermx2b_u128 avx_u64 scalar_u4
+x8_pack_lh
+   ARM64    igemm_neonsme igemm_neonsme2 neonsme neonsme2
+x8_packq_f32qp8
+   ARM64    aarch64_neon_u2
+   ELSE     scalar_u1
+x8_packw_gemm_goi
+   ARM      scalar_u2
+   ARM64    scalar_u2
+   ELSE     scalar_u2
+   WASM     scalar_u2
+   X86      scalar_u2
+x8_transposec
+   ARM      16x16_reuse_dec_zip_neon 2x4_scalar_int
+   ARM64    16x16_reuse_dec_zip_neon
+   ELSE     2x4_scalar_int
+   HEXAGON  2x4_scalar_int
+   RISCV    2x4_scalar_int
+   WASM     16x16_reuse_mov_wasmsimd
+   X86      16x16_reuse_mov_sse2 2x4_scalar_int 32x32_reuse_switch_avx2
+xx_copy
+   ARM      scalar_memcpy
+   ARM64    scalar_memcpy
+   ELSE     scalar_memcpy
+   HEXAGON  scalar_memcpy
+   RISCV    scalar_memcpy
+   WASM     scalar_memcpy
+   X86      scalar_memcpy
+xx_fill
+   ARM      neon_u64 scalar_u16
+   ARM64    neon_u64
+   ELSE     scalar_u16
+   RISCV    scalar_u16
+   WASM     wasmsimd_u64
+   X86      sse2_u64
+xx_pad
+   ARM      neon_u16 scalar_u16
+   ARM64    neon_u16
+   ELSE     scalar_u16
+   WASM     wasmsimd_u16
+   X86      sse2_u16
+xx_transposev
+   ARM      1x1_scalar_memcpy
+   ARM64    1x1_scalar_memcpy
+   ELSE     1x1_scalar_memcpy
+   HEXAGON  1x1_scalar_memcpy
+   RISCV    1x1_scalar_memcpy
+   WASM     1x1_scalar_memcpy
+   X86      1x1_scalar_memcpy
