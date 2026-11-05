@@ -44,7 +44,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-TOOL_VERSION = "rvv_ptr_lower 1.0.0"
+TOOL_VERSION = "rvv_ptr_lower 1.3.0"
 HERE = Path(__file__).resolve().parent
 REPO = HERE.parents[1]
 PTR_PREFIX = "qcp_p_"
@@ -62,6 +62,14 @@ class Reject(Exception):
 
 # ----------------------------------------------------------------------------
 # clang AST acquisition
+
+
+def cfg_for(cfg, isa):
+    """Merge the ISA-specific parse settings (config 'isa' section) over the top level."""
+    out = dict(cfg)
+    out.update(cfg.get("isa", {}).get(isa, {}))
+    out["_isa"] = isa
+    return out
 
 
 def clang_command(cfg, profile, src):
@@ -892,23 +900,247 @@ def expand_local_macros(cfg, text, ast, main_file, work_dir):
     return rest, log
 
 
-def lower_file(cfg, src, work_dir, header_name="qcp_rvv_ptr_ops.h"):
+# ----------------------------------------------------------------------------
+# QCP frontend normalisation, applied to both ISAs (NEON A and RVV Bopt):
+#   R14 an inline asm statement whose only content is an alignment directive
+#       (.balign/.p2align/.align N, no operands or clobbers) is replaced by an empty
+#       statement: it only pads instruction layout and has no C-level effect.
+#   R15 `do S while (OP v REL e);` / `do S while (OP v);` with OP in {++,--} applied
+#       to a plain variable v, e free of side effects and of v, and no `continue`
+#       binding to this loop  ->  `do { S OP v; } while (v REL e);` / `(v)`.
+#       The condition is evaluated exactly once after each iteration of S, so moving
+#       its side effect to the end of the body preserves the evaluation sequence.
+#   Any other loop condition with ++/--/assignment is rejected (NORMCOND).
+
+ASM_ALIGN = re.compile(r'^(?:asm|__asm__)\s*(?:volatile|__volatile__)?\s*\(\s*"\s*\.(?:p2align|balign|align)\s+\d+\s*"\s*\)\s*;$', re.S)
+RELOPS = {"==", "!=", "<", "<=", ">", ">="}
+
+
+def _cond_side_effect(n):
+    k = n.get("kind")
+    if k == "UnaryOperator" and n.get("opcode") in ("++", "--"):
+        return True
+    if k == "CompoundAssignOperator" or (k == "BinaryOperator" and n.get("opcode") == "="):
+        return True
+    return any(_cond_side_effect(c) for c in kids(n))
+
+
+def _continue_binds(body):
+    def rec(n):
+        k = n.get("kind")
+        if k == "ContinueStmt":
+            return True
+        if k in ("ForStmt", "WhileStmt", "DoStmt"):
+            return False
+        return any(rec(c) for c in kids(n))
+    return any(rec(c) for c in kids(body))
+
+
+def _prefix_var(n):
+    n = strip(n)
+    if n.get("kind") == "UnaryOperator" and n.get("opcode") in ("++", "--") and not n.get("isPostfix"):
+        v = strip(kids(n)[0])
+        if v.get("kind") == "DeclRefExpr" and v.get("referencedDecl", {}).get("kind") in ("VarDecl", "ParmVarDecl"):
+            return n, v
+    return None
+
+
+def normalize(text, ast, main_file):
+    low = Lowerer(text, main_file)
+
+    def do_stmt(n):
+        body, cond = kids(n)[0], kids(n)[1]
+        c = strip(cond)
+        pv = _prefix_var(c)
+        rhs = None
+        if pv is None and c.get("kind") == "BinaryOperator" and c.get("opcode") in RELOPS:
+            pv = _prefix_var(kids(c)[0])
+            rhs = kids(c)[1]
+        if pv is None:
+            if _cond_side_effect(cond):
+                raise Reject("NORMCOND", "do-while condition with a side effect outside the R15 pattern", n)
+            return
+        un, var = pv
+        vid = var.get("referencedDecl", {}).get("id")
+        if rhs is not None and (has_side_effect(rhs) or _cond_side_effect(rhs) or vid in decl_refs(rhs)):
+            raise Reject("NORMCOND", "do-while condition: right operand has side effects or mentions the variable", n)
+        if body.get("kind") != "CompoundStmt":
+            raise Reject("NORMCOND", "do-while body is not a block", n)
+        if _continue_binds(body):
+            raise Reject("NORMCOND", "do-while body contains continue; moving the condition side effect would skip it", n)
+        name = var["referencedDecl"]["name"]
+        op = un["opcode"]
+        cop = "-=" if op == "--" else "+="
+        us, ue = low.span(un, "condition operand")
+        low.edit(us, ue, name, "R15", un)
+        _, be = low.span(body, "do-while body")
+        close = be - 1
+        assert low.text[close] == "}"
+        ls = low.text.rfind("\n", 0, close) + 1
+        if low.text[ls:close].strip() == "":
+            ind = low.text[ls:close]
+            low.edit(ls, ls, f"{ind}  {name} {cop} 1;  /* R15: moved from the do-while condition */\n", "R15", body, original="")
+        else:
+            low.edit(close, close, f" {name} {cop} 1; /* R15 */ ", "R15", body, original="")
+
+    def r16(stmt):
+        """R16: `++v;`, `--v;`, `v++;`, `v--;` as a whole statement inside a do-while
+        body -> `v += 1;` / `v -= 1;` (value unused, so all four forms are equal)."""
+        x = stmt
+        if x.get("kind") == "UnaryOperator" and x.get("opcode") in ("++", "--"):
+            v = strip(kids(x)[0])
+            if v.get("kind") == "DeclRefExpr" and v.get("referencedDecl", {}).get("kind") in ("VarDecl", "ParmVarDecl"):
+                s0, _ = low.span(x, "increment statement")
+                e0 = low.stmt_end(x)
+                name = v["referencedDecl"]["name"]
+                cop = "-=" if x["opcode"] == "--" else "+="
+                low.edit(s0, e0, f"{name} {cop} 1;", "R16", x)
+
+    def walk_do_body(n, inside):
+        k = n.get("kind")
+        if k in ("ForStmt", "WhileStmt"):
+            inside = False
+        if k == "DoStmt":
+            inside = True
+            body = kids(n)[0]
+            walk_do_body(body, True)
+            return
+        if k == "CompoundStmt" and inside:
+            for c in kids(n):
+                if c.get("kind") == "UnaryOperator":
+                    r16(c)
+                else:
+                    walk_do_body(c, inside)
+            return
+        for c in kids(n):
+            walk_do_body(c, inside)
+
+    def refs_of(node, vid, stack, out):
+        if node.get("kind") == "DeclRefExpr" and node.get("referencedDecl", {}).get("id") == vid:
+            out.append(list(stack))
+        stack.append(node)
+        for c in kids(node):
+            refs_of(c, vid, stack, out)
+        stack.pop()
+
+    def r17(decl_stmt, fn_body):
+        """R17: function-local `static const` array with an initialiser -> automatic
+        `const` array (alignment attribute dropped). Read-only, same values on every
+        call; rejected if its address can escape the call."""
+        for d in kids(decl_stmt):
+            if d.get("kind") != "VarDecl" or d.get("storageClass") != "static":
+                continue
+            q = d.get("type", {}).get("qualType", "")
+            if not (q.startswith("const ") and "[" in q and kids(d)):
+                raise Reject("STATIC", f"function-local static {d.get('name')} is not a const array with initialiser", d)
+            paths = []
+            refs_of(fn_body, d.get("id"), [], paths)
+            for path in paths:
+                for anc in path:
+                    k = anc.get("kind")
+                    if k == "ReturnStmt":
+                        raise Reject("STATIC", f"address of static {d['name']} may be returned", d)
+                    if k == "CallExpr" and not is_intrinsic_call(anc) and not (callee_name(anc) or "").startswith(("v", "__builtin")):
+                        raise Reject("STATIC", f"static {d['name']} passed to a non-intrinsic call", d)
+                    if k in ("BinaryOperator", "CompoundAssignOperator") and anc.get("opcode") in ("=", "+=", "-="):
+                        lhs = strip(kids(anc)[0])
+                        if not (lhs.get("kind") == "DeclRefExpr" and lhs.get("referencedDecl", {}).get("kind") == "VarDecl"):
+                            raise Reject("STATIC", f"address of static {d['name']} stored to a non-local lvalue", d)
+            b0 = decl_stmt.get("range", {}).get("begin", {})
+            start = b0.get("offset") if "offset" in b0 else b0.get("expansionLoc", {}).get("offset")
+            line_end = low.text.index("\n", start)
+            seg = low.text[start:line_end]
+            m = re.match(r"(?:XNN_ALIGN\s*\(\s*\d+\s*\)\s*)?static\s+", seg)
+            if not m:
+                raise Reject("STATIC", "could not locate the static keyword", d)
+            low.edit(start, start + m.end(), "", "R17", d, original=seg[:m.end()])
+
+    def r18(init):
+        """R18: drop the trailing comma of an initialiser list (syntax only)."""
+        try:
+            s0, e0 = low.span(init, "initialiser list")
+        except Reject:
+            return
+        t = low.text
+        if t[e0 - 1] != "}":
+            return
+        i = e0 - 2
+        while i > s0 and t[i].isspace():
+            i -= 1
+        if t[i] == ",":
+            low.edit(i, i + 1, "", "R18", init, original=",")
+
+    def visit(n, fn_body=None):
+        k = n.get("kind")
+        if k == "DeclStmt" and fn_body is not None and any(d.get("storageClass") == "static" for d in kids(n)):
+            r17(n, fn_body)
+        if k == "InitListExpr":
+            r18(n)
+            return
+        if k == "GCCAsmStmt":
+            s, _ = low.span(n, "asm statement")
+            e = low.stmt_end(n) if low.text[low.span(n)[1] - 1] != ";" else low.span(n)[1]
+            if not ASM_ALIGN.match(low.text[s:e].strip()):
+                raise Reject("ASM", "inline asm other than an alignment-only directive", n)
+            low.edit(s, e, "/* R14: alignment-only asm removed */;", "R14", n)
+            return
+        if k == "DoStmt":
+            do_stmt(n)
+        elif k in ("WhileStmt", "ForStmt"):
+            ch = kids(n)
+            conds = ch[:1] if k == "WhileStmt" else [c for c in ch[:-1] if c is not ch[0]][:1]
+            for c in conds:
+                if c and _cond_side_effect(c) and k == "WhileStmt":
+                    raise Reject("NORMCOND", "while condition with a side effect", n)
+        for c in kids(n):
+            visit(c, fn_body)
+
+    fns = [f for f in kids(ast) if f.get("kind") == "FunctionDecl" and
+           any(c.get("kind") == "CompoundStmt" for c in kids(f)) and
+           f.get("loc", {}).get("_file", f.get("loc", {}).get("expansionLoc", {}).get("_file")) == main_file]
+    for f in fns:
+        low.fn = f["name"]
+        for c in kids(f):
+            if c.get("kind") == "CompoundStmt":
+                visit(c, c)
+                walk_do_body(c, False)
+    return low.apply(), low.log
+
+
+def lower_file(cfg, src, work_dir, header_name="qcp_rvv_ptr_ops.h", isa="rvv"):
     src = Path(src).resolve()
     # clang reports byte offsets; latin-1 maps each byte to one character, so string
     # indices equal byte offsets and the file round-trips byte-exactly.
     orig_text = src.read_bytes().decode("latin-1")
+    cfg = cfg_for(cfg, isa)
     profile, ast, cmd = parse(cfg, src)
     annotate_files(ast, {"file": None})
-    text, r12 = expand_local_macros(cfg, orig_text, ast, str(src), work_dir)
     main_file = str(src)
-    if r12:
-        epath = (work_dir / (src.stem + ".r12-expanded.c")).resolve()
-        epath.write_bytes(text.encode("latin-1"))
-        profile, ast, cmd = parse(cfg, epath)
+    text, r12 = orig_text, []
+    if isa == "rvv":
+        text, r12 = expand_local_macros(cfg, orig_text, ast, str(src), work_dir)
+        if r12:
+            epath = (work_dir / (src.stem + ".r12-expanded.c")).resolve()
+            epath.write_bytes(text.encode("latin-1"))
+            profile, ast, cmd = parse(cfg, epath)
+            annotate_files(ast, {"file": None})
+            main_file = str(epath)
+    ntext, nlog = normalize(text, ast, main_file)
+    if nlog:
+        npath = (work_dir / (src.stem + ".normalized.c")).resolve()
+        npath.write_bytes(ntext.encode("latin-1"))
+        profile, ast, cmd = parse(cfg, npath)
         annotate_files(ast, {"file": None})
-        main_file = str(epath)
+        main_file, text = str(npath), ntext
+    if isa != "rvv":
+        res = {"tool": TOOL_VERSION, "isa": isa, "input": src.name,
+               "input_sha256": hashlib.sha256(orig_text.encode("latin-1")).hexdigest(),
+               "parse_profile": profile, "rewrites": nlog, "rejections": [],
+               "output_sha256": hashlib.sha256(text.encode("latin-1")).hexdigest()}
+        return res, text, None
     low = Lowerer(text, main_file)
     low.log.extend(r12)
+    low.log.extend(nlog)
     rejects = []
     fns = [n for n in kids(ast) if n.get("kind") == "FunctionDecl" and
            any(c.get("kind") == "CompoundStmt" for c in kids(n)) and
@@ -920,14 +1152,14 @@ def lower_file(cfg, src, work_dir, header_name="qcp_rvv_ptr_ops.h"):
             rejects.append({"function": fn.get("name"), "rule": r.rule, "message": r.message,
                             "line": low.line_of(r.node) if r.node else None})
     result = {"tool": TOOL_VERSION, "input": src.name,
-              "input_sha256": hashlib.sha256(text.encode()).hexdigest(),
+              "input_sha256": hashlib.sha256(orig_text.encode("latin-1")).hexdigest(),
               "parse_profile": profile, "functions": [f["name"] for f in fns],
               "rejections": rejects}
     if rejects:
         return result, None, None
     out = low.apply()
     if low.edits:
-        out = f'#include "{header_name}"  /* inserted by {TOOL_VERSION} */\n' + out
+        out = f'#include "{header_name}"  /* inserted by rvv_ptr_lower */\n' + out
     def utf8(x):
         return x.encode("latin-1").decode("utf-8", "replace") if isinstance(x, str) else x
     result["rewrites"] = [{k: utf8(v) for k, v in e.items()} for e in low.log]
@@ -945,16 +1177,23 @@ def main():
     ap.add_argument("input")
     ap.add_argument("--out-dir", required=True)
     ap.add_argument("--config", default=str(HERE / "config.json"))
+    ap.add_argument("--isa", choices=["rvv", "neon"], default="rvv",
+                    help="rvv: normalise + pointer-lower; neon: normalise only")
     a = ap.parse_args()
     cfg = json.loads(Path(a.config).read_text())
     out_dir = Path(a.out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
     stem = Path(a.input).stem
     try:
-        result, out, header = lower_file(cfg, a.input, out_dir)
+        result, out, header = lower_file(cfg, a.input, out_dir, isa=a.isa)
     except Reject as r:
         result, out, header = {"tool": TOOL_VERSION, "input": Path(a.input).name,
                                "rejections": [{"rule": r.rule, "message": r.message}]}, None, None
+    if out is not None and a.isa != "rvv":
+        (out_dir / f"{stem}.normalized.c").write_bytes(out.encode("latin-1"))
+        (out_dir / f"{stem}.normalization.json").write_text(json.dumps(result, indent=1, ensure_ascii=False) + "\n")
+        print(f"OK {Path(a.input).name} isa={a.isa} rewrites={len(result['rewrites'])}")
+        return 0
     if out is not None:
         (out_dir / f"{stem}.lowered.c").write_bytes(out.encode("latin-1"))
         (out_dir / "qcp_rvv_ptr_ops.h").write_text(header[0])

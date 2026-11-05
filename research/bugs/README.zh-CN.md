@@ -7,6 +7,7 @@
 | [xnnpack/](xnnpack/) | XNNPACK 自身的问题：kernel 与 XNNPACK 自己的参考语义不一致，或 API、参数初始化漏检等。E1 原始 NEON A 的问题也放在这里，因为 A 来自 XNNPACK |
 | [bopt/](bopt/) | 最终优化 RVV kernel（Bopt，`keaganchern/optimized-rvv-kernels@80feb4564`）自身的问题 |
 | [qcp/](qcp/) | QCP 验证工具（前端、符号执行）的缺陷 |
+| [divergences/](divergences/) | 已确认 A ≠ B，但按 XNNPACK 契约不算 bug：维护者声明不保证（如 NaN 的 min/max），或差异落在 XNNPACK 允许的容差内。照样附反例和 L1 分析，供观察关系和 spec 决策使用 |
 
 ## 每条记录必须写明
 
@@ -29,7 +30,13 @@
 
 | 编号 | 发现途径 | 标题 | 状态 |
 |---|---|---|---|
-| [XNN-001](xnnpack/XNN-001-vclamp-tail-order/README.zh-CN.md) | E1 s8-vclamp（A ⇔ Bopt），证明时得到反例 | s8/u8 vclamp 的 SIMD 实现中，尾部 min/max 顺序与参考语义相反，`min > max` 时结果不一致 | 已确认；A 的修复补丁已备好；A_fixed ≡ Bopt 正在由 W4 验证 |
-| [BOPT-001](bopt/BOPT-001-u8-vclamp-params-abi.zh-CN.md) | E1 准备阶段：改写工具的差分测试暴露了编译冲突，再审源码发现 | u8-vclamp 自定义的 params 布局（uint8）与 XNNPACK（uint32）不一致 | 待实测确认；修复计划见记录 |
+| [XNN-001](xnnpack/XNN-001-vclamp-tail-order/README.zh-CN.md) | E1 s8-vclamp（A ⇔ Bopt），证明时得到反例 | s8/u8 vclamp 的 SIMD 实现中，尾部 min/max 顺序与参考语义相反，`min > max` 时结果不一致 | 已确认；W4 已证明 s8 的 A_fixed ≡ Bopt（VLEN 512/128/256），监督者复检中；u8 待 BOPT-001 |
+| [BOPT-001](bopt/BOPT-001-u8-vclamp-params-abi.zh-CN.md) | E1 准备阶段：改写工具的差分测试暴露了编译冲突，再审源码发现 | u8-vclamp 自定义的 params 布局（uint8）与 XNNPACK（uint32）不一致 | **已实测确认**（W14）：`x=1, min=0, max=1` 时 Bopt 输出 0，A 输出 1；Bopt_fixed 已在 QEMU 上通过，证明进行中 |
 | [QCP-001](qcp/QCP-001-float-array-field.zh-CN.md) | E1 f32-vadd，RVV shim 生成 VC 时 | 局部 struct 中的 float/double 数组字段无法通过类型推断 | 已复现；E1 用比特 lane 表示绕开；未向作者报告 |
 | [QCP-002](qcp/QCP-002-struct-array-assign.zh-CN.md) | E1 s8-vclamp，证明拷贝适配器时 | 数组字段 struct 之间的整体赋值无法符号执行 | 已复现；shim 拷贝改用逐 lane 循环 |
+| [BOPT-002](bopt/BOPT-002-f32-f16-vcvt-nan-to-inf.zh-CN.md) | E1 f32-f16-vcvt：harness 差分给出线索，W12 用真实参数确认 | Bopt 去掉了 NaN 分支，qNaN 被转成 Inf（0x7c00；A 和参考为 0x7e00） | 已确认；修复计划见记录，未实施 |
+| [BOPT-003](bopt/BOPT-003-qu8-vadd-narrow-saturation.zh-CN.md) | E1 qu8-vadd-minmax：harness 差分给出线索，W12 用 XNNPACK 真实 init 确认 | Bopt 先做不饱和的有符号截窄，再做无符号饱和，负值变成 255 | 已确认；修复计划见记录，未实施 |
+| [DIV-001](divergences/DIV-001-f32-vmax-nan.zh-CN.md) | E1 f32-vmax：旧反例重放，W11 | 单侧 NaN：A 输出 NaN，Bopt 输出另一个数 | 不等价已确认；维护者声明不保证；语义目标待用户决定 |
+| [DIV-002](divergences/DIV-002-f32-vmin-nan.zh-CN.md) | E1 f32-vmin：同上 | 同上 | 同上 |
+| [DIV-003](divergences/DIV-003-qs8-vmul-rounding.zh-CN.md) | E1 qs8-vmul-minmax-fp32：W12 分诊 | 舍入策略不同，差 1，在 XNNPACK tester 的 ±1 容差内 | 不等价已确认；严格比较还是带容差比较，待用户决定 |
+| [QCP-003](qcp/QCP-003-do-while-ull-decrement.zh-CN.md) | E1 qu8-rsum（W9），生成 VC 时 | do-while 中 `unsigned long long` 的 `--n;` 导致前端异常；条件表达式中的 `--`、内联 asm 也无法解析 | 已用工具 v1.2（R14–R16）绕开 |

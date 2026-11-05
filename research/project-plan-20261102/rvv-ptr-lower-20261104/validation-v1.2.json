@@ -1,0 +1,2599 @@
+{
+ "tool": "rvv_ptr_lower 1.2.0",
+ "results": [
+  {
+   "kernel": "dwconv2d-chw",
+   "input_sha256": "7e0969eada80d7c9f5c75d2a0b0e43cf927a9d779e34c3996af6b6b0717f21f4",
+   "lower": "OK dwconv2d-chw.c rewrites=59 rejections=0",
+   "determinism": true,
+   "lowered_sha256": "3b0c3bf39535a8f5fa9850d562b411c51ff500dcaae22824c90dd7e7f9cc6ea9",
+   "header_sha256": "a92424664778d4633b08cfcdf71e8ca3e8ffcd90dd6f4146171bde8900da6f2b",
+   "syntax": true,
+   "idempotence": true,
+   "difftest": {
+    "original": {
+     "compile_rc": 0,
+     "dumped_arrays": [
+      "input",
+      "zero_row",
+      "weights",
+      "out_rvv",
+      "gold"
+     ],
+     "runs": {
+      "128": {
+       "rc": 0,
+       "stdout_sha256": "96984503b40c749df9086e854ddaaba9da589daad37b2791a46c4c693713b6da",
+       "pass_line": true,
+       "dump_lines": 5
+      },
+      "256": {
+       "rc": 0,
+       "stdout_sha256": "96984503b40c749df9086e854ddaaba9da589daad37b2791a46c4c693713b6da",
+       "pass_line": true,
+       "dump_lines": 5
+      },
+      "512": {
+       "rc": 0,
+       "stdout_sha256": "96984503b40c749df9086e854ddaaba9da589daad37b2791a46c4c693713b6da",
+       "pass_line": true,
+       "dump_lines": 5
+      }
+     }
+    },
+    "lowered": {
+     "compile_rc": 0,
+     "dumped_arrays": [
+      "input",
+      "zero_row",
+      "weights",
+      "out_rvv",
+      "gold"
+     ],
+     "runs": {
+      "128": {
+       "rc": 0,
+       "stdout_sha256": "96984503b40c749df9086e854ddaaba9da589daad37b2791a46c4c693713b6da",
+       "pass_line": true,
+       "dump_lines": 5
+      },
+      "256": {
+       "rc": 0,
+       "stdout_sha256": "96984503b40c749df9086e854ddaaba9da589daad37b2791a46c4c693713b6da",
+       "pass_line": true,
+       "dump_lines": 5
+      },
+      "512": {
+       "rc": 0,
+       "stdout_sha256": "96984503b40c749df9086e854ddaaba9da589daad37b2791a46c4c693713b6da",
+       "pass_line": true,
+       "dump_lines": 5
+      }
+     }
+    }
+   },
+   "difftest_identical": true,
+   "status": "OK"
+  },
+  {
+   "kernel": "f32-argmaxpool",
+   "input_sha256": "d3ee2c0205a6bc3680e03b79fbf00dfa969677bdd6bfcfe6da7be5ff5d51a09f",
+   "lower": "OK f32-argmaxpool.c rewrites=22 rejections=0",
+   "determinism": true,
+   "lowered_sha256": "81bf2058bfadcd4750d3cf964ac01b50cd9602b176511c38ce01f457996670e7",
+   "header_sha256": "0050afdaa417029879c001dbd78c989cbef21de3acf2326e7ac27a6bf3c79c0b",
+   "syntax": true,
+   "idempotence": true,
+   "difftest": {
+    "original": {
+     "compile_rc": 0,
+     "dumped_arrays": [
+      "input_ptrs",
+      "rows",
+      "out_rvv",
+      "out_gold",
+      "idx_rvv",
+      "idx_gold"
+     ],
+     "runs": {
+      "128": {
+       "rc": 0,
+       "stdout_sha256": "f40cb8774af3adae6a3aa3b5b6d36ac4268a6d29e21dec802ec5496541b2db21",
+       "pass_line": true,
+       "dump_lines": 6
+      },
+      "256": {
+       "rc": 0,
+       "stdout_sha256": "f40cb8774af3adae6a3aa3b5b6d36ac4268a6d29e21dec802ec5496541b2db21",
+       "pass_line": true,
+       "dump_lines": 6
+      },
+      "512": {
+       "rc": 0,
+       "stdout_sha256": "f40cb8774af3adae6a3aa3b5b6d36ac4268a6d29e21dec802ec5496541b2db21",
+       "pass_line": true,
+       "dump_lines": 6
+      }
+     }
+    },
+    "lowered": {
+     "compile_rc": 0,
+     "dumped_arrays": [
+      "input_ptrs",
+      "rows",
+      "out_rvv",
+      "out_gold",
+      "idx_rvv",
+      "idx_gold"
+     ],
+     "runs": {
+      "128": {
+       "rc": 0,
+       "stdout_sha256": "f40cb8774af3adae6a3aa3b5b6d36ac4268a6d29e21dec802ec5496541b2db21",
+       "pass_line": true,
+       "dump_lines": 6
+      },
+      "256": {
+       "rc": 0,
+       "stdout_sha256": "f40cb8774af3adae6a3aa3b5b6d36ac4268a6d29e21dec802ec5496541b2db21",
+       "pass_line": true,
+       "dump_lines": 6
+      },
+      "512": {
+       "rc": 0,
+       "stdout_sha256": "f40cb8774af3adae6a3aa3b5b6d36ac4268a6d29e21dec802ec5496541b2db21",
+       "pass_line": true,
+       "dump_lines": 6
+      }
+     }
+    }
+   },
+   "difftest_identical": true,
+   "status": "OK"
+  },
+  {
+   "kernel": "f32-conv-hwc2chw",
+   "input_sha256": "002c8cca60bac18e1cd31405bf10325e182b714a97be007a5d1a61045196d782",
+   "lower": "OK f32-conv-hwc2chw.c rewrites=898 rejections=0",
+   "determinism": true,
+   "lowered_sha256": "f9e949ed37469ba705fedcd3d8f4d2b30bc5e988cf55548bfb5ae65582dd30d9",
+   "header_sha256": "f5e696bf41ae7202dd6c1592c475185978344cc8f13cd117514ed9c14efe1033",
+   "syntax": true,
+   "idempotence": true,
+   "difftest": {
+    "original": {
+     "compile_rc": 0,
+     "dumped_arrays": [
+      "input",
+      "zerorow",
+      "kernelw",
+      "biasv",
+      "packed",
+      "out_rvv",
+      "gold"
+     ],
+     "runs": {
+      "128": {
+       "rc": 0,
+       "stdout_sha256": "440c8846fadc607abd0e7bf636691f994fcc645ecf0c2a50a7671c4f99612d07",
+       "pass_line": true,
+       "dump_lines": 7
+      },
+      "256": {
+       "rc": 0,
+       "stdout_sha256": "440c8846fadc607abd0e7bf636691f994fcc645ecf0c2a50a7671c4f99612d07",
+       "pass_line": true,
+       "dump_lines": 7
+      },
+      "512": {
+       "rc": 0,
+       "stdout_sha256": "440c8846fadc607abd0e7bf636691f994fcc645ecf0c2a50a7671c4f99612d07",
+       "pass_line": true,
+       "dump_lines": 7
+      }
+     }
+    },
+    "lowered": {
+     "compile_rc": 0,
+     "dumped_arrays": [
+      "input",
+      "zerorow",
+      "kernelw",
+      "biasv",
+      "packed",
+      "out_rvv",
+      "gold"
+     ],
+     "runs": {
+      "128": {
+       "rc": 0,
+       "stdout_sha256": "440c8846fadc607abd0e7bf636691f994fcc645ecf0c2a50a7671c4f99612d07",
+       "pass_line": true,
+       "dump_lines": 7
+      },
+      "256": {
+       "rc": 0,
+       "stdout_sha256": "440c8846fadc607abd0e7bf636691f994fcc645ecf0c2a50a7671c4f99612d07",
+       "pass_line": true,
+       "dump_lines": 7
+      },
+      "512": {
+       "rc": 0,
+       "stdout_sha256": "440c8846fadc607abd0e7bf636691f994fcc645ecf0c2a50a7671c4f99612d07",
+       "pass_line": true,
+       "dump_lines": 7
+      }
+     }
+    }
+   },
+   "difftest_identical": true,
+   "status": "OK"
+  },
+  {
+   "kernel": "f32-dwconv-minmax",
+   "input_sha256": "cdf02bdcc859ec06f618f281b0ef51f1dd2d19774b79bdc3018e5f53873d388f",
+   "lower": "OK f32-dwconv-minmax.c rewrites=24 rejections=0",
+   "determinism": true,
+   "lowered_sha256": "d3e4fa3a6471e4bdcb40d76b482c3cfc7f02c01d617941ba88c5dff4dd0ff4c9",
+   "header_sha256": "bc20e3f7bb342600a750896e74f7899884f7e40c8f2eecf7c1f17524a41c9fd5",
+   "syntax": true,
+   "idempotence": true,
+   "difftest": {
+    "original": {
+     "compile_rc": 0,
+     "dumped_arrays": [
+      "indir",
+      "rows",
+      "zero_row",
+      "wlog",
+      "w_scalar",
+      "w_rvv",
+      "out_rvv",
+      "gold"
+     ],
+     "harness_adaptation": {
+      "removed_kernel_structs": [
+       "xnn_f32_minmax_params"
+      ]
+     },
+     "runs": {
+      "128": {
+       "rc": 0,
+       "stdout_sha256": "2e0b29c3d31e1cbe889a245b293f8e25e562e3112c8719650587dca2e77f3efd",
+       "pass_line": true,
+       "dump_lines": 8
+      },
+      "256": {
+       "rc": 0,
+       "stdout_sha256": "4b1536648af0ec1fa46a0b0321abf142e8cc6adb846de479a141659600d54a55",
+       "pass_line": true,
+       "dump_lines": 8
+      },
+      "512": {
+       "rc": 0,
+       "stdout_sha256": "4b1536648af0ec1fa46a0b0321abf142e8cc6adb846de479a141659600d54a55",
+       "pass_line": true,
+       "dump_lines": 8
+      }
+     }
+    },
+    "lowered": {
+     "compile_rc": 0,
+     "dumped_arrays": [
+      "indir",
+      "rows",
+      "zero_row",
+      "wlog",
+      "w_scalar",
+      "w_rvv",
+      "out_rvv",
+      "gold"
+     ],
+     "harness_adaptation": {
+      "removed_kernel_structs": [
+       "xnn_f32_minmax_params"
+      ]
+     },
+     "runs": {
+      "128": {
+       "rc": 0,
+       "stdout_sha256": "2e0b29c3d31e1cbe889a245b293f8e25e562e3112c8719650587dca2e77f3efd",
+       "pass_line": true,
+       "dump_lines": 8
+      },
+      "256": {
+       "rc": 0,
+       "stdout_sha256": "4b1536648af0ec1fa46a0b0321abf142e8cc6adb846de479a141659600d54a55",
+       "pass_line": true,
+       "dump_lines": 8
+      },
+      "512": {
+       "rc": 0,
+       "stdout_sha256": "4b1536648af0ec1fa46a0b0321abf142e8cc6adb846de479a141659600d54a55",
+       "pass_line": true,
+       "dump_lines": 8
+      }
+     }
+    }
+   },
+   "difftest_identical": true,
+   "status": "OK"
+  },
+  {
+   "kernel": "f32-f16-vcvt",
+   "input_sha256": "13c8f3ae83f720b5ac2e72d24b7e8c150a0338ffc701b1048ca0768188709667",
+   "lower": "OK f32-f16-vcvt.c rewrites=41 rejections=0",
+   "determinism": true,
+   "lowered_sha256": "fb3f5d1b78c7ca764d713308f5a766fc713c6b63af989663f45e6e9e3b4c020b",
+   "header_sha256": "82632c4d23ee77ffe4b87a502713d7bdc2f10cb41f166bc4c3e9e8e7ba0118c4",
+   "syntax": true,
+   "idempotence": true,
+   "difftest": {
+    "original": {
+     "compile_rc": 0,
+     "dumped_arrays": [
+      "input",
+      "out_rvv",
+      "gold"
+     ],
+     "runs": {
+      "128": {
+       "rc": 0,
+       "stdout_sha256": "a225bfb71998734a1e069b57e2ee17d3630852ff83a71b4f489d9b351242e378",
+       "pass_line": false,
+       "dump_lines": 3
+      },
+      "256": {
+       "rc": 0,
+       "stdout_sha256": "a225bfb71998734a1e069b57e2ee17d3630852ff83a71b4f489d9b351242e378",
+       "pass_line": false,
+       "dump_lines": 3
+      },
+      "512": {
+       "rc": 0,
+       "stdout_sha256": "a225bfb71998734a1e069b57e2ee17d3630852ff83a71b4f489d9b351242e378",
+       "pass_line": false,
+       "dump_lines": 3
+      }
+     }
+    },
+    "lowered": {
+     "compile_rc": 0,
+     "dumped_arrays": [
+      "input",
+      "out_rvv",
+      "gold"
+     ],
+     "runs": {
+      "128": {
+       "rc": 0,
+       "stdout_sha256": "a225bfb71998734a1e069b57e2ee17d3630852ff83a71b4f489d9b351242e378",
+       "pass_line": false,
+       "dump_lines": 3
+      },
+      "256": {
+       "rc": 0,
+       "stdout_sha256": "a225bfb71998734a1e069b57e2ee17d3630852ff83a71b4f489d9b351242e378",
+       "pass_line": false,
+       "dump_lines": 3
+      },
+      "512": {
+       "rc": 0,
+       "stdout_sha256": "a225bfb71998734a1e069b57e2ee17d3630852ff83a71b4f489d9b351242e378",
+       "pass_line": false,
+       "dump_lines": 3
+      }
+     }
+    }
+   },
+   "difftest_identical": true,
+   "status": "OK"
+  },
+  {
+   "kernel": "f32-gemm-minmax",
+   "input_sha256": "e1287e7debab605b7b07e1cafb79e5f7e07f31e808b216280c5c42b63ae2afa0",
+   "lower": "OK f32-gemm-minmax.c rewrites=321 rejections=0",
+   "determinism": true,
+   "lowered_sha256": "d3a4e191890dafeb1f422b5dcd95b862df5f51f4edc640b9d4af894c8b32a54d",
+   "header_sha256": "42e38ef35887246fea0b37c75b5df7b77afc81aa58d0f69520154572c31aa391",
+   "syntax": true,
+   "idempotence": true,
+   "difftest": {
+    "original": {
+     "compile_rc": 0,
+     "dumped_arrays": [
+      "A",
+      "B",
+      "bias",
+      "w_scalar",
+      "w_rvv",
+      "out_rvv",
+      "gold"
+     ],
+     "runs": {
+      "128": {
+       "rc": 0,
+       "stdout_sha256": "ffabe1e89652f95b38534ff6bcdbf1537ed3a3d75891f37167078db1865820f2",
+       "pass_line": true,
+       "dump_lines": 7
+      },
+      "256": {
+       "rc": 0,
+       "stdout_sha256": "ffabe1e89652f95b38534ff6bcdbf1537ed3a3d75891f37167078db1865820f2",
+       "pass_line": true,
+       "dump_lines": 7
+      },
+      "512": {
+       "rc": 0,
+       "stdout_sha256": "ffabe1e89652f95b38534ff6bcdbf1537ed3a3d75891f37167078db1865820f2",
+       "pass_line": true,
+       "dump_lines": 7
+      }
+     }
+    },
+    "lowered": {
+     "compile_rc": 0,
+     "dumped_arrays": [
+      "A",
+      "B",
+      "bias",
+      "w_scalar",
+      "w_rvv",
+      "out_rvv",
+      "gold"
+     ],
+     "runs": {
+      "128": {
+       "rc": 0,
+       "stdout_sha256": "ffabe1e89652f95b38534ff6bcdbf1537ed3a3d75891f37167078db1865820f2",
+       "pass_line": true,
+       "dump_lines": 7
+      },
+      "256": {
+       "rc": 0,
+       "stdout_sha256": "ffabe1e89652f95b38534ff6bcdbf1537ed3a3d75891f37167078db1865820f2",
+       "pass_line": true,
+       "dump_lines": 7
+      },
+      "512": {
+       "rc": 0,
+       "stdout_sha256": "ffabe1e89652f95b38534ff6bcdbf1537ed3a3d75891f37167078db1865820f2",
+       "pass_line": true,
+       "dump_lines": 7
+      }
+     }
+    }
+   },
+   "difftest_identical": true,
+   "status": "OK"
+  },
+  {
+   "kernel": "f32-igemm-minmax",
+   "input_sha256": "f467a594734604e23e8d101c0c0bdb6b4a2a2cd3e6a592e19f011e4bbd13c84b",
+   "lower": "OK f32-igemm-minmax.c rewrites=71 rejections=0",
+   "determinism": true,
+   "lowered_sha256": "8d9a18d490abb8faaec7302a8fcbc87dba25f7d48e631d99658689bba652c523",
+   "header_sha256": "bfa5a4b58e5a247c4fea0c7691ffa1ab0ee80f86c1b51a9b1d96676c2781f5c4",
+   "syntax": true,
+   "idempotence": true,
+   "difftest": {
+    "original": {
+     "compile_rc": 0,
+     "dumped_arrays": [
+      "arows",
+      "indir",
+      "zero_row",
+      "bias",
+      "Wlog",
+      "w_scalar",
+      "w_rvv",
+      "out_rvv",
+      "gold"
+     ],
+     "runs": {
+      "128": {
+       "rc": 0,
+       "stdout_sha256": "521d4a099fab2864bbc08e74be9cf514798263f6f4a12a01a317925710354f36",
+       "pass_line": false,
+       "dump_lines": 9
+      },
+      "256": {
+       "rc": 0,
+       "stdout_sha256": "902ac7452feb5babf4c11745f881911ca38e8115fc435d744491b545aa40dce5",
+       "pass_line": false,
+       "dump_lines": 9
+      },
+      "512": {
+       "rc": 0,
+       "stdout_sha256": "2e880806cb012ccd7391c9a5d773c1ce60914fa900063829d7f3fe6f858ace08",
+       "pass_line": false,
+       "dump_lines": 9
+      }
+     }
+    },
+    "lowered": {
+     "compile_rc": 0,
+     "dumped_arrays": [
+      "arows",
+      "indir",
+      "zero_row",
+      "bias",
+      "Wlog",
+      "w_scalar",
+      "w_rvv",
+      "out_rvv",
+      "gold"
+     ],
+     "runs": {
+      "128": {
+       "rc": 0,
+       "stdout_sha256": "521d4a099fab2864bbc08e74be9cf514798263f6f4a12a01a317925710354f36",
+       "pass_line": false,
+       "dump_lines": 9
+      },
+      "256": {
+       "rc": 0,
+       "stdout_sha256": "902ac7452feb5babf4c11745f881911ca38e8115fc435d744491b545aa40dce5",
+       "pass_line": false,
+       "dump_lines": 9
+      },
+      "512": {
+       "rc": 0,
+       "stdout_sha256": "2e880806cb012ccd7391c9a5d773c1ce60914fa900063829d7f3fe6f858ace08",
+       "pass_line": false,
+       "dump_lines": 9
+      }
+     }
+    }
+   },
+   "difftest_identical": true,
+   "status": "OK"
+  },
+  {
+   "kernel": "f32-maxpool",
+   "input_sha256": "e967c8904dfa8532069787c849181713a93e3a0f1c9ff62dd200d71ecd1392ca",
+   "lower": "OK f32-maxpool.c rewrites=11 rejections=0",
+   "determinism": true,
+   "lowered_sha256": "72e73ed14d9761e5193d31a51e5c00b10576716ef0c690d9861082a10a1de2fc",
+   "header_sha256": "f304cfd64cf47b2823abc3905f3267d05d066a8baf3e832af57f5b22b41727c9",
+   "syntax": true,
+   "idempotence": true,
+   "difftest": {
+    "original": {
+     "compile_rc": 0,
+     "dumped_arrays": [
+      "indir",
+      "rows",
+      "out_rvv",
+      "gold"
+     ],
+     "harness_adaptation": {
+      "removed_kernel_structs": [
+       "xnn_f32_minmax_params"
+      ]
+     },
+     "runs": {
+      "128": {
+       "rc": 0,
+       "stdout_sha256": "7290c4457804443d0dd96c44cc878cfcc61c981d1b9e5008c13b94f0e60bd42f",
+       "pass_line": true,
+       "dump_lines": 4
+      },
+      "256": {
+       "rc": 0,
+       "stdout_sha256": "7290c4457804443d0dd96c44cc878cfcc61c981d1b9e5008c13b94f0e60bd42f",
+       "pass_line": true,
+       "dump_lines": 4
+      },
+      "512": {
+       "rc": 0,
+       "stdout_sha256": "7290c4457804443d0dd96c44cc878cfcc61c981d1b9e5008c13b94f0e60bd42f",
+       "pass_line": true,
+       "dump_lines": 4
+      }
+     }
+    },
+    "lowered": {
+     "compile_rc": 0,
+     "dumped_arrays": [
+      "indir",
+      "rows",
+      "out_rvv",
+      "gold"
+     ],
+     "harness_adaptation": {
+      "removed_kernel_structs": [
+       "xnn_f32_minmax_params"
+      ]
+     },
+     "runs": {
+      "128": {
+       "rc": 0,
+       "stdout_sha256": "7290c4457804443d0dd96c44cc878cfcc61c981d1b9e5008c13b94f0e60bd42f",
+       "pass_line": true,
+       "dump_lines": 4
+      },
+      "256": {
+       "rc": 0,
+       "stdout_sha256": "7290c4457804443d0dd96c44cc878cfcc61c981d1b9e5008c13b94f0e60bd42f",
+       "pass_line": true,
+       "dump_lines": 4
+      },
+      "512": {
+       "rc": 0,
+       "stdout_sha256": "7290c4457804443d0dd96c44cc878cfcc61c981d1b9e5008c13b94f0e60bd42f",
+       "pass_line": true,
+       "dump_lines": 4
+      }
+     }
+    }
+   },
+   "difftest_identical": true,
+   "status": "OK"
+  },
+  {
+   "kernel": "f32-vadd",
+   "input_sha256": "ed382a172ed57ed3b5e87649a800dfadc8013ad443eed9d9ae19516bff3e72b6",
+   "lower": "OK f32-vadd.c rewrites=10 rejections=0",
+   "determinism": true,
+   "lowered_sha256": "71fec1a9c1abcee609f50654944d8301fa34c3a91765b972776c93349b76d9d1",
+   "header_sha256": "7e7f9e9a45639358a0911c186891b71b8e6e3156b048be5f37eb871502433462",
+   "syntax": true,
+   "idempotence": true,
+   "difftest": {
+    "original": {
+     "compile_rc": 0,
+     "dumped_arrays": [
+      "input_a",
+      "input_b",
+      "out_rvv",
+      "gold"
+     ],
+     "runs": {
+      "128": {
+       "rc": 0,
+       "stdout_sha256": "a901410e3e18606dd05252348bdea924235bdbf2d2217588256a9c79a158c64a",
+       "pass_line": true,
+       "dump_lines": 4
+      },
+      "256": {
+       "rc": 0,
+       "stdout_sha256": "a901410e3e18606dd05252348bdea924235bdbf2d2217588256a9c79a158c64a",
+       "pass_line": true,
+       "dump_lines": 4
+      },
+      "512": {
+       "rc": 0,
+       "stdout_sha256": "a901410e3e18606dd05252348bdea924235bdbf2d2217588256a9c79a158c64a",
+       "pass_line": true,
+       "dump_lines": 4
+      }
+     }
+    },
+    "lowered": {
+     "compile_rc": 0,
+     "dumped_arrays": [
+      "input_a",
+      "input_b",
+      "out_rvv",
+      "gold"
+     ],
+     "runs": {
+      "128": {
+       "rc": 0,
+       "stdout_sha256": "a901410e3e18606dd05252348bdea924235bdbf2d2217588256a9c79a158c64a",
+       "pass_line": true,
+       "dump_lines": 4
+      },
+      "256": {
+       "rc": 0,
+       "stdout_sha256": "a901410e3e18606dd05252348bdea924235bdbf2d2217588256a9c79a158c64a",
+       "pass_line": true,
+       "dump_lines": 4
+      },
+      "512": {
+       "rc": 0,
+       "stdout_sha256": "a901410e3e18606dd05252348bdea924235bdbf2d2217588256a9c79a158c64a",
+       "pass_line": true,
+       "dump_lines": 4
+      }
+     }
+    }
+   },
+   "difftest_identical": true,
+   "status": "OK"
+  },
+  {
+   "kernel": "f32-vcmul",
+   "input_sha256": "760cc234af896b78e93d97d5798a8080846548c0a1b2c6ce14e3e64faca670d5",
+   "lower": "OK f32-vcmul.c rewrites=28 rejections=0",
+   "determinism": true,
+   "lowered_sha256": "9b9ec96777f83db142fa788401c008708912f0e36e0dad8ea304fea5ace5a9a2",
+   "header_sha256": "a476fafbf30217f92ee42255837544627f8c507656399888df0742be14d9be55",
+   "syntax": true,
+   "idempotence": true,
+   "difftest": {
+    "original": {
+     "compile_rc": 0,
+     "dumped_arrays": [
+      "input_a",
+      "input_b",
+      "out_rvv",
+      "gold"
+     ],
+     "runs": {
+      "128": {
+       "rc": 0,
+       "stdout_sha256": "ba044b96bbbbd8fd5fd8a65c01596ea4f6b66dcd8b204a9fe9ad24fda771b75b",
+       "pass_line": true,
+       "dump_lines": 4
+      },
+      "256": {
+       "rc": 0,
+       "stdout_sha256": "ba044b96bbbbd8fd5fd8a65c01596ea4f6b66dcd8b204a9fe9ad24fda771b75b",
+       "pass_line": true,
+       "dump_lines": 4
+      },
+      "512": {
+       "rc": 0,
+       "stdout_sha256": "ba044b96bbbbd8fd5fd8a65c01596ea4f6b66dcd8b204a9fe9ad24fda771b75b",
+       "pass_line": true,
+       "dump_lines": 4
+      }
+     }
+    },
+    "lowered": {
+     "compile_rc": 0,
+     "dumped_arrays": [
+      "input_a",
+      "input_b",
+      "out_rvv",
+      "gold"
+     ],
+     "runs": {
+      "128": {
+       "rc": 0,
+       "stdout_sha256": "ba044b96bbbbd8fd5fd8a65c01596ea4f6b66dcd8b204a9fe9ad24fda771b75b",
+       "pass_line": true,
+       "dump_lines": 4
+      },
+      "256": {
+       "rc": 0,
+       "stdout_sha256": "ba044b96bbbbd8fd5fd8a65c01596ea4f6b66dcd8b204a9fe9ad24fda771b75b",
+       "pass_line": true,
+       "dump_lines": 4
+      },
+      "512": {
+       "rc": 0,
+       "stdout_sha256": "ba044b96bbbbd8fd5fd8a65c01596ea4f6b66dcd8b204a9fe9ad24fda771b75b",
+       "pass_line": true,
+       "dump_lines": 4
+      }
+     }
+    }
+   },
+   "difftest_identical": true,
+   "status": "OK"
+  },
+  {
+   "kernel": "f32-vdiv",
+   "input_sha256": "7f98cd41a62c3f11a61f5b510c7b95c1a7c0d02792b19df18948ffc9f42c18bb",
+   "lower": "OK f32-vdiv.c rewrites=14 rejections=0",
+   "determinism": true,
+   "lowered_sha256": "7480c443fab1d099a556b149966a0e0bd33aabec16ca4aad84cdbb3e37707da6",
+   "header_sha256": "7a7c70c157a598b98ba60509bff03174bd03da8290b00ebde2cee94302bd34c1",
+   "syntax": true,
+   "idempotence": true,
+   "difftest": {
+    "original": {
+     "compile_rc": 0,
+     "dumped_arrays": [
+      "input_a",
+      "input_b",
+      "out_rvv",
+      "gold"
+     ],
+     "runs": {
+      "128": {
+       "rc": 0,
+       "stdout_sha256": "fc84051574de8279adbee45dd89a3ee1bddcf70ea65f1cd64268968c314181e2",
+       "pass_line": true,
+       "dump_lines": 4
+      },
+      "256": {
+       "rc": 0,
+       "stdout_sha256": "fc84051574de8279adbee45dd89a3ee1bddcf70ea65f1cd64268968c314181e2",
+       "pass_line": true,
+       "dump_lines": 4
+      },
+      "512": {
+       "rc": 0,
+       "stdout_sha256": "fc84051574de8279adbee45dd89a3ee1bddcf70ea65f1cd64268968c314181e2",
+       "pass_line": true,
+       "dump_lines": 4
+      }
+     }
+    },
+    "lowered": {
+     "compile_rc": 0,
+     "dumped_arrays": [
+      "input_a",
+      "input_b",
+      "out_rvv",
+      "gold"
+     ],
+     "runs": {
+      "128": {
+       "rc": 0,
+       "stdout_sha256": "fc84051574de8279adbee45dd89a3ee1bddcf70ea65f1cd64268968c314181e2",
+       "pass_line": true,
+       "dump_lines": 4
+      },
+      "256": {
+       "rc": 0,
+       "stdout_sha256": "fc84051574de8279adbee45dd89a3ee1bddcf70ea65f1cd64268968c314181e2",
+       "pass_line": true,
+       "dump_lines": 4
+      },
+      "512": {
+       "rc": 0,
+       "stdout_sha256": "fc84051574de8279adbee45dd89a3ee1bddcf70ea65f1cd64268968c314181e2",
+       "pass_line": true,
+       "dump_lines": 4
+      }
+     }
+    }
+   },
+   "difftest_identical": true,
+   "status": "OK"
+  },
+  {
+   "kernel": "f32-vlrelu",
+   "input_sha256": "effef43e8eb9e23a5acebe32f5e3490925e9f453818651dc7720bf7a5581b231",
+   "lower": "OK f32-vlrelu.c rewrites=25 rejections=0",
+   "determinism": true,
+   "lowered_sha256": "4c82f697ccb9527aa68690ef7127ac14c9f86ffe02241a1081f73223f65ac65b",
+   "header_sha256": "fd1d52bf86f68c67aad56b5c9b2ee8d81b3e7718c199fcfd27b3833854cb2dc7",
+   "syntax": true,
+   "idempotence": true,
+   "difftest": {
+    "original": {
+     "compile_rc": 0,
+     "dumped_arrays": [
+      "input",
+      "out_rvv",
+      "gold"
+     ],
+     "runs": {
+      "128": {
+       "rc": 0,
+       "stdout_sha256": "0c17f5e6a25f4d112021b8937528268b954f39a7502ab74f545e3136fce58cea",
+       "pass_line": true,
+       "dump_lines": 3
+      },
+      "256": {
+       "rc": 0,
+       "stdout_sha256": "0c17f5e6a25f4d112021b8937528268b954f39a7502ab74f545e3136fce58cea",
+       "pass_line": true,
+       "dump_lines": 3
+      },
+      "512": {
+       "rc": 0,
+       "stdout_sha256": "0c17f5e6a25f4d112021b8937528268b954f39a7502ab74f545e3136fce58cea",
+       "pass_line": true,
+       "dump_lines": 3
+      }
+     }
+    },
+    "lowered": {
+     "compile_rc": 0,
+     "dumped_arrays": [
+      "input",
+      "out_rvv",
+      "gold"
+     ],
+     "runs": {
+      "128": {
+       "rc": 0,
+       "stdout_sha256": "0c17f5e6a25f4d112021b8937528268b954f39a7502ab74f545e3136fce58cea",
+       "pass_line": true,
+       "dump_lines": 3
+      },
+      "256": {
+       "rc": 0,
+       "stdout_sha256": "0c17f5e6a25f4d112021b8937528268b954f39a7502ab74f545e3136fce58cea",
+       "pass_line": true,
+       "dump_lines": 3
+      },
+      "512": {
+       "rc": 0,
+       "stdout_sha256": "0c17f5e6a25f4d112021b8937528268b954f39a7502ab74f545e3136fce58cea",
+       "pass_line": true,
+       "dump_lines": 3
+      }
+     }
+    }
+   },
+   "difftest_identical": true,
+   "status": "OK"
+  },
+  {
+   "kernel": "f32-vmax",
+   "input_sha256": "54bcf459e5cc6cca05de95eb3aa0bb0cf2cecbb3520f86ed697793518347c2ee",
+   "lower": "OK f32-vmax.c rewrites=8 rejections=0",
+   "determinism": true,
+   "lowered_sha256": "3eb185765526f6bf27085638d67b489b7bbf6eb2716428b2fa10b580c9b00fd2",
+   "header_sha256": "1f4ca29ba3b86033ad9462863c275a0d3edb53d1521c2094eb54ae3b41baf9e9",
+   "syntax": true,
+   "idempotence": true,
+   "difftest": {
+    "original": {
+     "compile_rc": 0,
+     "dumped_arrays": [
+      "input_a",
+      "input_b",
+      "out_rvv",
+      "gold"
+     ],
+     "runs": {
+      "128": {
+       "rc": 0,
+       "stdout_sha256": "10454379c9578285e73f08d936eb0553e53e4fe6b67ed5553755a7ee7a85107b",
+       "pass_line": true,
+       "dump_lines": 4
+      },
+      "256": {
+       "rc": 0,
+       "stdout_sha256": "10454379c9578285e73f08d936eb0553e53e4fe6b67ed5553755a7ee7a85107b",
+       "pass_line": true,
+       "dump_lines": 4
+      },
+      "512": {
+       "rc": 0,
+       "stdout_sha256": "10454379c9578285e73f08d936eb0553e53e4fe6b67ed5553755a7ee7a85107b",
+       "pass_line": true,
+       "dump_lines": 4
+      }
+     }
+    },
+    "lowered": {
+     "compile_rc": 0,
+     "dumped_arrays": [
+      "input_a",
+      "input_b",
+      "out_rvv",
+      "gold"
+     ],
+     "runs": {
+      "128": {
+       "rc": 0,
+       "stdout_sha256": "10454379c9578285e73f08d936eb0553e53e4fe6b67ed5553755a7ee7a85107b",
+       "pass_line": true,
+       "dump_lines": 4
+      },
+      "256": {
+       "rc": 0,
+       "stdout_sha256": "10454379c9578285e73f08d936eb0553e53e4fe6b67ed5553755a7ee7a85107b",
+       "pass_line": true,
+       "dump_lines": 4
+      },
+      "512": {
+       "rc": 0,
+       "stdout_sha256": "10454379c9578285e73f08d936eb0553e53e4fe6b67ed5553755a7ee7a85107b",
+       "pass_line": true,
+       "dump_lines": 4
+      }
+     }
+    }
+   },
+   "difftest_identical": true,
+   "status": "OK"
+  },
+  {
+   "kernel": "f32-vmin",
+   "input_sha256": "7d319cf134b72255ff3b4a9759aa5affbc9418b453634ffd68df23f0904d2e6c",
+   "lower": "OK f32-vmin.c rewrites=10 rejections=0",
+   "determinism": true,
+   "lowered_sha256": "3974350147b78166880873ed59debee848031c22e76b1bc79de6c18b85fa5e3c",
+   "header_sha256": "be72d7e93cec460278684bbe969e9eb15357ca7b16fef147fafd69201ef28cf5",
+   "syntax": true,
+   "idempotence": true,
+   "difftest": {
+    "original": {
+     "compile_rc": 0,
+     "dumped_arrays": [
+      "input_a",
+      "input_b",
+      "out_rvv",
+      "gold"
+     ],
+     "runs": {
+      "128": {
+       "rc": 0,
+       "stdout_sha256": "de1a881a28f42203c7783c9aa214080954dab8c6b936db98f3e7e052cdf5ba65",
+       "pass_line": true,
+       "dump_lines": 4
+      },
+      "256": {
+       "rc": 0,
+       "stdout_sha256": "de1a881a28f42203c7783c9aa214080954dab8c6b936db98f3e7e052cdf5ba65",
+       "pass_line": true,
+       "dump_lines": 4
+      },
+      "512": {
+       "rc": 0,
+       "stdout_sha256": "de1a881a28f42203c7783c9aa214080954dab8c6b936db98f3e7e052cdf5ba65",
+       "pass_line": true,
+       "dump_lines": 4
+      }
+     }
+    },
+    "lowered": {
+     "compile_rc": 0,
+     "dumped_arrays": [
+      "input_a",
+      "input_b",
+      "out_rvv",
+      "gold"
+     ],
+     "runs": {
+      "128": {
+       "rc": 0,
+       "stdout_sha256": "de1a881a28f42203c7783c9aa214080954dab8c6b936db98f3e7e052cdf5ba65",
+       "pass_line": true,
+       "dump_lines": 4
+      },
+      "256": {
+       "rc": 0,
+       "stdout_sha256": "de1a881a28f42203c7783c9aa214080954dab8c6b936db98f3e7e052cdf5ba65",
+       "pass_line": true,
+       "dump_lines": 4
+      },
+      "512": {
+       "rc": 0,
+       "stdout_sha256": "de1a881a28f42203c7783c9aa214080954dab8c6b936db98f3e7e052cdf5ba65",
+       "pass_line": true,
+       "dump_lines": 4
+      }
+     }
+    }
+   },
+   "difftest_identical": true,
+   "status": "OK"
+  },
+  {
+   "kernel": "f32-vmul",
+   "input_sha256": "df31ec8a7d0c1064d5de4b01c4ca1372cb64f2c74fa11443730ddfca80e58642",
+   "lower": "OK f32-vmul.c rewrites=4 rejections=0",
+   "determinism": true,
+   "lowered_sha256": "e93a29b87336d7246a4f778e7f85983a1fe7b99206aaba7c2c72c5b0febb60e4",
+   "header_sha256": "3480783d2d346bac26b84af238a0f350dd6e07c737a3d318e3f9fbeeec3d3bb5",
+   "syntax": true,
+   "idempotence": true,
+   "difftest": {
+    "original": {
+     "compile_rc": 0,
+     "dumped_arrays": [
+      "input_a",
+      "input_b",
+      "out_rvv",
+      "gold"
+     ],
+     "runs": {
+      "128": {
+       "rc": 0,
+       "stdout_sha256": "ee3c251d85ddfb27ba308bc4ef584dd888477e641425d44454af98c02e7a537a",
+       "pass_line": true,
+       "dump_lines": 4
+      },
+      "256": {
+       "rc": 0,
+       "stdout_sha256": "ee3c251d85ddfb27ba308bc4ef584dd888477e641425d44454af98c02e7a537a",
+       "pass_line": true,
+       "dump_lines": 4
+      },
+      "512": {
+       "rc": 0,
+       "stdout_sha256": "ee3c251d85ddfb27ba308bc4ef584dd888477e641425d44454af98c02e7a537a",
+       "pass_line": true,
+       "dump_lines": 4
+      }
+     }
+    },
+    "lowered": {
+     "compile_rc": 0,
+     "dumped_arrays": [
+      "input_a",
+      "input_b",
+      "out_rvv",
+      "gold"
+     ],
+     "runs": {
+      "128": {
+       "rc": 0,
+       "stdout_sha256": "ee3c251d85ddfb27ba308bc4ef584dd888477e641425d44454af98c02e7a537a",
+       "pass_line": true,
+       "dump_lines": 4
+      },
+      "256": {
+       "rc": 0,
+       "stdout_sha256": "ee3c251d85ddfb27ba308bc4ef584dd888477e641425d44454af98c02e7a537a",
+       "pass_line": true,
+       "dump_lines": 4
+      },
+      "512": {
+       "rc": 0,
+       "stdout_sha256": "ee3c251d85ddfb27ba308bc4ef584dd888477e641425d44454af98c02e7a537a",
+       "pass_line": true,
+       "dump_lines": 4
+      }
+     }
+    }
+   },
+   "difftest_identical": true,
+   "status": "OK"
+  },
+  {
+   "kernel": "f32-vmulc",
+   "input_sha256": "957a1a5e7b63ba55720011c69096877e35f366aeb8fcdcc8b232d20e8ade4f98",
+   "lower": "OK f32-vmulc.c rewrites=6 rejections=0",
+   "determinism": true,
+   "lowered_sha256": "839615eb8ba1275e39b8fa8d4fcfd79c8575861ceaeebc72e8d94b6ff73868fa",
+   "header_sha256": "af632cd034b040836dd7cd6fa70469729c5ede3f0f907ffbb34c5471698e092b",
+   "syntax": true,
+   "idempotence": true,
+   "difftest": {
+    "original": {
+     "compile_rc": 0,
+     "dumped_arrays": [
+      "input_a",
+      "input_b",
+      "out_rvv",
+      "gold"
+     ],
+     "harness_adaptation": {
+      "removed_kernel_structs": [
+       "xnn_f32_default_params"
+      ]
+     },
+     "runs": {
+      "128": {
+       "rc": 0,
+       "stdout_sha256": "8c037c591de2c63044485ddada063f3fdbf21a52c469ebbe29f726281e4492b5",
+       "pass_line": true,
+       "dump_lines": 4
+      },
+      "256": {
+       "rc": 0,
+       "stdout_sha256": "8c037c591de2c63044485ddada063f3fdbf21a52c469ebbe29f726281e4492b5",
+       "pass_line": true,
+       "dump_lines": 4
+      },
+      "512": {
+       "rc": 0,
+       "stdout_sha256": "8c037c591de2c63044485ddada063f3fdbf21a52c469ebbe29f726281e4492b5",
+       "pass_line": true,
+       "dump_lines": 4
+      }
+     }
+    },
+    "lowered": {
+     "compile_rc": 0,
+     "dumped_arrays": [
+      "input_a",
+      "input_b",
+      "out_rvv",
+      "gold"
+     ],
+     "harness_adaptation": {
+      "removed_kernel_structs": [
+       "xnn_f32_default_params"
+      ]
+     },
+     "runs": {
+      "128": {
+       "rc": 0,
+       "stdout_sha256": "8c037c591de2c63044485ddada063f3fdbf21a52c469ebbe29f726281e4492b5",
+       "pass_line": true,
+       "dump_lines": 4
+      },
+      "256": {
+       "rc": 0,
+       "stdout_sha256": "8c037c591de2c63044485ddada063f3fdbf21a52c469ebbe29f726281e4492b5",
+       "pass_line": true,
+       "dump_lines": 4
+      },
+      "512": {
+       "rc": 0,
+       "stdout_sha256": "8c037c591de2c63044485ddada063f3fdbf21a52c469ebbe29f726281e4492b5",
+       "pass_line": true,
+       "dump_lines": 4
+      }
+     }
+    }
+   },
+   "difftest_identical": true,
+   "status": "OK"
+  },
+  {
+   "kernel": "f32-vrndne",
+   "input_sha256": "124dc831d5e28021748c5283ab705d8a654c826159d46a1d4ab6c37392db495c",
+   "lower": "OK f32-vrndne.c rewrites=16 rejections=0",
+   "determinism": true,
+   "lowered_sha256": "382ac5db3f752227f2833f35e614451fd972a92e0e22d88dfbe411aa850ff44f",
+   "header_sha256": "a7dcd25b839b2adfa877d14100c712c126cfe7f87e064704e34315a25bfea277",
+   "syntax": true,
+   "idempotence": true,
+   "difftest": {
+    "original": {
+     "compile_rc": 0,
+     "dumped_arrays": [
+      "input",
+      "out_rvv",
+      "gold"
+     ],
+     "runs": {
+      "128": {
+       "rc": 0,
+       "stdout_sha256": "fd4b9923de03f8924a6b70a69d09f1fe93a81cd910b40b8ceb5cef88c0132c4a",
+       "pass_line": true,
+       "dump_lines": 3
+      },
+      "256": {
+       "rc": 0,
+       "stdout_sha256": "fd4b9923de03f8924a6b70a69d09f1fe93a81cd910b40b8ceb5cef88c0132c4a",
+       "pass_line": true,
+       "dump_lines": 3
+      },
+      "512": {
+       "rc": 0,
+       "stdout_sha256": "fd4b9923de03f8924a6b70a69d09f1fe93a81cd910b40b8ceb5cef88c0132c4a",
+       "pass_line": true,
+       "dump_lines": 3
+      }
+     }
+    },
+    "lowered": {
+     "compile_rc": 0,
+     "dumped_arrays": [
+      "input",
+      "out_rvv",
+      "gold"
+     ],
+     "runs": {
+      "128": {
+       "rc": 0,
+       "stdout_sha256": "fd4b9923de03f8924a6b70a69d09f1fe93a81cd910b40b8ceb5cef88c0132c4a",
+       "pass_line": true,
+       "dump_lines": 3
+      },
+      "256": {
+       "rc": 0,
+       "stdout_sha256": "fd4b9923de03f8924a6b70a69d09f1fe93a81cd910b40b8ceb5cef88c0132c4a",
+       "pass_line": true,
+       "dump_lines": 3
+      },
+      "512": {
+       "rc": 0,
+       "stdout_sha256": "fd4b9923de03f8924a6b70a69d09f1fe93a81cd910b40b8ceb5cef88c0132c4a",
+       "pass_line": true,
+       "dump_lines": 3
+      }
+     }
+    }
+   },
+   "difftest_identical": true,
+   "status": "OK"
+  },
+  {
+   "kernel": "f32-vsqrt",
+   "input_sha256": "e23ffd5a58070ca9e975898624fd9964486f5c8f70d0cb702d8ca9749109599f",
+   "lower": "OK f32-vsqrt.c rewrites=7 rejections=0",
+   "determinism": true,
+   "lowered_sha256": "86ba113cd8f26fe4d36f017a15e69398465961d0356bbb1b4450341fd3b2e8de",
+   "header_sha256": "9fecbd148165e83a5cb41ad3a9b21ebfe4d6ec223022ad2a9c8b03f8762e5bf9",
+   "syntax": true,
+   "idempotence": true,
+   "difftest": {
+    "original": {
+     "compile_rc": 0,
+     "dumped_arrays": [
+      "input",
+      "out_rvv",
+      "gold"
+     ],
+     "runs": {
+      "128": {
+       "rc": 0,
+       "stdout_sha256": "33b99f04af64b330b9c5c82c3ffc11b3b8dcb6aa38729bb2ecfb1bfc61151a64",
+       "pass_line": true,
+       "dump_lines": 3
+      },
+      "256": {
+       "rc": 0,
+       "stdout_sha256": "33b99f04af64b330b9c5c82c3ffc11b3b8dcb6aa38729bb2ecfb1bfc61151a64",
+       "pass_line": true,
+       "dump_lines": 3
+      },
+      "512": {
+       "rc": 0,
+       "stdout_sha256": "33b99f04af64b330b9c5c82c3ffc11b3b8dcb6aa38729bb2ecfb1bfc61151a64",
+       "pass_line": true,
+       "dump_lines": 3
+      }
+     }
+    },
+    "lowered": {
+     "compile_rc": 0,
+     "dumped_arrays": [
+      "input",
+      "out_rvv",
+      "gold"
+     ],
+     "runs": {
+      "128": {
+       "rc": 0,
+       "stdout_sha256": "33b99f04af64b330b9c5c82c3ffc11b3b8dcb6aa38729bb2ecfb1bfc61151a64",
+       "pass_line": true,
+       "dump_lines": 3
+      },
+      "256": {
+       "rc": 0,
+       "stdout_sha256": "33b99f04af64b330b9c5c82c3ffc11b3b8dcb6aa38729bb2ecfb1bfc61151a64",
+       "pass_line": true,
+       "dump_lines": 3
+      },
+      "512": {
+       "rc": 0,
+       "stdout_sha256": "33b99f04af64b330b9c5c82c3ffc11b3b8dcb6aa38729bb2ecfb1bfc61151a64",
+       "pass_line": true,
+       "dump_lines": 3
+      }
+     }
+    }
+   },
+   "difftest_identical": true,
+   "status": "OK"
+  },
+  {
+   "kernel": "f32-vsub",
+   "input_sha256": "fb3f10917586f110d58458af73c6ba7f49de7a0c58520cfdb24618af81e38517",
+   "lower": "OK f32-vsub.c rewrites=8 rejections=0",
+   "determinism": true,
+   "lowered_sha256": "3e4e3dd093b0ce93b31a950366baec0b793bf8fd22474bc0c66c5e21f4e0e307",
+   "header_sha256": "3efd1574d982d3621d58d233cb2cab21cc1f4aaa27e3c2e5b2543d6114bc2d15",
+   "syntax": true,
+   "idempotence": true,
+   "difftest": {
+    "original": {
+     "compile_rc": 0,
+     "dumped_arrays": [
+      "input_a",
+      "input_b",
+      "out_rvv",
+      "gold"
+     ],
+     "runs": {
+      "128": {
+       "rc": 0,
+       "stdout_sha256": "65ff040cb961614927ef9bca7127a9bd308c6ad55acfbc239cef5c71dcd9e5f4",
+       "pass_line": true,
+       "dump_lines": 4
+      },
+      "256": {
+       "rc": 0,
+       "stdout_sha256": "65ff040cb961614927ef9bca7127a9bd308c6ad55acfbc239cef5c71dcd9e5f4",
+       "pass_line": true,
+       "dump_lines": 4
+      },
+      "512": {
+       "rc": 0,
+       "stdout_sha256": "65ff040cb961614927ef9bca7127a9bd308c6ad55acfbc239cef5c71dcd9e5f4",
+       "pass_line": true,
+       "dump_lines": 4
+      }
+     }
+    },
+    "lowered": {
+     "compile_rc": 0,
+     "dumped_arrays": [
+      "input_a",
+      "input_b",
+      "out_rvv",
+      "gold"
+     ],
+     "runs": {
+      "128": {
+       "rc": 0,
+       "stdout_sha256": "65ff040cb961614927ef9bca7127a9bd308c6ad55acfbc239cef5c71dcd9e5f4",
+       "pass_line": true,
+       "dump_lines": 4
+      },
+      "256": {
+       "rc": 0,
+       "stdout_sha256": "65ff040cb961614927ef9bca7127a9bd308c6ad55acfbc239cef5c71dcd9e5f4",
+       "pass_line": true,
+       "dump_lines": 4
+      },
+      "512": {
+       "rc": 0,
+       "stdout_sha256": "65ff040cb961614927ef9bca7127a9bd308c6ad55acfbc239cef5c71dcd9e5f4",
+       "pass_line": true,
+       "dump_lines": 4
+      }
+     }
+    }
+   },
+   "difftest_identical": true,
+   "status": "OK"
+  },
+  {
+   "kernel": "qd8-f32-qc4w-gemm-minmax",
+   "input_sha256": "ce2ce80a9205768087b2474a2849ba29dcc4badd42b6f3a3d8f9a2d4edcd0f03",
+   "lower": "OK qd8-f32-qc4w-gemm-minmax.c rewrites=42 rejections=0",
+   "determinism": true,
+   "lowered_sha256": "607b9db48869e0f793118adb6ac519e24033f5deb393f992f563734d64144fc9",
+   "header_sha256": "f34511cef728b586047a479c6f4b28a5458163fe9e51d15f81feaefe688c796b",
+   "syntax": true,
+   "idempotence": true,
+   "difftest": {
+    "original": {
+     "compile_rc": 0,
+     "dumped_arrays": [
+      "k4",
+      "kscale",
+      "kbias",
+      "a",
+      "qp",
+      "w_scalar",
+      "w_rvv",
+      "out_rvv",
+      "gold"
+     ],
+     "runs": {
+      "128": {
+       "rc": 0,
+       "stdout_sha256": "cb9d843dd3632e2ed3ba420d07e7daa886c9c8d1323249948de54f48ff576361",
+       "pass_line": true,
+       "dump_lines": 9
+      },
+      "256": {
+       "rc": 0,
+       "stdout_sha256": "5870619bf1137eb68315275dcd67c29e11a1302867c22389a31457e4e944682e",
+       "pass_line": false,
+       "dump_lines": 9
+      },
+      "512": {
+       "rc": 0,
+       "stdout_sha256": "44dd8be3a0bd240f5895c8e5c23692d040b787371207f3394514664d80b7fd05",
+       "pass_line": false,
+       "dump_lines": 9
+      }
+     }
+    },
+    "lowered": {
+     "compile_rc": 0,
+     "dumped_arrays": [
+      "k4",
+      "kscale",
+      "kbias",
+      "a",
+      "qp",
+      "w_scalar",
+      "w_rvv",
+      "out_rvv",
+      "gold"
+     ],
+     "runs": {
+      "128": {
+       "rc": 0,
+       "stdout_sha256": "cb9d843dd3632e2ed3ba420d07e7daa886c9c8d1323249948de54f48ff576361",
+       "pass_line": true,
+       "dump_lines": 9
+      },
+      "256": {
+       "rc": 0,
+       "stdout_sha256": "5870619bf1137eb68315275dcd67c29e11a1302867c22389a31457e4e944682e",
+       "pass_line": false,
+       "dump_lines": 9
+      },
+      "512": {
+       "rc": 0,
+       "stdout_sha256": "44dd8be3a0bd240f5895c8e5c23692d040b787371207f3394514664d80b7fd05",
+       "pass_line": false,
+       "dump_lines": 9
+      }
+     }
+    }
+   },
+   "difftest_identical": true,
+   "status": "OK"
+  },
+  {
+   "kernel": "qs8-f32-vcvt",
+   "input_sha256": "fd491770f91529fa666cd8b844a8186f25725b85d77401862a5f37cecc98fb02",
+   "lower": "OK qs8-f32-vcvt.c rewrites=10 rejections=0",
+   "determinism": true,
+   "lowered_sha256": "4a8a3513da4accb12ff89038f339cae379a5e554ba4e59050d920b14eaee4650",
+   "header_sha256": "ac70b761dea7c18cb20b70bf5bbe6c8c357dbc3b57df91617e64a94cfde2aea4",
+   "syntax": true,
+   "idempotence": true,
+   "difftest": {
+    "original": {
+     "compile_rc": 0,
+     "dumped_arrays": [
+      "input",
+      "out_rvv",
+      "gold"
+     ],
+     "runs": {
+      "128": {
+       "rc": 0,
+       "stdout_sha256": "553e2fb79af716a793d052d415f230978843c4083c700a2aadd4897486ed1f63",
+       "pass_line": true,
+       "dump_lines": 3
+      },
+      "256": {
+       "rc": 0,
+       "stdout_sha256": "553e2fb79af716a793d052d415f230978843c4083c700a2aadd4897486ed1f63",
+       "pass_line": true,
+       "dump_lines": 3
+      },
+      "512": {
+       "rc": 0,
+       "stdout_sha256": "553e2fb79af716a793d052d415f230978843c4083c700a2aadd4897486ed1f63",
+       "pass_line": true,
+       "dump_lines": 3
+      }
+     }
+    },
+    "lowered": {
+     "compile_rc": 0,
+     "dumped_arrays": [
+      "input",
+      "out_rvv",
+      "gold"
+     ],
+     "runs": {
+      "128": {
+       "rc": 0,
+       "stdout_sha256": "553e2fb79af716a793d052d415f230978843c4083c700a2aadd4897486ed1f63",
+       "pass_line": true,
+       "dump_lines": 3
+      },
+      "256": {
+       "rc": 0,
+       "stdout_sha256": "553e2fb79af716a793d052d415f230978843c4083c700a2aadd4897486ed1f63",
+       "pass_line": true,
+       "dump_lines": 3
+      },
+      "512": {
+       "rc": 0,
+       "stdout_sha256": "553e2fb79af716a793d052d415f230978843c4083c700a2aadd4897486ed1f63",
+       "pass_line": true,
+       "dump_lines": 3
+      }
+     }
+    }
+   },
+   "difftest_identical": true,
+   "status": "OK"
+  },
+  {
+   "kernel": "qs8-rdsum",
+   "input_sha256": "209aea0d2102fb7d7165c3fecc6f0af9c1f0c1d672f0a4838bd5fadcd366abb4",
+   "lower": "OK qs8-rdsum.c rewrites=56 rejections=0",
+   "determinism": true,
+   "lowered_sha256": "327c4769a4eef35aba7ef3d066858f0a89c57247b2e2dfff05e68ec28a05bd72",
+   "header_sha256": "714aae8f36c5ba6b1205ae6d3c0c9ec4319d14c4361a6497ac2f51f090b9a399",
+   "syntax": true,
+   "idempotence": true,
+   "difftest": {
+    "original": {
+     "compile_rc": 0,
+     "dumped_arrays": [
+      "input",
+      "zero",
+      "out_rvv",
+      "gold"
+     ],
+     "runs": {
+      "128": {
+       "rc": 0,
+       "stdout_sha256": "6e6af446bb7222fb43609301f2f53f2f3faaefd6723048ae62a31fd7b247609a",
+       "pass_line": true,
+       "dump_lines": 4
+      },
+      "256": {
+       "rc": 0,
+       "stdout_sha256": "6e6af446bb7222fb43609301f2f53f2f3faaefd6723048ae62a31fd7b247609a",
+       "pass_line": true,
+       "dump_lines": 4
+      },
+      "512": {
+       "rc": 0,
+       "stdout_sha256": "6e6af446bb7222fb43609301f2f53f2f3faaefd6723048ae62a31fd7b247609a",
+       "pass_line": true,
+       "dump_lines": 4
+      }
+     }
+    },
+    "lowered": {
+     "compile_rc": 0,
+     "dumped_arrays": [
+      "input",
+      "zero",
+      "out_rvv",
+      "gold"
+     ],
+     "runs": {
+      "128": {
+       "rc": 0,
+       "stdout_sha256": "6e6af446bb7222fb43609301f2f53f2f3faaefd6723048ae62a31fd7b247609a",
+       "pass_line": true,
+       "dump_lines": 4
+      },
+      "256": {
+       "rc": 0,
+       "stdout_sha256": "6e6af446bb7222fb43609301f2f53f2f3faaefd6723048ae62a31fd7b247609a",
+       "pass_line": true,
+       "dump_lines": 4
+      },
+      "512": {
+       "rc": 0,
+       "stdout_sha256": "6e6af446bb7222fb43609301f2f53f2f3faaefd6723048ae62a31fd7b247609a",
+       "pass_line": true,
+       "dump_lines": 4
+      }
+     }
+    }
+   },
+   "difftest_identical": true,
+   "status": "OK"
+  },
+  {
+   "kernel": "qs8-rsum",
+   "input_sha256": "0379ee3a96c486644693965c47ebe893b488d03b4e6420f1d69ac380ae0e92cc",
+   "lower": "OK qs8-rsum.c rewrites=25 rejections=0",
+   "determinism": true,
+   "lowered_sha256": "119925681ab54e4c0f986fdfb740b6307b0cad3b8090c66c0fcb65713d431c5c",
+   "header_sha256": "034472b5fde9f0dfa96ba9d41a4068e51beb192a5e007de23ded0f67c2bd750e",
+   "syntax": true,
+   "idempotence": true,
+   "difftest": {
+    "original": {
+     "compile_rc": 0,
+     "dumped_arrays": [
+      "input"
+     ],
+     "runs": {
+      "128": {
+       "rc": 0,
+       "stdout_sha256": "299a4ead6d97aa2f65ce8c9409528ed4dfa539e70e447f0f603eb3060d6f6fa7",
+       "pass_line": true,
+       "dump_lines": 1
+      },
+      "256": {
+       "rc": 0,
+       "stdout_sha256": "299a4ead6d97aa2f65ce8c9409528ed4dfa539e70e447f0f603eb3060d6f6fa7",
+       "pass_line": true,
+       "dump_lines": 1
+      },
+      "512": {
+       "rc": 0,
+       "stdout_sha256": "299a4ead6d97aa2f65ce8c9409528ed4dfa539e70e447f0f603eb3060d6f6fa7",
+       "pass_line": true,
+       "dump_lines": 1
+      }
+     }
+    },
+    "lowered": {
+     "compile_rc": 0,
+     "dumped_arrays": [
+      "input"
+     ],
+     "runs": {
+      "128": {
+       "rc": 0,
+       "stdout_sha256": "299a4ead6d97aa2f65ce8c9409528ed4dfa539e70e447f0f603eb3060d6f6fa7",
+       "pass_line": true,
+       "dump_lines": 1
+      },
+      "256": {
+       "rc": 0,
+       "stdout_sha256": "299a4ead6d97aa2f65ce8c9409528ed4dfa539e70e447f0f603eb3060d6f6fa7",
+       "pass_line": true,
+       "dump_lines": 1
+      },
+      "512": {
+       "rc": 0,
+       "stdout_sha256": "299a4ead6d97aa2f65ce8c9409528ed4dfa539e70e447f0f603eb3060d6f6fa7",
+       "pass_line": true,
+       "dump_lines": 1
+      }
+     }
+    }
+   },
+   "difftest_identical": true,
+   "status": "OK"
+  },
+  {
+   "kernel": "qs8-vadd-minmax",
+   "input_sha256": "9841dbcf688d074514585c03ecd90eecedea56334033122ce6b082bcb6f7893d",
+   "lower": "OK qs8-vadd-minmax.c rewrites=12 rejections=0",
+   "determinism": true,
+   "lowered_sha256": "c82e51bf32c52edaa5a21b98432763a9ca7d45d617118899fa565616e2ea9e1f",
+   "header_sha256": "f7a4accff04b34ff13f77675bb6b618c5fcf090ee0ab18407aabf91e6469b2fa",
+   "syntax": true,
+   "idempotence": true,
+   "difftest": {
+    "original": {
+     "compile_rc": 0,
+     "dumped_arrays": [
+      "input_a",
+      "input_b",
+      "out_rvv",
+      "gold"
+     ],
+     "runs": {
+      "128": {
+       "rc": 0,
+       "stdout_sha256": "9cd2a13578794ef27279e26a92311c860490e74006d2fdb5ebae5a00184c6cae",
+       "pass_line": true,
+       "dump_lines": 4
+      },
+      "256": {
+       "rc": 0,
+       "stdout_sha256": "9cd2a13578794ef27279e26a92311c860490e74006d2fdb5ebae5a00184c6cae",
+       "pass_line": true,
+       "dump_lines": 4
+      },
+      "512": {
+       "rc": 0,
+       "stdout_sha256": "9cd2a13578794ef27279e26a92311c860490e74006d2fdb5ebae5a00184c6cae",
+       "pass_line": true,
+       "dump_lines": 4
+      }
+     }
+    },
+    "lowered": {
+     "compile_rc": 0,
+     "dumped_arrays": [
+      "input_a",
+      "input_b",
+      "out_rvv",
+      "gold"
+     ],
+     "runs": {
+      "128": {
+       "rc": 0,
+       "stdout_sha256": "9cd2a13578794ef27279e26a92311c860490e74006d2fdb5ebae5a00184c6cae",
+       "pass_line": true,
+       "dump_lines": 4
+      },
+      "256": {
+       "rc": 0,
+       "stdout_sha256": "9cd2a13578794ef27279e26a92311c860490e74006d2fdb5ebae5a00184c6cae",
+       "pass_line": true,
+       "dump_lines": 4
+      },
+      "512": {
+       "rc": 0,
+       "stdout_sha256": "9cd2a13578794ef27279e26a92311c860490e74006d2fdb5ebae5a00184c6cae",
+       "pass_line": true,
+       "dump_lines": 4
+      }
+     }
+    }
+   },
+   "difftest_identical": true,
+   "status": "OK"
+  },
+  {
+   "kernel": "qs8-vcvt",
+   "input_sha256": "210f3d2da1e34e6720273195e9a9b33f8c858558e7ffd06082efb338c30c7886",
+   "lower": "OK qs8-vcvt.c rewrites=12 rejections=0",
+   "determinism": true,
+   "lowered_sha256": "a8a07052eea44ca5ddbbfc5225605a6b07ce9d1e2beabdd17dc2bc200c4aa1e3",
+   "header_sha256": "c3f01fef5e56b384f2e77d5b8e6a1efb035bb68465016f4e799019fcdaba1cc7",
+   "syntax": true,
+   "idempotence": true,
+   "difftest": {
+    "original": {
+     "compile_rc": 0,
+     "dumped_arrays": [
+      "input",
+      "out_rvv",
+      "gold"
+     ],
+     "runs": {
+      "128": {
+       "rc": 0,
+       "stdout_sha256": "e110dddbf0709fbed531ef7f1c8ff92b1de8c15efa5fab7d8c57dcec2d7a10df",
+       "pass_line": true,
+       "dump_lines": 3
+      },
+      "256": {
+       "rc": 0,
+       "stdout_sha256": "e110dddbf0709fbed531ef7f1c8ff92b1de8c15efa5fab7d8c57dcec2d7a10df",
+       "pass_line": true,
+       "dump_lines": 3
+      },
+      "512": {
+       "rc": 0,
+       "stdout_sha256": "e110dddbf0709fbed531ef7f1c8ff92b1de8c15efa5fab7d8c57dcec2d7a10df",
+       "pass_line": true,
+       "dump_lines": 3
+      }
+     }
+    },
+    "lowered": {
+     "compile_rc": 0,
+     "dumped_arrays": [
+      "input",
+      "out_rvv",
+      "gold"
+     ],
+     "runs": {
+      "128": {
+       "rc": 0,
+       "stdout_sha256": "e110dddbf0709fbed531ef7f1c8ff92b1de8c15efa5fab7d8c57dcec2d7a10df",
+       "pass_line": true,
+       "dump_lines": 3
+      },
+      "256": {
+       "rc": 0,
+       "stdout_sha256": "e110dddbf0709fbed531ef7f1c8ff92b1de8c15efa5fab7d8c57dcec2d7a10df",
+       "pass_line": true,
+       "dump_lines": 3
+      },
+      "512": {
+       "rc": 0,
+       "stdout_sha256": "e110dddbf0709fbed531ef7f1c8ff92b1de8c15efa5fab7d8c57dcec2d7a10df",
+       "pass_line": true,
+       "dump_lines": 3
+      }
+     }
+    }
+   },
+   "difftest_identical": true,
+   "status": "OK"
+  },
+  {
+   "kernel": "qs8-vlrelu",
+   "input_sha256": "b3613d69111cc86de4f922f744c71bd980f38147044800d975bf27526da8c8c4",
+   "lower": "OK qs8-vlrelu.c rewrites=38 rejections=0",
+   "determinism": true,
+   "lowered_sha256": "e69a1fb3b30253a68db66b167d3c1a064810ceddeaf3bb6fe972bf1d4c00c421",
+   "header_sha256": "088b6d3d0d29f5c2ce38ed79063de66665cdfe88db8c0c84a3ff28c35cedba40",
+   "syntax": true,
+   "idempotence": true,
+   "difftest": {
+    "original": {
+     "compile_rc": 0,
+     "dumped_arrays": [
+      "input",
+      "out_rvv",
+      "gold"
+     ],
+     "harness_adaptation": {
+      "removed_kernel_structs": [
+       "xnn_qs8_lrelu_params"
+      ]
+     },
+     "runs": {
+      "128": {
+       "rc": 0,
+       "stdout_sha256": "c5f7d74508698e25a3be7cf48042cbd6fee211cc33fab4905e4518e099de8e4c",
+       "pass_line": true,
+       "dump_lines": 3
+      },
+      "256": {
+       "rc": 0,
+       "stdout_sha256": "c5f7d74508698e25a3be7cf48042cbd6fee211cc33fab4905e4518e099de8e4c",
+       "pass_line": true,
+       "dump_lines": 3
+      },
+      "512": {
+       "rc": 0,
+       "stdout_sha256": "c5f7d74508698e25a3be7cf48042cbd6fee211cc33fab4905e4518e099de8e4c",
+       "pass_line": true,
+       "dump_lines": 3
+      }
+     }
+    },
+    "lowered": {
+     "compile_rc": 0,
+     "dumped_arrays": [
+      "input",
+      "out_rvv",
+      "gold"
+     ],
+     "harness_adaptation": {
+      "removed_kernel_structs": [
+       "xnn_qs8_lrelu_params"
+      ]
+     },
+     "runs": {
+      "128": {
+       "rc": 0,
+       "stdout_sha256": "c5f7d74508698e25a3be7cf48042cbd6fee211cc33fab4905e4518e099de8e4c",
+       "pass_line": true,
+       "dump_lines": 3
+      },
+      "256": {
+       "rc": 0,
+       "stdout_sha256": "c5f7d74508698e25a3be7cf48042cbd6fee211cc33fab4905e4518e099de8e4c",
+       "pass_line": true,
+       "dump_lines": 3
+      },
+      "512": {
+       "rc": 0,
+       "stdout_sha256": "c5f7d74508698e25a3be7cf48042cbd6fee211cc33fab4905e4518e099de8e4c",
+       "pass_line": true,
+       "dump_lines": 3
+      }
+     }
+    }
+   },
+   "difftest_identical": true,
+   "status": "OK"
+  },
+  {
+   "kernel": "qs8-vmul-minmax-fp32",
+   "input_sha256": "124bfe15042a595bbf7b286995c6298a2b4d0d534c2d3b980e1ebdf9db08d614",
+   "lower": "OK qs8-vmul-minmax-fp32.c rewrites=37 rejections=0",
+   "determinism": true,
+   "lowered_sha256": "7e188d636453f5529ddb71a79f9fb8430b9d87fa26d1858b9c3870481c6d1f57",
+   "header_sha256": "bd0fdb04e5eb7884a8d1bff8d050c35f2b4371c63be15b260f505718e0837a37",
+   "syntax": true,
+   "idempotence": true,
+   "difftest": {
+    "original": {
+     "compile_rc": 0,
+     "dumped_arrays": [
+      "input_a",
+      "input_b",
+      "out_rvv",
+      "gold"
+     ],
+     "runs": {
+      "128": {
+       "rc": 0,
+       "stdout_sha256": "bf848a8c285f3056067ee275f95ba9bd546b7b057e064a154d87cb45725299e4",
+       "pass_line": false,
+       "dump_lines": 4
+      },
+      "256": {
+       "rc": 0,
+       "stdout_sha256": "bf848a8c285f3056067ee275f95ba9bd546b7b057e064a154d87cb45725299e4",
+       "pass_line": false,
+       "dump_lines": 4
+      },
+      "512": {
+       "rc": 0,
+       "stdout_sha256": "bf848a8c285f3056067ee275f95ba9bd546b7b057e064a154d87cb45725299e4",
+       "pass_line": false,
+       "dump_lines": 4
+      }
+     }
+    },
+    "lowered": {
+     "compile_rc": 0,
+     "dumped_arrays": [
+      "input_a",
+      "input_b",
+      "out_rvv",
+      "gold"
+     ],
+     "runs": {
+      "128": {
+       "rc": 0,
+       "stdout_sha256": "bf848a8c285f3056067ee275f95ba9bd546b7b057e064a154d87cb45725299e4",
+       "pass_line": false,
+       "dump_lines": 4
+      },
+      "256": {
+       "rc": 0,
+       "stdout_sha256": "bf848a8c285f3056067ee275f95ba9bd546b7b057e064a154d87cb45725299e4",
+       "pass_line": false,
+       "dump_lines": 4
+      },
+      "512": {
+       "rc": 0,
+       "stdout_sha256": "bf848a8c285f3056067ee275f95ba9bd546b7b057e064a154d87cb45725299e4",
+       "pass_line": false,
+       "dump_lines": 4
+      }
+     }
+    }
+   },
+   "difftest_identical": true,
+   "status": "OK"
+  },
+  {
+   "kernel": "qu8-f32-vcvt",
+   "input_sha256": "448b67ec6e14d4b4d6ac76a06b311affcd434e1c7578bf9448125609d203ff0f",
+   "lower": "OK qu8-f32-vcvt.c rewrites=20 rejections=0",
+   "determinism": true,
+   "lowered_sha256": "9f76449b067a0b80ff5fa7c55f7d584f115674f6380b24b548c3d1d38a00285e",
+   "header_sha256": "afa1db2a27262cfcfd40430637e0690ce0cd5669c1bc93abd5c39486315940bf",
+   "syntax": true,
+   "idempotence": true,
+   "difftest": {
+    "original": {
+     "compile_rc": 0,
+     "dumped_arrays": [
+      "input",
+      "out_rvv",
+      "gold"
+     ],
+     "runs": {
+      "128": {
+       "rc": 0,
+       "stdout_sha256": "781f69c0171ce264e6291fcc98d8e3bf097e75f5d4f4e0164ef552a38a86fd45",
+       "pass_line": true,
+       "dump_lines": 3
+      },
+      "256": {
+       "rc": 0,
+       "stdout_sha256": "781f69c0171ce264e6291fcc98d8e3bf097e75f5d4f4e0164ef552a38a86fd45",
+       "pass_line": true,
+       "dump_lines": 3
+      },
+      "512": {
+       "rc": 0,
+       "stdout_sha256": "781f69c0171ce264e6291fcc98d8e3bf097e75f5d4f4e0164ef552a38a86fd45",
+       "pass_line": true,
+       "dump_lines": 3
+      }
+     }
+    },
+    "lowered": {
+     "compile_rc": 0,
+     "dumped_arrays": [
+      "input",
+      "out_rvv",
+      "gold"
+     ],
+     "runs": {
+      "128": {
+       "rc": 0,
+       "stdout_sha256": "781f69c0171ce264e6291fcc98d8e3bf097e75f5d4f4e0164ef552a38a86fd45",
+       "pass_line": true,
+       "dump_lines": 3
+      },
+      "256": {
+       "rc": 0,
+       "stdout_sha256": "781f69c0171ce264e6291fcc98d8e3bf097e75f5d4f4e0164ef552a38a86fd45",
+       "pass_line": true,
+       "dump_lines": 3
+      },
+      "512": {
+       "rc": 0,
+       "stdout_sha256": "781f69c0171ce264e6291fcc98d8e3bf097e75f5d4f4e0164ef552a38a86fd45",
+       "pass_line": true,
+       "dump_lines": 3
+      }
+     }
+    }
+   },
+   "difftest_identical": true,
+   "status": "OK"
+  },
+  {
+   "kernel": "qu8-rdsum",
+   "input_sha256": "9228009b487eb961305375260f32e01bc42b6356146d58bd3f24f0675c2ff05a",
+   "lower": "OK qu8-rdsum.c rewrites=25 rejections=0",
+   "determinism": true,
+   "lowered_sha256": "85c5567a92a2922d3e729f076636892171bb80946c953c458428284ccb2d6559",
+   "header_sha256": "4c74d54e72c4b2204c780375565313e46e1703dbd2bf588e925167a9dcc42160",
+   "syntax": true,
+   "idempotence": true,
+   "difftest": {
+    "original": {
+     "compile_rc": 0,
+     "dumped_arrays": [
+      "input",
+      "zero",
+      "out_rvv",
+      "gold"
+     ],
+     "runs": {
+      "128": {
+       "rc": 0,
+       "stdout_sha256": "433f74bfa120d249ae639037b8a34b753ccdcc1d259fbfc0d804b59e5a0ead43",
+       "pass_line": true,
+       "dump_lines": 4
+      },
+      "256": {
+       "rc": 0,
+       "stdout_sha256": "433f74bfa120d249ae639037b8a34b753ccdcc1d259fbfc0d804b59e5a0ead43",
+       "pass_line": true,
+       "dump_lines": 4
+      },
+      "512": {
+       "rc": 0,
+       "stdout_sha256": "433f74bfa120d249ae639037b8a34b753ccdcc1d259fbfc0d804b59e5a0ead43",
+       "pass_line": true,
+       "dump_lines": 4
+      }
+     }
+    },
+    "lowered": {
+     "compile_rc": 0,
+     "dumped_arrays": [
+      "input",
+      "zero",
+      "out_rvv",
+      "gold"
+     ],
+     "runs": {
+      "128": {
+       "rc": 0,
+       "stdout_sha256": "433f74bfa120d249ae639037b8a34b753ccdcc1d259fbfc0d804b59e5a0ead43",
+       "pass_line": true,
+       "dump_lines": 4
+      },
+      "256": {
+       "rc": 0,
+       "stdout_sha256": "433f74bfa120d249ae639037b8a34b753ccdcc1d259fbfc0d804b59e5a0ead43",
+       "pass_line": true,
+       "dump_lines": 4
+      },
+      "512": {
+       "rc": 0,
+       "stdout_sha256": "433f74bfa120d249ae639037b8a34b753ccdcc1d259fbfc0d804b59e5a0ead43",
+       "pass_line": true,
+       "dump_lines": 4
+      }
+     }
+    }
+   },
+   "difftest_identical": true,
+   "status": "OK"
+  },
+  {
+   "kernel": "qu8-rsum",
+   "input_sha256": "926d86d01e7eab8b0481a2e44c6be0cb08f9e23242dcb0fe180bd87eee2a4bbc",
+   "lower": "OK qu8-rsum.c rewrites=41 rejections=0",
+   "determinism": true,
+   "lowered_sha256": "840fd33f2f648cf713bc49b19346d92ae6ed06ccb06f26877172c0619912c96b",
+   "header_sha256": "592f89773f92f0413af36cc8849f92ec1c4dee63d74b29a0b0d8204544c9e129",
+   "syntax": true,
+   "idempotence": true,
+   "difftest": {
+    "original": {
+     "compile_rc": 0,
+     "dumped_arrays": [
+      "input"
+     ],
+     "runs": {
+      "128": {
+       "rc": 0,
+       "stdout_sha256": "e4cdf739f318a3fc623875d64b22c86ed30e58acfb9361e798b8a72554129627",
+       "pass_line": true,
+       "dump_lines": 1
+      },
+      "256": {
+       "rc": 0,
+       "stdout_sha256": "e4cdf739f318a3fc623875d64b22c86ed30e58acfb9361e798b8a72554129627",
+       "pass_line": true,
+       "dump_lines": 1
+      },
+      "512": {
+       "rc": 0,
+       "stdout_sha256": "e4cdf739f318a3fc623875d64b22c86ed30e58acfb9361e798b8a72554129627",
+       "pass_line": true,
+       "dump_lines": 1
+      }
+     }
+    },
+    "lowered": {
+     "compile_rc": 0,
+     "dumped_arrays": [
+      "input"
+     ],
+     "runs": {
+      "128": {
+       "rc": 0,
+       "stdout_sha256": "e4cdf739f318a3fc623875d64b22c86ed30e58acfb9361e798b8a72554129627",
+       "pass_line": true,
+       "dump_lines": 1
+      },
+      "256": {
+       "rc": 0,
+       "stdout_sha256": "e4cdf739f318a3fc623875d64b22c86ed30e58acfb9361e798b8a72554129627",
+       "pass_line": true,
+       "dump_lines": 1
+      },
+      "512": {
+       "rc": 0,
+       "stdout_sha256": "e4cdf739f318a3fc623875d64b22c86ed30e58acfb9361e798b8a72554129627",
+       "pass_line": true,
+       "dump_lines": 1
+      }
+     }
+    }
+   },
+   "difftest_identical": true,
+   "status": "OK"
+  },
+  {
+   "kernel": "qu8-vadd-minmax",
+   "input_sha256": "09886e33eb638fd39faf588c4ed05194aa24ccaf98f194a5d7a232e9d3c03fcc",
+   "lower": "OK qu8-vadd-minmax.c rewrites=54 rejections=0",
+   "determinism": true,
+   "lowered_sha256": "2d23b025ad7be3e98f6c62d0f95315c6f8b53d45dd95cc4bb4e0acc64d3ac959",
+   "header_sha256": "7cbb096fd4d9790b2cc6304a7e989863729d9b4e7eb4cfc68ad951e0dd3a483e",
+   "syntax": true,
+   "idempotence": true,
+   "difftest": {
+    "original": {
+     "compile_rc": 0,
+     "dumped_arrays": [
+      "input_a",
+      "input_b",
+      "out_rvv",
+      "gold"
+     ],
+     "runs": {
+      "128": {
+       "rc": 0,
+       "stdout_sha256": "ad2744a0c576bfc4f43e6ad507a02a960cf6c36e06381727127489ed26a8e038",
+       "pass_line": false,
+       "dump_lines": 4
+      },
+      "256": {
+       "rc": 0,
+       "stdout_sha256": "ad2744a0c576bfc4f43e6ad507a02a960cf6c36e06381727127489ed26a8e038",
+       "pass_line": false,
+       "dump_lines": 4
+      },
+      "512": {
+       "rc": 0,
+       "stdout_sha256": "ad2744a0c576bfc4f43e6ad507a02a960cf6c36e06381727127489ed26a8e038",
+       "pass_line": false,
+       "dump_lines": 4
+      }
+     }
+    },
+    "lowered": {
+     "compile_rc": 0,
+     "dumped_arrays": [
+      "input_a",
+      "input_b",
+      "out_rvv",
+      "gold"
+     ],
+     "runs": {
+      "128": {
+       "rc": 0,
+       "stdout_sha256": "ad2744a0c576bfc4f43e6ad507a02a960cf6c36e06381727127489ed26a8e038",
+       "pass_line": false,
+       "dump_lines": 4
+      },
+      "256": {
+       "rc": 0,
+       "stdout_sha256": "ad2744a0c576bfc4f43e6ad507a02a960cf6c36e06381727127489ed26a8e038",
+       "pass_line": false,
+       "dump_lines": 4
+      },
+      "512": {
+       "rc": 0,
+       "stdout_sha256": "ad2744a0c576bfc4f43e6ad507a02a960cf6c36e06381727127489ed26a8e038",
+       "pass_line": false,
+       "dump_lines": 4
+      }
+     }
+    }
+   },
+   "difftest_identical": true,
+   "status": "OK"
+  },
+  {
+   "kernel": "s8-vclamp",
+   "input_sha256": "62e1c11206e573164a1dfbd46ef7f1ce715fc4b2a0e178b8c05130a2fc1dc4a6",
+   "lower": "OK s8-vclamp.c rewrites=9 rejections=0",
+   "determinism": true,
+   "lowered_sha256": "1e7e0b994599809401f40ddb00bb7e1cf12bb459d58332ee4f63435ce4a004f3",
+   "header_sha256": "f51995bace2d6fbe90fd248ac36a15b06da12d668db892c193d4482483f1966a",
+   "syntax": true,
+   "idempotence": true,
+   "difftest": {
+    "original": {
+     "compile_rc": 0,
+     "dumped_arrays": [
+      "input",
+      "out_rvv",
+      "gold"
+     ],
+     "harness_adaptation": {
+      "removed_kernel_structs": [
+       "xnn_scalar_s8_minmax_params",
+       "xnn_s8_minmax_params"
+      ]
+     },
+     "runs": {
+      "128": {
+       "rc": 0,
+       "stdout_sha256": "1dc4e14d7114f542579c4c2140601bfef4c3da7e5f2314b4cd77345dafc955a1",
+       "pass_line": true,
+       "dump_lines": 3
+      },
+      "256": {
+       "rc": 0,
+       "stdout_sha256": "1dc4e14d7114f542579c4c2140601bfef4c3da7e5f2314b4cd77345dafc955a1",
+       "pass_line": true,
+       "dump_lines": 3
+      },
+      "512": {
+       "rc": 0,
+       "stdout_sha256": "1dc4e14d7114f542579c4c2140601bfef4c3da7e5f2314b4cd77345dafc955a1",
+       "pass_line": true,
+       "dump_lines": 3
+      }
+     }
+    },
+    "lowered": {
+     "compile_rc": 0,
+     "dumped_arrays": [
+      "input",
+      "out_rvv",
+      "gold"
+     ],
+     "harness_adaptation": {
+      "removed_kernel_structs": [
+       "xnn_scalar_s8_minmax_params",
+       "xnn_s8_minmax_params"
+      ]
+     },
+     "runs": {
+      "128": {
+       "rc": 0,
+       "stdout_sha256": "1dc4e14d7114f542579c4c2140601bfef4c3da7e5f2314b4cd77345dafc955a1",
+       "pass_line": true,
+       "dump_lines": 3
+      },
+      "256": {
+       "rc": 0,
+       "stdout_sha256": "1dc4e14d7114f542579c4c2140601bfef4c3da7e5f2314b4cd77345dafc955a1",
+       "pass_line": true,
+       "dump_lines": 3
+      },
+      "512": {
+       "rc": 0,
+       "stdout_sha256": "1dc4e14d7114f542579c4c2140601bfef4c3da7e5f2314b4cd77345dafc955a1",
+       "pass_line": true,
+       "dump_lines": 3
+      }
+     }
+    }
+   },
+   "difftest_identical": true,
+   "status": "OK"
+  },
+  {
+   "kernel": "u8-vclamp",
+   "input_sha256": "cc383d1bc0453a221890c9614aebfcf2b6bd3600f4d3798cd32f5a9ad586c7bd",
+   "lower": "OK u8-vclamp.c rewrites=9 rejections=0",
+   "determinism": true,
+   "lowered_sha256": "e41dff5428d5c6a56a943ef5b3430b0393d7a07da6f21769f63be7ddbdef1e58",
+   "header_sha256": "25891fd29e48c399f17f5f8869cf31b5a25ad250fb748eb90f6fea4c02f302be",
+   "syntax": true,
+   "idempotence": true,
+   "difftest": {
+    "original": {
+     "compile_rc": 0,
+     "dumped_arrays": [
+      "input",
+      "out_rvv",
+      "gold"
+     ],
+     "harness_adaptation": {
+      "removed_kernel_structs": [
+       "xnn_u8_minmax_params"
+      ]
+     },
+     "runs": {
+      "128": {
+       "rc": 0,
+       "stdout_sha256": "2f8339ee85b7c2e712be0a88f3ba3132e77828c4e7a489621ff18bd829aa1416",
+       "pass_line": true,
+       "dump_lines": 3
+      },
+      "256": {
+       "rc": 0,
+       "stdout_sha256": "2f8339ee85b7c2e712be0a88f3ba3132e77828c4e7a489621ff18bd829aa1416",
+       "pass_line": true,
+       "dump_lines": 3
+      },
+      "512": {
+       "rc": 0,
+       "stdout_sha256": "2f8339ee85b7c2e712be0a88f3ba3132e77828c4e7a489621ff18bd829aa1416",
+       "pass_line": true,
+       "dump_lines": 3
+      }
+     }
+    },
+    "lowered": {
+     "compile_rc": 0,
+     "dumped_arrays": [
+      "input",
+      "out_rvv",
+      "gold"
+     ],
+     "harness_adaptation": {
+      "removed_kernel_structs": [
+       "xnn_u8_minmax_params"
+      ]
+     },
+     "runs": {
+      "128": {
+       "rc": 0,
+       "stdout_sha256": "2f8339ee85b7c2e712be0a88f3ba3132e77828c4e7a489621ff18bd829aa1416",
+       "pass_line": true,
+       "dump_lines": 3
+      },
+      "256": {
+       "rc": 0,
+       "stdout_sha256": "2f8339ee85b7c2e712be0a88f3ba3132e77828c4e7a489621ff18bd829aa1416",
+       "pass_line": true,
+       "dump_lines": 3
+      },
+      "512": {
+       "rc": 0,
+       "stdout_sha256": "2f8339ee85b7c2e712be0a88f3ba3132e77828c4e7a489621ff18bd829aa1416",
+       "pass_line": true,
+       "dump_lines": 3
+      }
+     }
+    }
+   },
+   "difftest_identical": true,
+   "status": "OK"
+  },
+  {
+   "kernel": "x32-packw-gemm-goi",
+   "input_sha256": "4e84101eb1e3c8e92d5f0f935dc4bff6ced5bf9d620e1aeced88acf69745a8f9",
+   "lower": "OK x32-packw-gemm-goi.c rewrites=64 rejections=0",
+   "determinism": true,
+   "lowered_sha256": "76fa9753b930a53d5918bb08f9524ea2a83f99ce821bc859446f6e49b0575361",
+   "header_sha256": "aa7094519523ceba8cdf37800bba27311207d49e25e3d42b43952248bede75dd",
+   "syntax": true,
+   "idempotence": true,
+   "difftest": {
+    "original": {
+     "compile_rc": 0,
+     "dumped_arrays": [
+      "weights",
+      "bias_buf",
+      "out_rvv",
+      "gold"
+     ],
+     "runs": {
+      "128": {
+       "rc": 0,
+       "stdout_sha256": "8694576b4b16b10ec2e8e1c166aed46dc5f0b04c377eb45c89c9c7dfa9fc3f9e",
+       "pass_line": false,
+       "dump_lines": 4
+      },
+      "256": {
+       "rc": 0,
+       "stdout_sha256": "8694576b4b16b10ec2e8e1c166aed46dc5f0b04c377eb45c89c9c7dfa9fc3f9e",
+       "pass_line": false,
+       "dump_lines": 4
+      },
+      "512": {
+       "rc": 0,
+       "stdout_sha256": "8694576b4b16b10ec2e8e1c166aed46dc5f0b04c377eb45c89c9c7dfa9fc3f9e",
+       "pass_line": false,
+       "dump_lines": 4
+      }
+     }
+    },
+    "lowered": {
+     "compile_rc": 0,
+     "dumped_arrays": [
+      "weights",
+      "bias_buf",
+      "out_rvv",
+      "gold"
+     ],
+     "runs": {
+      "128": {
+       "rc": 0,
+       "stdout_sha256": "8694576b4b16b10ec2e8e1c166aed46dc5f0b04c377eb45c89c9c7dfa9fc3f9e",
+       "pass_line": false,
+       "dump_lines": 4
+      },
+      "256": {
+       "rc": 0,
+       "stdout_sha256": "8694576b4b16b10ec2e8e1c166aed46dc5f0b04c377eb45c89c9c7dfa9fc3f9e",
+       "pass_line": false,
+       "dump_lines": 4
+      },
+      "512": {
+       "rc": 0,
+       "stdout_sha256": "8694576b4b16b10ec2e8e1c166aed46dc5f0b04c377eb45c89c9c7dfa9fc3f9e",
+       "pass_line": false,
+       "dump_lines": 4
+      }
+     }
+    }
+   },
+   "difftest_identical": true,
+   "status": "OK"
+  },
+  {
+   "kernel": "x32transpose",
+   "input_sha256": "659a175f4233ba2cbc1cc1080434d21bbe4c5f468de8f70a51dc09e4e0b99b69",
+   "lower": "OK x32transpose.c rewrites=48 rejections=0",
+   "determinism": true,
+   "lowered_sha256": "17fdff7be0b32637a7e8e8ac96a60593e528184fcd7a1ee453f25cf69ec59a44",
+   "header_sha256": "4e9168d4549aec19bc754c8dfddaf3f76c0528a12cfd0d0f984ef4a711c139a4",
+   "syntax": true,
+   "idempotence": true,
+   "difftest": {
+    "original": {
+     "compile_rc": 0,
+     "dumped_arrays": [
+      "input",
+      "out_rvv",
+      "gold"
+     ],
+     "runs": {
+      "128": {
+       "rc": 0,
+       "stdout_sha256": "a6058bc417244e33c538bf8106a63d23c2d474303890e5d63ea0b2350801cfc8",
+       "pass_line": true,
+       "dump_lines": 3
+      },
+      "256": {
+       "rc": 0,
+       "stdout_sha256": "a6058bc417244e33c538bf8106a63d23c2d474303890e5d63ea0b2350801cfc8",
+       "pass_line": true,
+       "dump_lines": 3
+      },
+      "512": {
+       "rc": 0,
+       "stdout_sha256": "a6058bc417244e33c538bf8106a63d23c2d474303890e5d63ea0b2350801cfc8",
+       "pass_line": true,
+       "dump_lines": 3
+      }
+     }
+    },
+    "lowered": {
+     "compile_rc": 0,
+     "dumped_arrays": [
+      "input",
+      "out_rvv",
+      "gold"
+     ],
+     "runs": {
+      "128": {
+       "rc": 0,
+       "stdout_sha256": "a6058bc417244e33c538bf8106a63d23c2d474303890e5d63ea0b2350801cfc8",
+       "pass_line": true,
+       "dump_lines": 3
+      },
+      "256": {
+       "rc": 0,
+       "stdout_sha256": "a6058bc417244e33c538bf8106a63d23c2d474303890e5d63ea0b2350801cfc8",
+       "pass_line": true,
+       "dump_lines": 3
+      },
+      "512": {
+       "rc": 0,
+       "stdout_sha256": "a6058bc417244e33c538bf8106a63d23c2d474303890e5d63ea0b2350801cfc8",
+       "pass_line": true,
+       "dump_lines": 3
+      }
+     }
+    }
+   },
+   "difftest_identical": true,
+   "status": "OK"
+  }
+ ]
+}

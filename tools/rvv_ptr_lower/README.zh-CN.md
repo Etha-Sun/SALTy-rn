@@ -38,6 +38,18 @@
 | R12 | kernel 文件内定义、宏体含向量代码的宏的调用处 | 替换为 clang 预处理器给出的展开 | 只保留这些宏的 `#define/#undef`，其余指令全部置空，因此头文件宏（`UINT32_C`、`XNN_*`、`assert`）不展开，留给真实编译处理。宏定义行替换为同行数的注释 |
 | R13 | `T a = x, b = y;` | 每个声明符一条声明，顺序不变 | C 按顺序初始化声明符，每个声明符从自身之后开始可见 |
 
+| R14 | 内联汇编只含对齐指令（`asm volatile(".balign N")`、`.p2align`、`.align`），且没有操作数和 clobber | 替换为空语句和注释 | 这条指令只影响指令布局，对 C 语义没有影响。其他形式的 asm 一律拒绝（ASM） |
+| R15 | `do S while (OP v REL e);` 或 `do S while (OP v);`，其中 OP 是 `++` 或 `--`，v 是普通变量，e 没有副作用且不含 v，循环体中没有作用于本循环的 `continue` | `do { S v -= 1; } while (v REL e);`（`++` 时为 `v += 1`），或条件为 `(v)` | 条件在每轮 S 之后恰好求值一次，所以把它的副作用移到循环体末尾，求值顺序不变。其余带 `++`、`--` 或赋值的循环条件一律拒绝（NORMCOND） |
+
+| R16 | 在 do-while 循环体中（不跨越内层 for/while），单独成句的 `++v;`、`--v;`、`v++;`、`v--;` | `v += 1;` / `v -= 1;` | 语句的值不被使用，四种写法等价。QCP 2.1.4 在 do-while 中处理 `unsigned long long` 的 `--n;` 会失败，而 `n -= 1;` 可以（W9 发现，v1.2 加入）。只作用于 do-while 内部，已证明 kernel 的程序文本不受影响 |
+
+| R17 | 函数内带常量初始化的 `static const` 数组（可带 `XNN_ALIGN(n)`） | 去掉 `static` 和对齐属性，成为普通的局部 `const` 数组 | 数组只读，每次调用读到的值相同；对齐不影响 C 语义。数组可能被返回、存入非局部左值，或传给非 intrinsic 的函数（名称不以 `v`、`__builtin_`、`__riscv_` 开头）时拒绝（STATIC）。QCP 2.1.4 不支持函数内的静态存储变量（W9 发现，v1.3 加入） |
+| R18 | 初始化列表末尾多余的逗号 `{…, x,}` | `{…, x}` | 纯语法改动。QCP 2.1.4 无法解析末尾逗号（v1.3 加入） |
+
+R14、R15 是 QCP 前端规范化，在 v1.1（2026-11-05）加入，**对两侧都适用**。QCP 2.1.4 不能解析内联 asm，也不能解析出现在表达式里的前置自增/自减（作为独立语句可以）。用 `--isa neon` 时，只对 NEON A 做规范化，不做向量改写。NEON 侧的差分测试由 `validate_neon.py` 完成：原版和规范化后的 A 分别编进上游 harness，在 qemu-aarch64 上运行，要求输出完全相同。
+
+QCP 支持 do-while 本身，但循环不变量要写在循环体之后、`while` 之前（`do { ... } /*@ Inv Assert ... */ while (c);`，见 QCP tutorial T3-6），所以不需要像旧项目那样手工改成 while。
+
 R6 的安全条件（check_lifts）：
 
 - (a) 被提升的调用没有副作用。它们只能是纯运算或 load；store 返回 void，不会被嵌套。
@@ -67,7 +79,7 @@ R6 的安全条件（check_lifts）：
 ## 用法
 
 ```bash
-python3 -I tools/rvv_ptr_lower/rvv_ptr_lower.py <kernel.c> --out-dir <dir>
+python3 -I tools/rvv_ptr_lower/rvv_ptr_lower.py <kernel.c> --out-dir <dir> [--isa rvv|neon]
 python3 -I tools/rvv_ptr_lower/validate.py <kernel-dir> --out <dir> [--only k1 k2]
 ```
 

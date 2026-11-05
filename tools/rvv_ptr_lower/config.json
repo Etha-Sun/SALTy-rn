@@ -1,6 +1,9 @@
 {
-  "comment": "Parse configuration for rvv_ptr_lower. Paths are relative to the repository root. The include prefix mirrors the SALTy/sol-pipeline RVV harness prelude (research/sol-pipeline-comparison-20261030/rvv_eval.py).",
-  "clang": ["research/sol-pipeline-comparison-20261030/tools/ziglang/zig", "clang"],
+  "comment": "Parse configuration for rvv_ptr_lower. Paths are relative to the repository root. The include prefix mirrors the SALTy/sol-pipeline RVV harness prelude (research/sol-pipeline-comparison-20261030/rvv_eval.py). Per-ISA settings are under 'isa'; top-level target/profile keys mirror isa.rvv for backward compatibility.",
+  "clang": [
+    "research/sol-pipeline-comparison-20261030/tools/ziglang/zig",
+    "clang"
+  ],
   "clang_resource_include": "research/sol-pipeline-comparison-20261030/tools/ziglang/lib/include",
   "libc_includes": [
     "research/sol-pipeline-comparison-20261030/tools/ziglang/lib/libc/include/riscv64-linux-musl",
@@ -12,12 +15,112 @@
     "benchmark/XNNPACK/src",
     "third_party/zephyr/third-party/executorch/backends/xnnpack/third-party/pthreadpool/include"
   ],
-  "target_flags": ["-target", "riscv64-unknown-linux-musl", "-march=rv64gcv_zvfh", "-std=gnu99"],
+  "target_flags": [
+    "-target",
+    "riscv64-unknown-linux-musl",
+    "-march=rv64gcv_zvfh",
+    "-std=gnu99"
+  ],
   "profiles": {
-    "xnn": ["stdint.h", "stddef.h", "assert.h", "math.h", "riscv_vector.h",
-            "src/xnnpack/common.h", "src/xnnpack/math.h", "src/xnnpack/microparams.h"],
-    "self": ["stdint.h", "stddef.h", "assert.h", "math.h", "riscv_vector.h",
-             "src/xnnpack/common.h", "src/xnnpack/math.h"]
+    "xnn": [
+      "stdint.h",
+      "stddef.h",
+      "assert.h",
+      "math.h",
+      "riscv_vector.h",
+      "src/xnnpack/common.h",
+      "src/xnnpack/math.h",
+      "src/xnnpack/microparams.h"
+    ],
+    "self": [
+      "stdint.h",
+      "stddef.h",
+      "assert.h",
+      "math.h",
+      "riscv_vector.h",
+      "src/xnnpack/common.h",
+      "src/xnnpack/math.h"
+    ]
   },
-  "profile_order": ["xnn", "self"]
+  "profile_order": [
+    "xnn",
+    "self"
+  ],
+  "isa": {
+    "rvv": {
+      "target_flags": [
+        "-target",
+        "riscv64-unknown-linux-musl",
+        "-march=rv64gcv_zvfh",
+        "-std=gnu99"
+      ],
+      "libc_includes": [
+        "research/sol-pipeline-comparison-20261030/tools/ziglang/lib/libc/include/riscv64-linux-musl",
+        "research/sol-pipeline-comparison-20261030/tools/ziglang/lib/libc/include/generic-musl",
+        "research/sol-pipeline-comparison-20261030/tools/ziglang/lib/libc/include/any-linux-any"
+      ],
+      "profiles": {
+        "xnn": [
+          "stdint.h",
+          "stddef.h",
+          "assert.h",
+          "math.h",
+          "riscv_vector.h",
+          "src/xnnpack/common.h",
+          "src/xnnpack/math.h",
+          "src/xnnpack/microparams.h"
+        ],
+        "self": [
+          "stdint.h",
+          "stddef.h",
+          "assert.h",
+          "math.h",
+          "riscv_vector.h",
+          "src/xnnpack/common.h",
+          "src/xnnpack/math.h"
+        ]
+      },
+      "profile_order": [
+        "xnn",
+        "self"
+      ]
+    },
+    "neon": {
+      "target_flags": [
+        "-target",
+        "aarch64-unknown-linux-musl",
+        "-std=gnu99"
+      ],
+      "libc_includes": [
+        "research/sol-pipeline-comparison-20261030/tools/ziglang/lib/libc/include/aarch64-linux-musl",
+        "research/sol-pipeline-comparison-20261030/tools/ziglang/lib/libc/include/generic-musl",
+        "research/sol-pipeline-comparison-20261030/tools/ziglang/lib/libc/include/any-linux-any"
+      ],
+      "profiles": {
+        "xnn": [
+          "stdint.h",
+          "stddef.h",
+          "assert.h",
+          "math.h",
+          "arm_neon.h",
+          "src/xnnpack/common.h",
+          "src/xnnpack/math.h",
+          "src/xnnpack/microparams.h"
+        ],
+        "self": [
+          "stdint.h",
+          "stddef.h",
+          "assert.h",
+          "math.h",
+          "arm_neon.h",
+          "src/xnnpack/common.h",
+          "src/xnnpack/math.h"
+        ]
+      },
+      "profile_order": [
+        "xnn",
+        "self"
+      ]
+    }
+  }
 }
