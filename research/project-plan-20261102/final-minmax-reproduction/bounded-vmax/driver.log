@@ -1,0 +1,23 @@
+INFO:pipeline:═══════════════════════════════════════════════════════════
+INFO:pipeline:Verification: f32-vmax
+INFO:pipeline:  NEON source: /zp_vegeta/scratch_sb/ycsun/verus/research/sol-pipeline-comparison-20261030/sources/SALTy-rn/kernels/source/f32-vmax.c
+INFO:pipeline:  RVV source:  /zp_vegeta/scratch_sb/ycsun/verus/research/project-plan-20261102/final-minmax-reproduction/vmax/rvv.c
+INFO:pipeline:  Backend: cvc5
+INFO:pipeline:  VLEN=512  max_batch=1  time_budget=20s
+INFO:pipeline:  Mode: params=concrete (full domain)
+INFO:pipeline:Step 1/3: Generating verification harness (v2)...
+INFO:pipeline:  Harness generated (205 lines)
+INFO:pipeline:Step 2/3: Compiling verification harness...
+INFO:pipeline:Configuring CMake...
+INFO:pipeline:Compiling verify_f32-vmax...
+INFO:pipeline:Compiled successfully: verify_f32-vmax (5.8s)
+INFO:pipeline:  Compilation successful
+INFO:pipeline:Step 3/3: Bounded verification (batch from 1, to 1, 20s budget)...
+INFO:pipeline:  Running: verify_f32-vmax start=1 end=1 vlen=512 budget=20s
+INFO:pipeline:  Starting config=no-params...
+INFO:pipeline:  batch=1          solving... (0.1s)
+INFO:pipeline:  batch=1          VERIFIED  (0.2s)
+INFO:pipeline:  config=no-params: verified up to batch=1
+INFO:pipeline:  Starting config=default...
+INFO:pipeline:═══════════════════════════════════════════════════════════
+INFO:pipeline:VERIFIED: f32-vmax — 1 batches, 1 configs, max_batch=1 (0.2s)

@@ -1,0 +1,14 @@
+--- kernels/target/f32-f16-vcvt.c
++++ verification/qcp/verified/f32-f16-vcvt/impl/testRVV.c
+@@ -23,9 +23,9 @@
+     vuint32m8_t vbias = __riscv_vadd_vx_u32m8(vabsx_u, UINT32_C(0x07800000), vl);
+ 
+-    vfloat32m8_t vf = __riscv_vfmul_vf_f32m8(vabsx, 0x1.0p+112f, vl);
++    vfloat32m8_t vf = __riscv_vfmul_vf_f32m8(vabsx, 5192296858534827628530496329220096.0f, vl);
+     vbool4_t vnanmask = __riscv_vmsgtu_vx_u32m8_b4(vabsx_u, UINT32_C(0x7F800000), vl);
+ 
+     vbias = __riscv_vand_vx_u32m8(vbias, UINT32_C(0x7F800000), vl);
+-    vf = __riscv_vfmul_vf_f32m8(vf, 0x1.0p-110f, vl);
++    vf = __riscv_vfmul_vf_f32m8(vf, 0.00000000000000000000000000000000077037197775489434122239117703397092741524065928615527809597551822662353515625f, vl);
+ 
+     vbias = __riscv_vmaxu_vx_u32m8(vbias, UINT32_C(0x40000000), vl);

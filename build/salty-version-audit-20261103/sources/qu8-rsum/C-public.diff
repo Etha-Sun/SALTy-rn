@@ -1,0 +1,135 @@
+--- A-target
++++ C-public
+@@ -1,3 +1,8 @@
++#include <riscv_vector.h>
++#include <stddef.h>
++#include <stdint.h>
++#include <assert.h>
++
+ void test_rvv(
+     size_t batch,
+     const uint8_t* input,
+@@ -9,29 +14,105 @@
+   assert(output != NULL);
+   assert(params != NULL);
+ 
+-  // vlmax is the same for e8m2 and e32m8 (VLEN/4)
+-  size_t vlmax = __riscv_vsetvlmax_e32m8();
++  // vlmax is defined for SEW=8, LMUL=2. 
++  // In Saturn, LMUL=2 at e8/e16 provides sufficient chime length to hide pipeline latencies.
++  const size_t vlmax = __riscv_vsetvlmax_e8m2();
+   
+-  // Initialize the vector accumulator to 0
+-  vuint32m8_t vacc = __riscv_vmv_v_x_u32m8(0, vlmax);
++  // 32-bit scalar-in-vector accumulator (LMUL=1). 
++  // Only the first element (index 0) is used to accumulate the final result.
++  vuint32m1_t vacc32 = __riscv_vmv_v_x_u32m1(0, __riscv_vsetvlmax_e32m1());
+ 
+-  for (; batch > 0; ) {
++  // Strategy: Software Pipelining with 4x Unrolling.
++  // 252 iterations (largest multiple of 4 below 255) ensures 
++  // 16-bit intermediate accumulators do not overflow: (252 * 255 = 64260 < 65535).
++  const size_t pinned_chunk_iters = 252;
++  const size_t pinned_chunk_size = pinned_chunk_iters * vlmax;
++
++  while (batch >= pinned_chunk_size) {
++    vuint16m4_t vacc16_0 = __riscv_vmv_v_x_u16m4(0, vlmax);
++    vuint16m4_t vacc16_1 = __riscv_vmv_v_x_u16m4(0, vlmax);
++    vuint16m4_t vacc16_2 = __riscv_vmv_v_x_u16m4(0, vlmax);
++    vuint16m4_t vacc16_3 = __riscv_vmv_v_x_u16m4(0, vlmax);
++    
++    // Software Pipelining Prologue: Load the first set of vectors.
++    vuint8m2_t vt0 = __riscv_vle8_v_u8m2(input, vlmax);
++    vuint8m2_t vt1 = __riscv_vle8_v_u8m2(input + vlmax, vlmax);
++    vuint8m2_t vt2 = __riscv_vle8_v_u8m2(input + 2 * vlmax, vlmax);
++    vuint8m2_t vt3 = __riscv_vle8_v_u8m2(input + 3 * vlmax, vlmax);
++    input += 4 * vlmax;
++
++    // Main Loop: Decrement-to-zero and aligned for frontend efficiency.
++    // Grouping 2-computes followed by 2-loads hides WAR (Anti-Dependency) stalls
++    // by creating a temporal distance between reading a register and overwriting it.
++    size_t iters = (pinned_chunk_iters - 4) / 4;
++    asm volatile(".balign 16");
++    do {
++      vacc16_0 = __riscv_vwaddu_wv_u16m4(vacc16_0, vt0, vlmax);
++      vacc16_1 = __riscv_vwaddu_wv_u16m4(vacc16_1, vt1, vlmax);
++      vt0 = __riscv_vle8_v_u8m2(input, vlmax);
++      vt1 = __riscv_vle8_v_u8m2(input + vlmax, vlmax);
++
++      vacc16_2 = __riscv_vwaddu_wv_u16m4(vacc16_2, vt2, vlmax);
++      vacc16_3 = __riscv_vwaddu_wv_u16m4(vacc16_3, vt3, vlmax);
++      vt2 = __riscv_vle8_v_u8m2(input + 2 * vlmax, vlmax);
++      vt3 = __riscv_vle8_v_u8m2(input + 3 * vlmax, vlmax);
++
++      input += 4 * vlmax;
++    } while (--iters > 0);
++    
++    // Software Pipelining Epilogue: Process the final vectors loaded in the last loop iteration.
++    vacc16_0 = __riscv_vwaddu_wv_u16m4(vacc16_0, vt0, vlmax);
++    vacc16_1 = __riscv_vwaddu_wv_u16m4(vacc16_1, vt1, vlmax);
++    vacc16_2 = __riscv_vwaddu_wv_u16m4(vacc16_2, vt2, vlmax);
++    vacc16_3 = __riscv_vwaddu_wv_u16m4(vacc16_3, vt3, vlmax);
++    
++    // Tiered reduction: Accumulate 16-bit intermediate results into the 32-bit vector.
++    vacc32 = __riscv_vwredsumu_vs_u16m4_u32m1(vacc16_0, vacc32, vlmax);
++    vacc32 = __riscv_vwredsumu_vs_u16m4_u32m1(vacc16_1, vacc32, vlmax);
++    vacc32 = __riscv_vwredsumu_vs_u16m4_u32m1(vacc16_2, vacc32, vlmax);
++    vacc32 = __riscv_vwredsumu_vs_u16m4_u32m1(vacc16_3, vacc32, vlmax);
++    
++    batch -= pinned_chunk_size;
++  }
++
++  // Handle remaining full-length vectors with software pipelining and decrement-to-zero.
++  if (batch >= vlmax) {
++    vuint16m4_t vacc16 = __riscv_vmv_v_x_u16m4(0, vlmax);
++    
++    size_t num_full_vecs = batch / vlmax;
++    batch %= vlmax; 
++
++    // Prologue: Initial load.
++    vuint8m2_t vt = __riscv_vle8_v_u8m2(input, vlmax);
++    input += vlmax;
++    
++    size_t iters = num_full_vecs - 1;
++    if (iters > 0) {
++      asm volatile(".balign 16");
++      do {
++        vacc16 = __riscv_vwaddu_wv_u16m4(vacc16, vt, vlmax);
++        vt = __riscv_vle8_v_u8m2(input, vlmax);
++        input += vlmax;
++      } while (--iters > 0);
++    }
++    
++    // Epilogue: Add last loaded vector.
++    vacc16 = __riscv_vwaddu_wv_u16m4(vacc16, vt, vlmax);
++    vacc32 = __riscv_vwredsumu_vs_u16m4_u32m1(vacc16, vacc32, vlmax);
++  }
++
++  // Handle the final fractional vector using VL-predication.
++  if (batch > 0) {
+     size_t vl = __riscv_vsetvl_e8m2(batch);
+     vuint8m2_t vt = __riscv_vle8_v_u8m2(input, vl);
+-    input += vl;
+-    batch -= vl;
+-
+-    // Zero-extend uint8 to uint32
+-    vuint32m8_t vt32 = __riscv_vzext_vf4_u32m8(vt, vl);
+     
+-    // Accumulate using tail-undisturbed policy to preserve the sums in the tail
+-    // elements when vl < vlmax, ensuring the final reduction is correct.
+-    vacc = __riscv_vadd_vv_u32m8_tu(vacc, vacc, vt32, vl);
++    // Widening sum of final fractional elements.
++    vuint16m4_t vacc16_final = __riscv_vwaddu_vx_u16m4(vt, 0, vl);
++    vacc32 = __riscv_vwredsumu_vs_u16m4_u32m1(vacc16_final, vacc32, vl);
+   }
+ 
+-  // Reduce the vector accumulator into a scalar
+-  vuint32m1_t red = __riscv_vmv_v_x_u32m1(0, __riscv_vsetvlmax_e32m1());
+-  red = __riscv_vredsum_vs_u32m8_u32m1(vacc, red, vlmax);
+-  
+-  *output += __riscv_vmv_x_s_u32m1_u32(red);
+-}+  // Final scalar writeback: Extract horizontal sum to scalar.
++  // Vector-to-scalar moves are kept out of loops to minimize scalar pipeline stalls.
++  *output += __riscv_vmv_x_s_u32m1_u32(vacc32);
++}
++

@@ -1,0 +1,36 @@
+--- v2-before-paragraph8-20261104-173504.md
++++ v2-preconditions.md
+@@ -67,11 +67,28 @@
+ **Paragraph 8: Three applications**
+ 
+ - We identify three useful downstream tasks for this equivalence verification framework.
+-- Validate that optimized kernels preserve their reference behavior.
+-- Translate existing NEON or AVX kernels to RVV or HVX libraries that lack the corresponding operation.
+-- Cross-check independent implementations of the same operation.
+-- Use concrete discrepancies to distinguish implementation defects from permitted numerical differences.
+-- Use the findings to guide repairs and clarify library behavior.
++
++**1. Verify optimized kernels and programs**
++
++- Check that an optimized kernel or program preserves its reference behavior, within one ISA or across ISAs.
++- Agents may exploit gaps in tests to produce faster code that changes the intended behavior.
++- Proving equivalence for all inputs permitted by the spec helps guard against this form of reward hacking.
++
++**2. Translate kernels across ISAs**
++
++- Existing NEON and AVX libraries provide implementations developed and maintained over years of optimization.
++- When an RVV or HVX library lacks an operation, these implementations provide a starting point for translation.
++- Manually porting and checking such kernels requires substantial engineering effort.
++- Our framework supports translation together with a proof that the target kernel preserves the source behavior under the preconditions in the spec.
++- This can reduce the manual effort needed to check each translation.
++
++**3. Cross-check existing implementations**
++
++- Libraries may contain independent implementations of the same operation for different ISAs.
++- We compare these implementations directly to determine whether they produce equivalent outputs under the same preconditions.
++- When they differ, concrete counterexamples identify the inputs and instruction behavior responsible for the difference.
++- Experts can then determine whether the difference is permitted by the library's requirements or indicates a bug.
++- These counterexamples can guide repairs and regression tests, while equivalence proofs can check that the repaired implementations agree.
+ 
+ **Paragraph 9: Evaluation**
+ 

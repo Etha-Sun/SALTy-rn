@@ -1,0 +1,61 @@
+#include <riscv_vector.h>
+#include <stddef.h>
+#include <assert.h>
+
+void test_rvv(
+    size_t batch,
+    const float* input,
+    float* output,
+    const struct xnn_f32_default_params* unused_params)
+{
+  assert(batch != 0);
+  assert(batch % sizeof(float) == 0);
+  assert(input != NULL);
+  assert(output != NULL);
+
+  size_t n = batch / sizeof(float);
+  if (n == 0) return;
+
+  size_t i = 0;
+  
+  /* 
+   * Saturn Performance Optimization:
+   * 1. Maximize LMUL: Using LMUL=8 to increase chime length, which helps hide 
+   *    pipeline latencies and reduces scalar instruction fetch pressure.
+   * 2. Software Pipelining: The vfsqrt instruction is iterative and non-pipelined 
+   *    (1 element/cycle), creating a massive bottleneck on the VXS sequencer. 
+   *    By loading the next chunk (VLS) while computing the current chunk (VXS), 
+   *    we overlap memory access with execution.
+   * 3. Chaining: Interleaving the store (VSS) with the compute (VXS) allows 
+   *    the Saturn backend to chain the store as soon as element groups are ready.
+   */
+
+  // Initialize the first chunk for the pipeline
+  size_t vl = __riscv_vsetvl_e32m8(n);
+  vfloat32m8_t vx = __riscv_vle32_v_f32m8(input + i, vl);
+  i += vl;
+
+  // Software pipelined loop
+  while (i < n) {
+    size_t next_vl = __riscv_vsetvl_e32m8(n - i);
+    
+    // Prefetch next chunk: VLS sequencer handles this concurrently with VXS
+    vfloat32m8_t vx_next = __riscv_vle32_v_f32m8(input + i, next_vl);
+
+    // Compute current chunk: VXS sequencer executes iterative sqrt
+    vfloat32m8_t vy = __riscv_vfsqrt_v_f32m8(vx, vl);
+    
+    // Store current chunk: VSS sequencer chains with VXS output
+    __riscv_vse32_v_f32m8(output + i - vl, vy, vl);
+
+    // Shift registers for the next iteration
+    // The compiler handles register allocation; = is used for whole-register transfer.
+    vx = vx_next;
+    vl = next_vl;
+    i += vl;
+  }
+
+  // Final chunk drain: Process the last vector held in 'vx'
+  vfloat32m8_t vy = __riscv_vfsqrt_v_f32m8(vx, vl);
+  __riscv_vse32_v_f32m8(output + i - vl, vy, vl);
+}

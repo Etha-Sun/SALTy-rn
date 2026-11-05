@@ -1,0 +1,84 @@
+--- kernels/source/f32-spmm-minmax.c
++++ verification/qcp/verified/f32-spmm-minmax/impl/testNEON.c
+@@ -40,9 +40,9 @@
+     size_t n = nc;
+     do {
+-      uint32_t nnz = *nnzmap++;
++      uint32_t nnz = *nnzmap; nnzmap += 1;
+       float32x4_t vacc0123 = vld1q_dup_f32(w); w += 1;
+       if XNN_LIKELY(nnz != 0) {
+         do {
+-          const intptr_t diff = *dmap++;
++          const intptr_t diff = *dmap; dmap += 1;
+           const float32x4_t vi0123 = vld1q_f32(input);
+           input = (const float*) ((uintptr_t) input + (uintptr_t) diff);
+@@ -51,5 +51,6 @@
+           xnn_prefetch_to_l1(w + 32);
+           vacc0123 = vfmaq_f32(vacc0123, vi0123, vw);
+-        } while (--nnz != 0);
++          nnz -= 1;
++        } while (nnz != 0);
+       }
+       float32x4_t vout0123 = vminq_f32(vacc0123, vmax);
+@@ -57,5 +58,6 @@
+       vst1q_f32(output, vout0123);
+       output = (float*) ((uintptr_t) output + output_stride);
+-    } while (--n != 0);
++      n -= 1;
++    } while (n != 0);
+     output = (float*) ((uintptr_t) output - output_decrement);
+     input += 4;
+@@ -70,14 +72,15 @@
+       size_t n = nc;
+       do {
+-        uint32_t nnz = *nnzmap++;
++        uint32_t nnz = *nnzmap; nnzmap += 1;
+         float32x2_t vacc01 = vld1_dup_f32(w); w += 1;
+         if XNN_LIKELY(nnz != 0) {
+           do {
+-            const intptr_t diff = *dmap++;
++            const intptr_t diff = *dmap; dmap += 1;
+             const float32x2_t vi01 = vld1_f32(input);
+             input = (const float*) ((uintptr_t) input + (uintptr_t) diff);
+             const float32x2_t vw = vld1_dup_f32(w); w += 1;
+             vacc01 = vfma_f32(vacc01, vi01, vw);
+-          } while (--nnz != 0);
++            nnz -= 1;
++          } while (nnz != 0);
+         }
+         float32x2_t vout01 = vmin_f32(vacc01, vget_low_f32(vmax));
+@@ -85,5 +88,6 @@
+         vst1_f32(output, vout01);
+         output = (float*) ((uintptr_t) output + output_stride);
+-      } while (--n != 0);
++        n -= 1;
++      } while (n != 0);
+       output = (float*) ((uintptr_t) output - output_decrement);
+       input += 2;
+@@ -96,14 +100,15 @@
+       size_t n = nc;
+       do {
+-        uint32_t nnz = *nnzmap++;
++        uint32_t nnz = *nnzmap; nnzmap += 1;
+         float32x2_t vacc0 = vld1_dup_f32(w); w += 1;
+         if XNN_LIKELY(nnz != 0) {
+           do {
+-            const intptr_t diff = *dmap++;
++            const intptr_t diff = *dmap; dmap += 1;
+             const float32x2_t vi0 = vld1_dup_f32(input);
+             input = (const float*) ((uintptr_t) input + (uintptr_t) diff);
+             const float32x2_t vw = vld1_dup_f32(w); w += 1;
+             vacc0 = vfma_f32(vacc0, vi0, vw);
+-          } while (--nnz != 0);
++            nnz -= 1;
++          } while (nnz != 0);
+         }
+         float32x2_t vout0 = vmin_f32(vacc0, vget_low_f32(vmax));
+@@ -111,5 +116,6 @@
+         vst1_lane_f32(output, vout0, 0);
+         output = (float*) ((uintptr_t) output + output_stride);
+-      } while (--n != 0);
++        n -= 1;
++      } while (n != 0);
+       output = (float*) ((uintptr_t) output - output_decrement);
+       input += 1;

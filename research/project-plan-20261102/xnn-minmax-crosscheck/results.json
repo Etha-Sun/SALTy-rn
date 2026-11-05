@@ -1,0 +1,350 @@
+{
+  "upstream_commit": "82be86388c131862c3673c177d9dbcd5d3e3844d",
+  "header_snapshot": "867d5a344790802ee067be62f572c2e2722bf6fb",
+  "kernel_files_byte_identical_between_snapshots": true,
+  "scope": "Unmodified XNNPACK microkernel files, compiled and executed in ISA emulators. Not full library build, operator runtime, hardware or formal proof.",
+  "runs": [
+    {
+      "kernel": "vmax",
+      "arch": "neon",
+      "vlen": null,
+      "cases": 60,
+      "source": "src/f32-vbinary/gen/f32-vmax-neon-u8.c",
+      "source_sha256": "c3a65968898cad5a851f0cb8c39c12d4c54d8ef5c65681e27fae212597535076",
+      "source_git_blob": "740c3658324a4cd2fa8cb7ec5c3a60e1c3f204e0",
+      "compile_command": [
+        "/zp_vegeta/scratch_sb/ycsun/verus/research/sol-pipeline-comparison-20261030/tools/ziglang/zig",
+        "cc",
+        "-target",
+        "aarch64-linux-musl",
+        "-O3",
+        "-fno-fast-math",
+        "-ffp-contract=off",
+        "-static",
+        "-I/zp_vegeta/scratch_sb/ycsun/verus/benchmark/XNNPACK",
+        "-I/zp_vegeta/scratch_sb/ycsun/verus/benchmark/XNNPACK/src",
+        "-I/zp_vegeta/scratch_sb/ycsun/verus/third_party/zephyr/third-party/executorch/backends/xnnpack/third-party/pthreadpool/include",
+        "-Dtest_neon=xnn_f32_vmax_ukernel__neon_u8",
+        "/zp_vegeta/scratch_sb/ycsun/verus/research/project-plan-20261102/xnn-minmax-crosscheck/upstream/src/f32-vbinary/gen/f32-vmax-neon-u8.c",
+        "/zp_vegeta/scratch_sb/ycsun/verus/research/project-plan-20261102/xnn-minmax-crosscheck/harness.c",
+        "-o",
+        "/zp_vegeta/scratch_sb/ycsun/verus/research/project-plan-20261102/xnn-minmax-crosscheck/runs/vmax-neon/test.elf"
+      ],
+      "run_command": [
+        "/tmp/vekto-qemu-arm/extracted/usr/bin/qemu-aarch64-static",
+        "-cpu",
+        "max",
+        "/zp_vegeta/scratch_sb/ycsun/verus/research/project-plan-20261102/xnn-minmax-crosscheck/runs/vmax-neon/test.elf"
+      ],
+      "first_counterexample": {
+        "n": 1,
+        "case": "left_qnan",
+        "a": "7fc12345",
+        "b": "3f800000",
+        "output": "7fc12345",
+        "uniform": 1,
+        "output_frame": 1
+      }
+    },
+    {
+      "kernel": "vmax",
+      "arch": "rvv",
+      "vlen": 128,
+      "cases": 60,
+      "source": "src/f32-vbinary/gen/f32-vmax-rvv-u8v.c",
+      "source_sha256": "ae59218a6ced686dcde0280f2debfec0dadb792cf8cbe16399f83ea58495ab00",
+      "source_git_blob": "a64ec3cd8da980183c724e0b6bdba037e8471e1e",
+      "compile_command": [
+        "/zp_vegeta/scratch_sb/ycsun/verus/research/sol-pipeline-comparison-20261030/tools/ziglang/zig",
+        "cc",
+        "-target",
+        "riscv64-linux-musl",
+        "-mcpu=generic_rv64+m+a+f+d+c+v",
+        "-O3",
+        "-fno-fast-math",
+        "-ffp-contract=off",
+        "-static",
+        "-I/zp_vegeta/scratch_sb/ycsun/verus/benchmark/XNNPACK",
+        "-I/zp_vegeta/scratch_sb/ycsun/verus/benchmark/XNNPACK/src",
+        "-I/zp_vegeta/scratch_sb/ycsun/verus/third_party/zephyr/third-party/executorch/backends/xnnpack/third-party/pthreadpool/include",
+        "-Dtest_rvv=xnn_f32_vmax_ukernel__rvv_u8v",
+        "/zp_vegeta/scratch_sb/ycsun/verus/research/project-plan-20261102/xnn-minmax-crosscheck/upstream/src/f32-vbinary/gen/f32-vmax-rvv-u8v.c",
+        "/zp_vegeta/scratch_sb/ycsun/verus/research/project-plan-20261102/xnn-minmax-crosscheck/harness.c",
+        "-o",
+        "/zp_vegeta/scratch_sb/ycsun/verus/research/project-plan-20261102/xnn-minmax-crosscheck/runs/vmax-rvv/test.elf"
+      ],
+      "run_command": [
+        "/zp_vegeta/scratch_sb/ycsun/verus/research/sol-pipeline-comparison-20261030/tools/qemu-riscv64-static",
+        "-cpu",
+        "rv64,v=true,vlen=128,elen=64,vext_spec=v1.0",
+        "/zp_vegeta/scratch_sb/ycsun/verus/research/project-plan-20261102/xnn-minmax-crosscheck/runs/vmax-rvv/test.elf"
+      ],
+      "first_counterexample": {
+        "n": 1,
+        "case": "left_qnan",
+        "a": "7fc12345",
+        "b": "3f800000",
+        "output": "3f800000",
+        "uniform": 1,
+        "output_frame": 1
+      }
+    },
+    {
+      "kernel": "vmax",
+      "arch": "rvv",
+      "vlen": 256,
+      "cases": 60,
+      "source": "src/f32-vbinary/gen/f32-vmax-rvv-u8v.c",
+      "source_sha256": "ae59218a6ced686dcde0280f2debfec0dadb792cf8cbe16399f83ea58495ab00",
+      "source_git_blob": "a64ec3cd8da980183c724e0b6bdba037e8471e1e",
+      "compile_command": [
+        "/zp_vegeta/scratch_sb/ycsun/verus/research/sol-pipeline-comparison-20261030/tools/ziglang/zig",
+        "cc",
+        "-target",
+        "riscv64-linux-musl",
+        "-mcpu=generic_rv64+m+a+f+d+c+v",
+        "-O3",
+        "-fno-fast-math",
+        "-ffp-contract=off",
+        "-static",
+        "-I/zp_vegeta/scratch_sb/ycsun/verus/benchmark/XNNPACK",
+        "-I/zp_vegeta/scratch_sb/ycsun/verus/benchmark/XNNPACK/src",
+        "-I/zp_vegeta/scratch_sb/ycsun/verus/third_party/zephyr/third-party/executorch/backends/xnnpack/third-party/pthreadpool/include",
+        "-Dtest_rvv=xnn_f32_vmax_ukernel__rvv_u8v",
+        "/zp_vegeta/scratch_sb/ycsun/verus/research/project-plan-20261102/xnn-minmax-crosscheck/upstream/src/f32-vbinary/gen/f32-vmax-rvv-u8v.c",
+        "/zp_vegeta/scratch_sb/ycsun/verus/research/project-plan-20261102/xnn-minmax-crosscheck/harness.c",
+        "-o",
+        "/zp_vegeta/scratch_sb/ycsun/verus/research/project-plan-20261102/xnn-minmax-crosscheck/runs/vmax-rvv/test.elf"
+      ],
+      "run_command": [
+        "/zp_vegeta/scratch_sb/ycsun/verus/research/sol-pipeline-comparison-20261030/tools/qemu-riscv64-static",
+        "-cpu",
+        "rv64,v=true,vlen=256,elen=64,vext_spec=v1.0",
+        "/zp_vegeta/scratch_sb/ycsun/verus/research/project-plan-20261102/xnn-minmax-crosscheck/runs/vmax-rvv/test.elf"
+      ],
+      "first_counterexample": {
+        "n": 1,
+        "case": "left_qnan",
+        "a": "7fc12345",
+        "b": "3f800000",
+        "output": "3f800000",
+        "uniform": 1,
+        "output_frame": 1
+      }
+    },
+    {
+      "kernel": "vmax",
+      "arch": "rvv",
+      "vlen": 512,
+      "cases": 60,
+      "source": "src/f32-vbinary/gen/f32-vmax-rvv-u8v.c",
+      "source_sha256": "ae59218a6ced686dcde0280f2debfec0dadb792cf8cbe16399f83ea58495ab00",
+      "source_git_blob": "a64ec3cd8da980183c724e0b6bdba037e8471e1e",
+      "compile_command": [
+        "/zp_vegeta/scratch_sb/ycsun/verus/research/sol-pipeline-comparison-20261030/tools/ziglang/zig",
+        "cc",
+        "-target",
+        "riscv64-linux-musl",
+        "-mcpu=generic_rv64+m+a+f+d+c+v",
+        "-O3",
+        "-fno-fast-math",
+        "-ffp-contract=off",
+        "-static",
+        "-I/zp_vegeta/scratch_sb/ycsun/verus/benchmark/XNNPACK",
+        "-I/zp_vegeta/scratch_sb/ycsun/verus/benchmark/XNNPACK/src",
+        "-I/zp_vegeta/scratch_sb/ycsun/verus/third_party/zephyr/third-party/executorch/backends/xnnpack/third-party/pthreadpool/include",
+        "-Dtest_rvv=xnn_f32_vmax_ukernel__rvv_u8v",
+        "/zp_vegeta/scratch_sb/ycsun/verus/research/project-plan-20261102/xnn-minmax-crosscheck/upstream/src/f32-vbinary/gen/f32-vmax-rvv-u8v.c",
+        "/zp_vegeta/scratch_sb/ycsun/verus/research/project-plan-20261102/xnn-minmax-crosscheck/harness.c",
+        "-o",
+        "/zp_vegeta/scratch_sb/ycsun/verus/research/project-plan-20261102/xnn-minmax-crosscheck/runs/vmax-rvv/test.elf"
+      ],
+      "run_command": [
+        "/zp_vegeta/scratch_sb/ycsun/verus/research/sol-pipeline-comparison-20261030/tools/qemu-riscv64-static",
+        "-cpu",
+        "rv64,v=true,vlen=512,elen=64,vext_spec=v1.0",
+        "/zp_vegeta/scratch_sb/ycsun/verus/research/project-plan-20261102/xnn-minmax-crosscheck/runs/vmax-rvv/test.elf"
+      ],
+      "first_counterexample": {
+        "n": 1,
+        "case": "left_qnan",
+        "a": "7fc12345",
+        "b": "3f800000",
+        "output": "3f800000",
+        "uniform": 1,
+        "output_frame": 1
+      }
+    },
+    {
+      "kernel": "vmin",
+      "arch": "neon",
+      "vlen": null,
+      "cases": 60,
+      "source": "src/f32-vbinary/gen/f32-vmin-neon-u8.c",
+      "source_sha256": "2abfc5050d671ea1c2e3124d57a7e9b63848d3c48ea8acdf84ddb38a2b7220e1",
+      "source_git_blob": "8d0efea93e61c1422d0695813597ec4f483cc124",
+      "compile_command": [
+        "/zp_vegeta/scratch_sb/ycsun/verus/research/sol-pipeline-comparison-20261030/tools/ziglang/zig",
+        "cc",
+        "-target",
+        "aarch64-linux-musl",
+        "-O3",
+        "-fno-fast-math",
+        "-ffp-contract=off",
+        "-static",
+        "-I/zp_vegeta/scratch_sb/ycsun/verus/benchmark/XNNPACK",
+        "-I/zp_vegeta/scratch_sb/ycsun/verus/benchmark/XNNPACK/src",
+        "-I/zp_vegeta/scratch_sb/ycsun/verus/third_party/zephyr/third-party/executorch/backends/xnnpack/third-party/pthreadpool/include",
+        "-Dtest_neon=xnn_f32_vmin_ukernel__neon_u8",
+        "/zp_vegeta/scratch_sb/ycsun/verus/research/project-plan-20261102/xnn-minmax-crosscheck/upstream/src/f32-vbinary/gen/f32-vmin-neon-u8.c",
+        "/zp_vegeta/scratch_sb/ycsun/verus/research/project-plan-20261102/xnn-minmax-crosscheck/harness.c",
+        "-o",
+        "/zp_vegeta/scratch_sb/ycsun/verus/research/project-plan-20261102/xnn-minmax-crosscheck/runs/vmin-neon/test.elf"
+      ],
+      "run_command": [
+        "/tmp/vekto-qemu-arm/extracted/usr/bin/qemu-aarch64-static",
+        "-cpu",
+        "max",
+        "/zp_vegeta/scratch_sb/ycsun/verus/research/project-plan-20261102/xnn-minmax-crosscheck/runs/vmin-neon/test.elf"
+      ],
+      "first_counterexample": {
+        "n": 1,
+        "case": "left_qnan",
+        "a": "7fc12345",
+        "b": "3f800000",
+        "output": "7fc12345",
+        "uniform": 1,
+        "output_frame": 1
+      }
+    },
+    {
+      "kernel": "vmin",
+      "arch": "rvv",
+      "vlen": 128,
+      "cases": 60,
+      "source": "src/f32-vbinary/gen/f32-vmin-rvv-u8v.c",
+      "source_sha256": "50bc3c273e02db58dd977feaf6253aab88d2ca45f79dd0b19eb28997e706cf37",
+      "source_git_blob": "11f774df645b071f730f7e47654356659f460793",
+      "compile_command": [
+        "/zp_vegeta/scratch_sb/ycsun/verus/research/sol-pipeline-comparison-20261030/tools/ziglang/zig",
+        "cc",
+        "-target",
+        "riscv64-linux-musl",
+        "-mcpu=generic_rv64+m+a+f+d+c+v",
+        "-O3",
+        "-fno-fast-math",
+        "-ffp-contract=off",
+        "-static",
+        "-I/zp_vegeta/scratch_sb/ycsun/verus/benchmark/XNNPACK",
+        "-I/zp_vegeta/scratch_sb/ycsun/verus/benchmark/XNNPACK/src",
+        "-I/zp_vegeta/scratch_sb/ycsun/verus/third_party/zephyr/third-party/executorch/backends/xnnpack/third-party/pthreadpool/include",
+        "-Dtest_rvv=xnn_f32_vmin_ukernel__rvv_u8v",
+        "/zp_vegeta/scratch_sb/ycsun/verus/research/project-plan-20261102/xnn-minmax-crosscheck/upstream/src/f32-vbinary/gen/f32-vmin-rvv-u8v.c",
+        "/zp_vegeta/scratch_sb/ycsun/verus/research/project-plan-20261102/xnn-minmax-crosscheck/harness.c",
+        "-o",
+        "/zp_vegeta/scratch_sb/ycsun/verus/research/project-plan-20261102/xnn-minmax-crosscheck/runs/vmin-rvv/test.elf"
+      ],
+      "run_command": [
+        "/zp_vegeta/scratch_sb/ycsun/verus/research/sol-pipeline-comparison-20261030/tools/qemu-riscv64-static",
+        "-cpu",
+        "rv64,v=true,vlen=128,elen=64,vext_spec=v1.0",
+        "/zp_vegeta/scratch_sb/ycsun/verus/research/project-plan-20261102/xnn-minmax-crosscheck/runs/vmin-rvv/test.elf"
+      ],
+      "first_counterexample": {
+        "n": 1,
+        "case": "left_qnan",
+        "a": "7fc12345",
+        "b": "3f800000",
+        "output": "3f800000",
+        "uniform": 1,
+        "output_frame": 1
+      }
+    },
+    {
+      "kernel": "vmin",
+      "arch": "rvv",
+      "vlen": 256,
+      "cases": 60,
+      "source": "src/f32-vbinary/gen/f32-vmin-rvv-u8v.c",
+      "source_sha256": "50bc3c273e02db58dd977feaf6253aab88d2ca45f79dd0b19eb28997e706cf37",
+      "source_git_blob": "11f774df645b071f730f7e47654356659f460793",
+      "compile_command": [
+        "/zp_vegeta/scratch_sb/ycsun/verus/research/sol-pipeline-comparison-20261030/tools/ziglang/zig",
+        "cc",
+        "-target",
+        "riscv64-linux-musl",
+        "-mcpu=generic_rv64+m+a+f+d+c+v",
+        "-O3",
+        "-fno-fast-math",
+        "-ffp-contract=off",
+        "-static",
+        "-I/zp_vegeta/scratch_sb/ycsun/verus/benchmark/XNNPACK",
+        "-I/zp_vegeta/scratch_sb/ycsun/verus/benchmark/XNNPACK/src",
+        "-I/zp_vegeta/scratch_sb/ycsun/verus/third_party/zephyr/third-party/executorch/backends/xnnpack/third-party/pthreadpool/include",
+        "-Dtest_rvv=xnn_f32_vmin_ukernel__rvv_u8v",
+        "/zp_vegeta/scratch_sb/ycsun/verus/research/project-plan-20261102/xnn-minmax-crosscheck/upstream/src/f32-vbinary/gen/f32-vmin-rvv-u8v.c",
+        "/zp_vegeta/scratch_sb/ycsun/verus/research/project-plan-20261102/xnn-minmax-crosscheck/harness.c",
+        "-o",
+        "/zp_vegeta/scratch_sb/ycsun/verus/research/project-plan-20261102/xnn-minmax-crosscheck/runs/vmin-rvv/test.elf"
+      ],
+      "run_command": [
+        "/zp_vegeta/scratch_sb/ycsun/verus/research/sol-pipeline-comparison-20261030/tools/qemu-riscv64-static",
+        "-cpu",
+        "rv64,v=true,vlen=256,elen=64,vext_spec=v1.0",
+        "/zp_vegeta/scratch_sb/ycsun/verus/research/project-plan-20261102/xnn-minmax-crosscheck/runs/vmin-rvv/test.elf"
+      ],
+      "first_counterexample": {
+        "n": 1,
+        "case": "left_qnan",
+        "a": "7fc12345",
+        "b": "3f800000",
+        "output": "3f800000",
+        "uniform": 1,
+        "output_frame": 1
+      }
+    },
+    {
+      "kernel": "vmin",
+      "arch": "rvv",
+      "vlen": 512,
+      "cases": 60,
+      "source": "src/f32-vbinary/gen/f32-vmin-rvv-u8v.c",
+      "source_sha256": "50bc3c273e02db58dd977feaf6253aab88d2ca45f79dd0b19eb28997e706cf37",
+      "source_git_blob": "11f774df645b071f730f7e47654356659f460793",
+      "compile_command": [
+        "/zp_vegeta/scratch_sb/ycsun/verus/research/sol-pipeline-comparison-20261030/tools/ziglang/zig",
+        "cc",
+        "-target",
+        "riscv64-linux-musl",
+        "-mcpu=generic_rv64+m+a+f+d+c+v",
+        "-O3",
+        "-fno-fast-math",
+        "-ffp-contract=off",
+        "-static",
+        "-I/zp_vegeta/scratch_sb/ycsun/verus/benchmark/XNNPACK",
+        "-I/zp_vegeta/scratch_sb/ycsun/verus/benchmark/XNNPACK/src",
+        "-I/zp_vegeta/scratch_sb/ycsun/verus/third_party/zephyr/third-party/executorch/backends/xnnpack/third-party/pthreadpool/include",
+        "-Dtest_rvv=xnn_f32_vmin_ukernel__rvv_u8v",
+        "/zp_vegeta/scratch_sb/ycsun/verus/research/project-plan-20261102/xnn-minmax-crosscheck/upstream/src/f32-vbinary/gen/f32-vmin-rvv-u8v.c",
+        "/zp_vegeta/scratch_sb/ycsun/verus/research/project-plan-20261102/xnn-minmax-crosscheck/harness.c",
+        "-o",
+        "/zp_vegeta/scratch_sb/ycsun/verus/research/project-plan-20261102/xnn-minmax-crosscheck/runs/vmin-rvv/test.elf"
+      ],
+      "run_command": [
+        "/zp_vegeta/scratch_sb/ycsun/verus/research/sol-pipeline-comparison-20261030/tools/qemu-riscv64-static",
+        "-cpu",
+        "rv64,v=true,vlen=512,elen=64,vext_spec=v1.0",
+        "/zp_vegeta/scratch_sb/ycsun/verus/research/project-plan-20261102/xnn-minmax-crosscheck/runs/vmin-rvv/test.elf"
+      ],
+      "first_counterexample": {
+        "n": 1,
+        "case": "left_qnan",
+        "a": "7fc12345",
+        "b": "3f800000",
+        "output": "3f800000",
+        "uniform": 1,
+        "output_frame": 1
+      }
+    }
+  ]
+}

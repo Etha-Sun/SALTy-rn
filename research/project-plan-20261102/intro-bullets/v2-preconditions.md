@@ -1,0 +1,101 @@
+**Paragraph 1: Hardware specialization and human effort**
+
+- Specialized hardware improves performance and energy efficiency.
+- Exploiting these capabilities requires kernels tailored to the hardware.
+- Developing and optimizing these kernels has traditionally required substantial human effort.
+- Developers must understand the hardware, organize computation, and tune performance.
+- Supporting another architecture often requires repeating this work.
+
+**Paragraph 2: CPU SIMD, RVV, and C intrinsics**
+
+- SIMD and vector units bring hardware specialization into modern CPUs.
+- RVV is a relatively new vector extension that is attracting growing interest.
+- Exploiting RVV requires efficient kernels, motivating the reuse of existing SIMD implementations.
+- These architectures have different execution models: NEON uses fixed-width vectors, while RVV selects the active vector length at runtime.
+- C intrinsics expose vector instructions within ordinary C programs.
+- Programmers combine C control flow with vector operations, which the compiler lowers to hardware instructions.
+- This allows developers to exploit vector hardware without writing entire kernels in assembly.
+
+**Paragraph 3: Agent optimization and correctness**
+
+- C intrinsics provide a practical interface for agents to generate and optimize SIMD kernels.
+- Intrinsic descriptions and hardware knowledge guide these transformations.
+- Recent work demonstrates this approach through kernel translation and optimization.
+- Agents may exploit gaps in test coverage, passing tests without preserving the intended behavior.
+- Existing work uses testing and formal validation, including bounded equivalence checking.
+- Our goal is to establish equivalence for all inputs permitted by the preconditions in the spec.
+
+**Paragraph 4: Possible semantic foundations**
+
+- Comparing kernels across ISAs requires a shared basis for reasoning about their behavior.
+- At the assembly level, ISA models describe instructions and architectural state.
+- Sail and Islaris support reasoning at this level.
+- At the IR level, vector operations can be expressed and verified using the IR’s semantics.
+- Alive2 and Rake demonstrate verification through intermediate representations.
+- At the C level, semantic shims interpret intrinsics as C operations.
+- This turns SIMD kernel verification into C program verification.
+
+**Paragraph 5: Why we choose C**
+
+- We aim to prove equivalent outputs for all inputs satisfying the preconditions in the spec.
+- Proving equivalence at the assembly level requires ISA models and reasoning about registers, memory, control flow, and instruction behavior.
+- Fixed-width SIMD and vector-length-agnostic execution are described by separate ISA models. Comparing their kernels requires establishing a correspondence between these models.
+- ISA models are also too detailed. They cover over exception handling and privileged execution, which are outside the scope of our kernel verification.
+- We choose the C level to reason directly about the kernel’s source code.
+- We give each supported intrinsic an explicit C definition of its numerical and memory behavior.
+- Human experts review these definitions against ISA documentation.
+- Using these definitions, existing C verification tools can prove the equivalence of both kernels.
+
+**Paragraph 6: The Vekto framework**
+
+- We present Vekto, a framework for checking kernel equivalence across ISAs.
+- Reusable C semantic shims cover supported NEON, RVV, AVX, and Hexagon HVX intrinsics.
+- Each kernel pair uses the corresponding shims and a common output specification.
+- QCP generates verification conditions for the annotated C programs.
+- These conditions cover loop invariants, memory accesses, and postconditions.
+- Implementations, specifications, and proofs remain separate.
+- Agents either prove or investigate failed obligations for concrete counterexamples.
+
+**Paragraph 7: Human review and repair**
+
+- Human experts only need to review the equivalence spec and the verification feedback.
+- When verification identifies a counterexample, experts check whether it can occur under the intended usage conditions.
+- If the spec omits a required input constraint, experts add the corresponding precondition without excluding valid inputs.
+- Otherwise, the counterexample guides a repair that preserves performance as much as possible.
+- The repaired kernel is then verified again.
+
+**Paragraph 8: Three applications**
+
+- We identify three useful downstream tasks for this equivalence verification framework.
+
+(1. Verify optimized kernels and programs)
+
+- Check that an optimized kernel or program preserves its reference behavior, within one ISA or across ISAs.
+- Agents may exploit gaps in tests to produce faster code that changes the intended behavior.
+- Proving equivalence for all inputs permitted by the spec helps guard against this form of reward hacking.
+
+(2. Translate kernels across ISAs)
+
+- Existing NEON and AVX libraries provide implementations developed and maintained over years of optimization.
+- When an RVV or HVX library lacks an operation, these implementations provide a starting point for translation.
+- Manually porting and checking such kernels requires substantial engineering effort.
+- Our framework supports translation together with a proof that the target kernel preserves the source behavior under the preconditions in the spec.
+- This can reduce the manual effort needed to check each translation.
+
+(3. Cross-check existing implementations)
+
+- Libraries may contain independent implementations of the same operation for different ISAs.
+- We compare these implementations directly to determine whether they produce equivalent outputs under the same preconditions.
+- When they differ, concrete counterexamples identify the inputs and instruction behavior responsible for the difference.
+- Experts can then determine whether the difference is permitted by the library's requirements or indicates a bug.
+
+**Paragraph 9: Evaluation**
+
+- Evaluate Vekto across multiple ISAs and verification tasks.
+- Use 35 pairs of NEON reference kernels and their final optimized RVV translations from SALTyRN, repairing the RVV implementations where needed and verifying their equivalence.
+- Report **[TBD]** verified pairs and **[TBD]** speedup over the handwritten RVV baseline.
+- Translate **[TBD]** operations from existing AVX implementations to RVV and HVX libraries that lack these operations, and verify their equivalence to the AVX implementations.
+- Cross-check corresponding XNNPACK implementations and report **[TBD]** discrepancies and upstream outcomes.
+- Extend the evaluation to an application-level SIMD program, with softmax as the candidate, by translating and optimizing a NEON implementation for RVV and verifying their equivalence.
+- Report **[TBD]** speedup over a handwritten RVV implementation of the same program.
+- Report verification time, token cost, implementation changes, and performance before and after repairs.

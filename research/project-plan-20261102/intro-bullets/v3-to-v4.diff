@@ -1,0 +1,12 @@
+--- v3-before-v4.md
++++ v4-isa-models.md
+@@ -38,7 +38,8 @@
+ **Paragraph 5: Why we choose C**
+ 
+ - We aim to prove equivalent outputs for all inputs satisfying the preconditions in the spec.
+-- At the assembly level, this requires relating the registers, memory, and execution state of two different ISAs.
++- NEON and RVV are described by separate ISA models with different architectural states and vector execution rules.
++- Proving equivalence requires relating these states and showing that fixed-width SIMD and vector-length-agnostic execution perform the same computation.
+ - Detailed ISA models also cover exception handling and privileged execution, which are outside the scope of our kernel verification.
+ - We choose the C level to reason directly about the kernel’s source code, including its loops, pointers, and intrinsic calls.
+ - We give each supported intrinsic an explicit C definition of its numerical and memory behavior.

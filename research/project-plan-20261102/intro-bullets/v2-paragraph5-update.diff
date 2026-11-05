@@ -1,0 +1,24 @@
+--- v2-before-paragraph5-update.md
++++ v2-preconditions.md
+@@ -37,13 +37,14 @@
+ 
+ **Paragraph 5: Why we choose C**
+ 
+-- We focus on functional equivalence under the preconditions in the spec.
+-- The relevant behavior includes kernel outputs (memory access...)
+-- Assembly-level proving involves relating architectural states and execution environments.
+-- C already exposes the kernel’s loops, pointers, and intrinsic calls.
+-- C interpretations keep intrinsic semantics close to the source and accessible to review.
+-- Human experts review these interpretations against ISA documentation.
+-- Existing C verification infrastructure then supports proofs of the complete kernels.
++- We aim to prove equivalent outputs for all inputs satisfying the preconditions in the spec.
++- NEON and RVV are described by separate ISA models with different architectural states and vector execution rules.
++- Proving equivalence requires relating these states and showing that fixed-width SIMD and vector-length-agnostic execution perform the same computation.
++- Detailed ISA models also cover exception handling and privileged execution, which are outside the scope of our kernel verification.
++- We choose the C level to reason directly about the kernel’s source code, including its loops, pointers, and intrinsic calls.
++- We give each supported intrinsic an explicit C definition of its numerical and memory behavior.
++- Human experts review these definitions against ISA documentation.
++- Using these definitions, existing C verification tools can prove that both kernels satisfy the common spec.
+ 
+ **Paragraph 6: The Vekto framework**
+ 

@@ -1,0 +1,9 @@
+--- kernels/source/qd8-f32-qc8w-igemm-minmax.c
++++ verification/qcp/verified/qd8-f32-qc8w-igemm-minmax/impl/testNEON.c
+@@ -200,5 +200,5 @@
+       vst1q_f32(&c0[4], vout0x4567);
+ 
+-      a = (const int8_t**restrict) ((uintptr_t) a - ks);
++      a = (const int8_t**) ((uintptr_t) a - ks);
+ 
+       c0 = (float*) ((uintptr_t) c0 + cn_stride);

@@ -1,0 +1,8 @@
+--- kernels/target/qs8-rsum.c
++++ verification/qcp/verified/qs8-rsum/impl/testRVV.c
+@@ -34,4 +34,4 @@
+   vres = __riscv_vredsum_vs_i32m8_i32m1(vacc, vres, vlmax);
+   
+-  *output += __riscv_vmv_x_s_i32m1_i32(vres);
++  *output = (int32_t)((uint32_t)*output + (uint32_t)__riscv_vmv_x_s_i32m1_i32(vres));
+ }

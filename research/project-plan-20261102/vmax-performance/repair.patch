@@ -1,0 +1,24 @@
+--- optimized.c
++++ repaired.c
+@@ -35,6 +35,10 @@
+ 
+     // vfmax targets the VXS sequencer (FPConvPipe).
+     vfloat32m8_t vacc = __riscv_vfmax_vv_f32m8(va, vb, vlmax);
++    vbool4_t a_nan = __riscv_vmfne_vv_f32m8_b4(va, va, vlmax);
++    vbool4_t b_nan = __riscv_vmfne_vv_f32m8_b4(vb, vb, vlmax);
++    vbool4_t any_nan = __riscv_vmor_mm_b4(a_nan, b_nan, vlmax);
++    vacc = __riscv_vfmerge_vfm_f32m8(vacc, __builtin_nanf(""), any_nan, vlmax);
+ 
+     // vse targets the VSS sequencer.
+     __riscv_vse32_v_f32m8(output, vacc, vlmax);
+@@ -56,6 +60,10 @@
+     vfloat32m8_t vb = __riscv_vle32_v_f32m8(input_b, vl);
+ 
+     vfloat32m8_t vacc = __riscv_vfmax_vv_f32m8(va, vb, vl);
++    vbool4_t a_nan = __riscv_vmfne_vv_f32m8_b4(va, va, vl);
++    vbool4_t b_nan = __riscv_vmfne_vv_f32m8_b4(vb, vb, vl);
++    vbool4_t any_nan = __riscv_vmor_mm_b4(a_nan, b_nan, vl);
++    vacc = __riscv_vfmerge_vfm_f32m8(vacc, __builtin_nanf(""), any_nan, vl);
+ 
+     __riscv_vse32_v_f32m8(output, vacc, vl);
+   }

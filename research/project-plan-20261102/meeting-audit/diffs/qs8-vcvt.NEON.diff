@@ -1,0 +1,9 @@
+--- kernels/source/qs8-vcvt.c
++++ verification/qcp/verified/qs8-vcvt/impl/testNEON.c
+@@ -21,5 +21,5 @@
+ 
+   const int16x8_t vinput_zero_point = vdupq_n_s16(params->scalar.input_zero_point);
+-  const int16x8_t vmultiplier = vdupq_n_s16(-params->scalar.multiplier);
++  const int16x8_t vmultiplier = vdupq_n_s16((int16_t)(0u - (uint32_t) params->scalar.multiplier));
+   const int16x8_t voutput_zero_point = vdupq_n_s16(params->scalar.output_zero_point);
+   for (; batch >= 8 * sizeof(int8_t); batch -= 8 * sizeof(int8_t)) {

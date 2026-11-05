@@ -1,0 +1,43 @@
+
+research/project-plan-20261102/vmax-performance/runs/repaired/test.elf:     file format elf64-littleriscv
+
+
+Disassembly of section .text.init:
+
+Disassembly of section .text:
+
+000000008000330e <test_rvv>:
+    8000330e:	8109                	srli	a0,a0,0x2
+    80003310:	0d3077d7          	vsetvli	a5,zero,e32,m8,ta,ma
+    80003314:	02f56e63          	bltu	a0,a5,80003350 <test_rvv+0x42>
+    80003318:	00000717          	auipc	a4,0x0
+    8000331c:	1f872787          	flw	fa5,504(a4) # 80003510 <main+0x190>
+    80003320:	00279713          	slli	a4,a5,0x2
+    80003324:	0205e407          	vle32.v	v8,(a1)
+    80003328:	02066807          	vle32.v	v16,(a2)
+    8000332c:	8d1d                	sub	a0,a0,a5
+    8000332e:	95ba                	add	a1,a1,a4
+    80003330:	963a                	add	a2,a2,a4
+    80003332:	72841057          	vmfne.vv	v0,v8,v8
+    80003336:	730810d7          	vmfne.vv	v1,v16,v16
+    8000333a:	1a881457          	vfmax.vv	v8,v8,v16
+    8000333e:	6a00a057          	vmor.mm	v0,v0,v1
+    80003342:	5c87d457          	vfmerge.vfm	v8,v8,fa5,v0
+    80003346:	0206e427          	vse32.v	v8,(a3)
+    8000334a:	96ba                	add	a3,a3,a4
+    8000334c:	fcf57ce3          	bgeu	a0,a5,80003324 <test_rvv+0x16>
+    80003350:	c51d                	beqz	a0,8000337e <test_rvv+0x70>
+    80003352:	0d357057          	vsetvli	zero,a0,e32,m8,ta,ma
+    80003356:	0205e407          	vle32.v	v8,(a1)
+    8000335a:	02066807          	vle32.v	v16,(a2)
+    8000335e:	00000797          	auipc	a5,0x0
+    80003362:	1b27a787          	flw	fa5,434(a5) # 80003510 <main+0x190>
+    80003366:	72841057          	vmfne.vv	v0,v8,v8
+    8000336a:	730810d7          	vmfne.vv	v1,v16,v16
+    8000336e:	1a881457          	vfmax.vv	v8,v8,v16
+    80003372:	6a00a057          	vmor.mm	v0,v0,v1
+    80003376:	5c87d457          	vfmerge.vfm	v8,v8,fa5,v0
+    8000337a:	0206e427          	vse32.v	v8,(a3)
+    8000337e:	8082                	ret
+
+Disassembly of section .text.startup:

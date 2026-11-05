@@ -1,0 +1,9 @@
+{
+  "claim_type": "computed_and_parsed",
+  "gcc_legal_configuration": "e8,mf4; vlsseg8e32: EMUL=(32/8)*(1/4)=1, NF*EMUL=8",
+  "rtl_source_calculation": "fractional LMUL is clamped to exponent 0 before EEW/SEW adjustment; 0+(log2(32)-log2(8))=2 -> EMUL4",
+  "observed": "NF8 field1 appears at destination field4; QEMU passes same GCC object; RTL fails. E32 caller initialization does not fix the GCC kernel because its own vsetivli is e8,mf4.",
+  "compiler_control": "Same C source compiled by existing Zig0.15.2/Clang uses e32,m1 for that load; full native/RTL result is in diagnostics/segmented-load-clang.",
+  "source_sha256": "66c16595d01edd741eb3bcf6d31ba7987e31873bb9b168cd8a2288e3edb082a3",
+  "limitation": "Source-level explanation agrees with observed register spacing; no patched-RTL rebuild performed, no claim about the original paper FPGA design."
+}

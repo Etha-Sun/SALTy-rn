@@ -1,0 +1,57 @@
+#include <riscv_vector.h>
+#include <assert.h>
+#include <stddef.h>
+
+/*
+ * Optimized for Saturn RVV Microarchitecture:
+ * 1. Used C99 'restrict' to enable hardware memory disambiguation, allowing 
+ *    the Load Sequencer (VLS) to overlap with the Store Sequencer (VSS) from 
+ *    the previous loop iteration.
+ * 2. Utilized LMUL=8 to maximize chime length. On Saturn's short-vector 
+ *    design, LMUL=8 (chime length = 8 * VLEN/DLEN) is long enough to fully 
+ *    hide the 4-stage FMA/Mul pipeline latency, even without software 
+ *    unrolling.
+ * 3. Maintained decoupled scalar bookkeeping: Pointer increments and loop 
+ *    counters are calculated while the vector units are executing, taking 
+ *    advantage of Saturn's Decoupled Access-Execute (DAE) model.
+ */
+
+void test_rvv(
+    size_t batch,
+    const float* restrict input_a,
+    const float* restrict input_b,
+    float* restrict output,
+    const struct xnn_f32_default_params* params)
+{
+  assert(batch != 0);
+  assert(batch % sizeof(float) == 0);
+  assert(input_a != NULL);
+  assert(input_b != NULL);
+  assert(output != NULL);
+
+  size_t n = batch / sizeof(float);
+  while (n > 0) {
+    // Set vector length for 32-bit elements with LMUL=8 to maximize throughput
+    size_t vl = __riscv_vsetvl_e32m8(n);
+    
+    // Vector Load Sequencer (VLS)
+    // The 'restrict' keyword allows these loads to issue even if previous 
+    // iteration stores are still in flight.
+    vfloat32m8_t va = __riscv_vle32_v_f32m8(input_a, vl);
+    vfloat32m8_t vb = __riscv_vle32_v_f32m8(input_b, vl);
+    
+    // Vector Execute Sequencer (VXS)
+    // Chaining occurs: Mul starts as soon as initial elements of va/vb arrive.
+    vfloat32m8_t vacc = __riscv_vfmul_vv_f32m8(va, vb, vl);
+    
+    // Vector Store Sequencer (VSS)
+    // Chaining occurs: Store starts as soon as initial elements of vacc are computed.
+    __riscv_vse32_v_f32m8(output, vacc, vl);
+    
+    // Scalar core executes these updates in parallel with vector execution
+    input_a += vl;
+    input_b += vl;
+    output += vl;
+    n -= vl;
+  }
+}

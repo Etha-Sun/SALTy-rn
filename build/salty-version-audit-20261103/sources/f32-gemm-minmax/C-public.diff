@@ -1,0 +1,849 @@
+--- A-target
++++ C-public
+@@ -1,95 +1,29 @@
+-/* Preserve Arm DN=0/AH=0 NaN payload selection around an RVV FMA.
+-   Non-NaN lanes retain the hardware result. This correctness-first fallback
+-   uses bounded scratch storage; flags/traps are not emulated. */
+-static inline vfloat32m4_t rvv_gemm_neon_fma(
+-    vfloat32m4_t acc, float a, vfloat32m4_t b, size_t vl)
++#include <riscv_vector.h>
++#include <assert.h>
++#include <stdint.h>
++#include <stddef.h>
++
++// Canonical layout in `src` (src_n = nc*(kc_elems+1) floats, nr=8 column
++// tiles): per tile of 8 output columns, [bias[8], then for each of the
++// kc_elems k-steps: 8 weights — one per column in the tile]. Tiles follow
++// each other in increasing column order. This identity copy keeps that
++// order.
++static void pack_weights(const void* src_v, size_t src_n,
++                         void* dst_v, size_t dst_cap)
+ {
+-  assert(vl <= 8);
+-  vfloat32m4_t result = __riscv_vfmacc_vf_f32m4(acc, a, b, vl);
+-  uint32_t ab;
+-  __builtin_memcpy(&ab, &a, sizeof(ab));
+-  uint32_t amag = ab & 0x7FFFFFFFu;
+-  int an = amag > 0x7F800000u;
+-  if (!an &&
+-      __riscv_vcpop_m_b8(__riscv_vmfeq_vv_f32m4_b8(acc, acc, vl), vl) == vl &&
+-      __riscv_vcpop_m_b8(__riscv_vmfeq_vv_f32m4_b8(b, b, vl), vl) == vl) {
+-    return result;
+-  }
+-
+-  float saved_acc[8], saved_b[8], saved_result[8];
+-  __riscv_vse32_v_f32m4(saved_acc, acc, vl);
+-  __riscv_vse32_v_f32m4(saved_b, b, vl);
+-  __riscv_vse32_v_f32m4(saved_result, result, vl);
+-  for (size_t lane = 0; lane < vl; lane++) {
+-    uint32_t cb, bb, selected;
+-    __builtin_memcpy(&cb, &saved_acc[lane], sizeof(cb));
+-    __builtin_memcpy(&bb, &saved_b[lane], sizeof(bb));
+-    uint32_t cmag = cb & 0x7FFFFFFFu;
+-    uint32_t bmag = bb & 0x7FFFFFFFu;
+-    int cn = cmag > 0x7F800000u;
+-    int bn = bmag > 0x7F800000u;
+-    int cs = cn && !(cb & 0x00400000u);
+-    int as = an && !(ab & 0x00400000u);
+-    int bs = bn && !(bb & 0x00400000u);
+-    int invalid_product = (amag == 0 && bmag == 0x7F800000u) ||
+-                          (amag == 0x7F800000u && bmag == 0);
+-    if (cn && !cs && invalid_product) {
+-      selected = 0x7FC00000u;
+-    } else if (cs) {
+-      selected = cb | 0x00400000u;
+-    } else if (as) {
+-      selected = ab | 0x00400000u;
+-    } else if (bs) {
+-      selected = bb | 0x00400000u;
+-    } else if (cn) {
+-      selected = cb | 0x00400000u;
+-    } else if (an) {
+-      selected = ab | 0x00400000u;
+-    } else if (bn) {
+-      selected = bb | 0x00400000u;
+-    } else {
+-      continue;
++    const float* src = (const float*)src_v;
++    float*       dst = (float*)dst_v;
++    (void)dst_cap;
++    for (size_t i = 0; i < src_n; i++) {
++        dst[i] = src[i];
+     }
+-    __builtin_memcpy(&saved_result[lane], &selected, sizeof(selected));
+-  }
+-  return __riscv_vle32_v_f32m4(saved_result, vl);
+ }
+ 
+-/* NEON FMIN then FMAX value semantics for an accumulator already quieted
+-   by at least one FMA, under FPCR.DN=0/AH=0. FP flags are not emulated.
+-   A signaling lower bound wins in FMAX; otherwise a signaling upper bound
+-   wins in FMIN. Quiet accumulator NaNs precede quiet bound NaNs. */
+-static inline vfloat32m4_t rvv_gemm_neon_clamp(
+-    vfloat32m4_t acc, float lo, float hi, size_t vl)
+-{
+-  uint32_t lo_bits, hi_bits;
+-  __builtin_memcpy(&lo_bits, &lo, sizeof(lo_bits));
+-  __builtin_memcpy(&hi_bits, &hi, sizeof(hi_bits));
+-  int lo_nan = (lo_bits & 0x7FFFFFFFu) > 0x7F800000u;
+-  int hi_nan = (hi_bits & 0x7FFFFFFFu) > 0x7F800000u;
+-  int lo_signaling = lo_nan && !(lo_bits & 0x00400000u);
+-  int hi_signaling = hi_nan && !(hi_bits & 0x00400000u);
+-  if (lo_signaling || hi_signaling) {
+-    uint32_t result_bits = (lo_signaling ? lo_bits : hi_bits) | 0x00400000u;
+-    float result;
+-    __builtin_memcpy(&result, &result_bits, sizeof(result));
+-    return __riscv_vfmv_v_f_f32m4(result, vl);
+-  }
+-
+-  vbool8_t ordered = __riscv_vmfeq_vv_f32m4_b8(acc, acc, vl);
+-  vfloat32m4_t result;
+-  if (hi_nan || lo_nan) {
+-    uint32_t result_bits = (hi_nan ? hi_bits : lo_bits) | 0x00400000u;
+-    float bound;
+-    __builtin_memcpy(&bound, &result_bits, sizeof(bound));
+-    result = __riscv_vfmv_v_f_f32m4(bound, vl);
+-  } else {
+-    result = __riscv_vfmin_vf_f32m4(acc, hi, vl);
+-    result = __riscv_vfmax_vf_f32m4(result, lo, vl);
+-  }
+-  return __riscv_vmerge_vvm_f32m4(acc, result, ordered, vl);
+-}
+-
++// Strategy: Compiler branch prediction directives (Strategy 17).
++// We use `__builtin_expect` on loop conditions and tail branches to give 
++// the compiler explicit branch probabilities, ensuring the primary execution
++// paths are laid out linearly in memory. This maximizes fetch efficiency and
++// avoids branch misprediction pipeline flushes.
+ void test_rvv(
+     size_t mr,
+     size_t nc,
+@@ -111,73 +45,660 @@
+   assert(w != NULL);
+   assert(c != NULL);
+ 
+-  const float* a0 = a;
+-  float* c0 = c;
+-  const float* a1 = (const float*) ((uintptr_t) a0 + a_stride);
+-  float* c1 = (float*) ((uintptr_t) c0 + cm_stride);
+-  if (mr < 2) {
+-    a1 = a0;
+-    c1 = c0;
++  const float min_v = params->scalar.min;
++  const float max_v = params->scalar.max;
++  const size_t kc_elements = kc / sizeof(float);
++  const size_t tile_stride = 8 + kc_elements * 8;
++
++  switch (mr) {
++    case 4: {
++      const float *a0 = a;
++      const float *a1 = (const float*) ((uintptr_t) a0 + a_stride);
++      const float *a2 = (const float*) ((uintptr_t) a1 + a_stride);
++      const float *a3 = (const float*) ((uintptr_t) a2 + a_stride);
++      float *c0 = c;
++      float *c1 = (float*) ((uintptr_t) c0 + cm_stride);
++      float *c2 = (float*) ((uintptr_t) c1 + cm_stride);
++      float *c3 = (float*) ((uintptr_t) c2 + cm_stride);
++
++      while (__builtin_expect(nc >= 16, 1)) {
++        size_t vl = __riscv_vsetvl_e32m2(8);
++        const float *w0 = w, *w1 = w + tile_stride;
++        vfloat32m2_t vacc00 = __riscv_vle32_v_f32m2(w0, vl); w0 += 8;
++        vfloat32m2_t vacc01 = __riscv_vle32_v_f32m2(w1, vl); w1 += 8;
++        vfloat32m2_t vacc10 = vacc00, vacc11 = vacc01;
++        vfloat32m2_t vacc20 = vacc00, vacc21 = vacc01;
++        vfloat32m2_t vacc30 = vacc00, vacc31 = vacc01;
++
++        const float *ak0 = a0, *ak1 = a1, *ak2 = a2, *ak3 = a3;
++        size_t k = kc;
++        while (__builtin_expect(k >= 4 * sizeof(float), 1)) {
++          vfloat32m2_t vb0_0 = __riscv_vle32_v_f32m2(w0, vl);
++          vfloat32m2_t vb1_0 = __riscv_vle32_v_f32m2(w1, vl);
++          float av0_0 = ak0[0], av1_0 = ak1[0], av2_0 = ak2[0], av3_0 = ak3[0];
++          
++          vfloat32m2_t vb0_1 = __riscv_vle32_v_f32m2(w0 + 8, vl);
++          vfloat32m2_t vb1_1 = __riscv_vle32_v_f32m2(w1 + 8, vl);
++          float av0_1 = ak0[1], av1_1 = ak1[1], av2_1 = ak2[1], av3_1 = ak3[1];
++          
++          vacc00 = __riscv_vfmacc_vf_f32m2(vacc00, av0_0, vb0_0, vl);
++          vacc01 = __riscv_vfmacc_vf_f32m2(vacc01, av0_0, vb1_0, vl);
++          vacc10 = __riscv_vfmacc_vf_f32m2(vacc10, av1_0, vb0_0, vl);
++          vacc11 = __riscv_vfmacc_vf_f32m2(vacc11, av1_0, vb1_0, vl);
++          vacc20 = __riscv_vfmacc_vf_f32m2(vacc20, av2_0, vb0_0, vl);
++          vacc21 = __riscv_vfmacc_vf_f32m2(vacc21, av2_0, vb1_0, vl);
++          vacc30 = __riscv_vfmacc_vf_f32m2(vacc30, av3_0, vb0_0, vl);
++          vacc31 = __riscv_vfmacc_vf_f32m2(vacc31, av3_0, vb1_0, vl);
++
++          vfloat32m2_t vb0_2 = __riscv_vle32_v_f32m2(w0 + 16, vl);
++          vfloat32m2_t vb1_2 = __riscv_vle32_v_f32m2(w1 + 16, vl);
++          float av0_2 = ak0[2], av1_2 = ak1[2], av2_2 = ak2[2], av3_2 = ak3[2];
++          
++          vacc00 = __riscv_vfmacc_vf_f32m2(vacc00, av0_1, vb0_1, vl);
++          vacc01 = __riscv_vfmacc_vf_f32m2(vacc01, av0_1, vb1_1, vl);
++          vacc10 = __riscv_vfmacc_vf_f32m2(vacc10, av1_1, vb0_1, vl);
++          vacc11 = __riscv_vfmacc_vf_f32m2(vacc11, av1_1, vb1_1, vl);
++          vacc20 = __riscv_vfmacc_vf_f32m2(vacc20, av2_1, vb0_1, vl);
++          vacc21 = __riscv_vfmacc_vf_f32m2(vacc21, av2_1, vb1_1, vl);
++          vacc30 = __riscv_vfmacc_vf_f32m2(vacc30, av3_1, vb0_1, vl);
++          vacc31 = __riscv_vfmacc_vf_f32m2(vacc31, av3_1, vb1_1, vl);
++
++          vfloat32m2_t vb0_3 = __riscv_vle32_v_f32m2(w0 + 24, vl);
++          vfloat32m2_t vb1_3 = __riscv_vle32_v_f32m2(w1 + 24, vl);
++          float av0_3 = ak0[3], av1_3 = ak1[3], av2_3 = ak2[3], av3_3 = ak3[3];
++
++          vacc00 = __riscv_vfmacc_vf_f32m2(vacc00, av0_2, vb0_2, vl);
++          vacc01 = __riscv_vfmacc_vf_f32m2(vacc01, av0_2, vb1_2, vl);
++          vacc10 = __riscv_vfmacc_vf_f32m2(vacc10, av1_2, vb0_2, vl);
++          vacc11 = __riscv_vfmacc_vf_f32m2(vacc11, av1_2, vb1_2, vl);
++          vacc20 = __riscv_vfmacc_vf_f32m2(vacc20, av2_2, vb0_2, vl);
++          vacc21 = __riscv_vfmacc_vf_f32m2(vacc21, av2_2, vb1_2, vl);
++          vacc30 = __riscv_vfmacc_vf_f32m2(vacc30, av3_2, vb0_2, vl);
++          vacc31 = __riscv_vfmacc_vf_f32m2(vacc31, av3_2, vb1_2, vl);
++
++          vacc00 = __riscv_vfmacc_vf_f32m2(vacc00, av0_3, vb0_3, vl);
++          vacc01 = __riscv_vfmacc_vf_f32m2(vacc01, av0_3, vb1_3, vl);
++          vacc10 = __riscv_vfmacc_vf_f32m2(vacc10, av1_3, vb0_3, vl);
++          vacc11 = __riscv_vfmacc_vf_f32m2(vacc11, av1_3, vb1_3, vl);
++          vacc20 = __riscv_vfmacc_vf_f32m2(vacc20, av2_3, vb0_3, vl);
++          vacc21 = __riscv_vfmacc_vf_f32m2(vacc21, av2_3, vb1_3, vl);
++          vacc30 = __riscv_vfmacc_vf_f32m2(vacc30, av3_3, vb0_3, vl);
++          vacc31 = __riscv_vfmacc_vf_f32m2(vacc31, av3_3, vb1_3, vl);
++
++          w0 += 32; w1 += 32;
++          ak0 += 4; ak1 += 4; ak2 += 4; ak3 += 4;
++          k -= 4 * sizeof(float);
++        }
++
++        while (__builtin_expect(k > 0, 0)) {
++          vfloat32m2_t vb0 = __riscv_vle32_v_f32m2(w0, vl); w0 += 8;
++          vfloat32m2_t vb1 = __riscv_vle32_v_f32m2(w1, vl); w1 += 8;
++          float av0 = *ak0++, av1 = *ak1++, av2 = *ak2++, av3 = *ak3++;
++          vacc00 = __riscv_vfmacc_vf_f32m2(vacc00, av0, vb0, vl);
++          vacc01 = __riscv_vfmacc_vf_f32m2(vacc01, av0, vb1, vl);
++          vacc10 = __riscv_vfmacc_vf_f32m2(vacc10, av1, vb0, vl);
++          vacc11 = __riscv_vfmacc_vf_f32m2(vacc11, av1, vb1, vl);
++          vacc20 = __riscv_vfmacc_vf_f32m2(vacc20, av2, vb0, vl);
++          vacc21 = __riscv_vfmacc_vf_f32m2(vacc21, av2, vb1, vl);
++          vacc30 = __riscv_vfmacc_vf_f32m2(vacc30, av3, vb0, vl);
++          vacc31 = __riscv_vfmacc_vf_f32m2(vacc31, av3, vb1, vl);
++          k -= sizeof(float);
++        }
++
++        vacc00 = __riscv_vfmin_vf_f32m2(vacc00, max_v, vl);
++        vacc01 = __riscv_vfmin_vf_f32m2(vacc01, max_v, vl);
++        vacc10 = __riscv_vfmin_vf_f32m2(vacc10, max_v, vl);
++        vacc11 = __riscv_vfmin_vf_f32m2(vacc11, max_v, vl);
++        vacc20 = __riscv_vfmin_vf_f32m2(vacc20, max_v, vl);
++        vacc21 = __riscv_vfmin_vf_f32m2(vacc21, max_v, vl);
++        vacc30 = __riscv_vfmin_vf_f32m2(vacc30, max_v, vl);
++        vacc31 = __riscv_vfmin_vf_f32m2(vacc31, max_v, vl);
++
++        vacc00 = __riscv_vfmax_vf_f32m2(vacc00, min_v, vl);
++        __riscv_vse32_v_f32m2(c0, vacc00, vl); 
++        vacc01 = __riscv_vfmax_vf_f32m2(vacc01, min_v, vl);
++        __riscv_vse32_v_f32m2((float*)((uintptr_t)c0 + cn_stride), vacc01, vl);
++        
++        vacc10 = __riscv_vfmax_vf_f32m2(vacc10, min_v, vl);
++        __riscv_vse32_v_f32m2(c1, vacc10, vl); 
++        vacc11 = __riscv_vfmax_vf_f32m2(vacc11, min_v, vl);
++        __riscv_vse32_v_f32m2((float*)((uintptr_t)c1 + cn_stride), vacc11, vl);
++        
++        vacc20 = __riscv_vfmax_vf_f32m2(vacc20, min_v, vl);
++        __riscv_vse32_v_f32m2(c2, vacc20, vl); 
++        vacc21 = __riscv_vfmax_vf_f32m2(vacc21, min_v, vl);
++        __riscv_vse32_v_f32m2((float*)((uintptr_t)c2 + cn_stride), vacc21, vl);
++        
++        vacc30 = __riscv_vfmax_vf_f32m2(vacc30, min_v, vl);
++        __riscv_vse32_v_f32m2(c3, vacc30, vl); 
++        vacc31 = __riscv_vfmax_vf_f32m2(vacc31, min_v, vl);
++        __riscv_vse32_v_f32m2((float*)((uintptr_t)c3 + cn_stride), vacc31, vl);
++
++        nc -= 16; 
++        w = w1;
++        c0 = (float*)((uintptr_t)c0 + 2 * cn_stride); 
++        c1 = (float*)((uintptr_t)c1 + 2 * cn_stride);
++        c2 = (float*)((uintptr_t)c2 + 2 * cn_stride); 
++        c3 = (float*)((uintptr_t)c3 + 2 * cn_stride);
++      }
++
++      if (__builtin_expect(nc > 0, 0)) {
++        do {
++          size_t vl = __riscv_vsetvl_e32m4(nc > 8 ? 8 : nc);
++          vfloat32m4_t vacc0 = __riscv_vle32_v_f32m4(w, vl); w += 8;
++          vfloat32m4_t vacc1 = vacc0, vacc2 = vacc0, vacc3 = vacc0;
++
++          const float *ak0 = a0, *ak1 = a1, *ak2 = a2, *ak3 = a3;
++          size_t k = kc;
++          while (__builtin_expect(k >= 4 * sizeof(float), 1)) {
++            vfloat32m4_t vb0 = __riscv_vle32_v_f32m4(w, vl);
++            float av0_0 = ak0[0], av1_0 = ak1[0], av2_0 = ak2[0], av3_0 = ak3[0];
++            vfloat32m4_t vb1 = __riscv_vle32_v_f32m4(w + 8, vl);
++            float av0_1 = ak0[1], av1_1 = ak1[1], av2_1 = ak2[1], av3_1 = ak3[1];
++            
++            vacc0 = __riscv_vfmacc_vf_f32m4(vacc0, av0_0, vb0, vl);
++            vacc1 = __riscv_vfmacc_vf_f32m4(vacc1, av1_0, vb0, vl);
++            vacc2 = __riscv_vfmacc_vf_f32m4(vacc2, av2_0, vb0, vl);
++            vacc3 = __riscv_vfmacc_vf_f32m4(vacc3, av3_0, vb0, vl);
++
++            vfloat32m4_t vb2 = __riscv_vle32_v_f32m4(w + 16, vl);
++            float av0_2 = ak0[2], av1_2 = ak1[2], av2_2 = ak2[2], av3_2 = ak3[2];
++            
++            vacc0 = __riscv_vfmacc_vf_f32m4(vacc0, av0_1, vb1, vl);
++            vacc1 = __riscv_vfmacc_vf_f32m4(vacc1, av1_1, vb1, vl);
++            vacc2 = __riscv_vfmacc_vf_f32m4(vacc2, av2_1, vb1, vl);
++            vacc3 = __riscv_vfmacc_vf_f32m4(vacc3, av3_1, vb1, vl);
++
++            vfloat32m4_t vb3 = __riscv_vle32_v_f32m4(w + 24, vl);
++            float av0_3 = ak0[3], av1_3 = ak1[3], av2_3 = ak2[3], av3_3 = ak3[3];
++            
++            vacc0 = __riscv_vfmacc_vf_f32m4(vacc0, av0_2, vb2, vl);
++            vacc1 = __riscv_vfmacc_vf_f32m4(vacc1, av1_2, vb2, vl);
++            vacc2 = __riscv_vfmacc_vf_f32m4(vacc2, av2_2, vb2, vl);
++            vacc3 = __riscv_vfmacc_vf_f32m4(vacc3, av3_2, vb2, vl);
++
++            vacc0 = __riscv_vfmacc_vf_f32m4(vacc0, av0_3, vb3, vl);
++            vacc1 = __riscv_vfmacc_vf_f32m4(vacc1, av1_3, vb3, vl);
++            vacc2 = __riscv_vfmacc_vf_f32m4(vacc2, av2_3, vb3, vl);
++            vacc3 = __riscv_vfmacc_vf_f32m4(vacc3, av3_3, vb3, vl);
++
++            w += 32; ak0 += 4; ak1 += 4; ak2 += 4; ak3 += 4; k -= 4 * sizeof(float);
++          }
++          
++          while (__builtin_expect(k > 0, 0)) {
++            vfloat32m4_t vb = __riscv_vle32_v_f32m4(w, vl); w += 8;
++            vacc0 = __riscv_vfmacc_vf_f32m4(vacc0, *ak0++, vb, vl);
++            vacc1 = __riscv_vfmacc_vf_f32m4(vacc1, *ak1++, vb, vl);
++            vacc2 = __riscv_vfmacc_vf_f32m4(vacc2, *ak2++, vb, vl);
++            vacc3 = __riscv_vfmacc_vf_f32m4(vacc3, *ak3++, vb, vl);
++            k -= sizeof(float);
++          }
++
++          vacc0 = __riscv_vfmin_vf_f32m4(vacc0, max_v, vl);
++          vacc1 = __riscv_vfmin_vf_f32m4(vacc1, max_v, vl);
++          vacc2 = __riscv_vfmin_vf_f32m4(vacc2, max_v, vl);
++          vacc3 = __riscv_vfmin_vf_f32m4(vacc3, max_v, vl);
++
++          vacc0 = __riscv_vfmax_vf_f32m4(vacc0, min_v, vl);
++          __riscv_vse32_v_f32m4(c0, vacc0, vl);
++          vacc1 = __riscv_vfmax_vf_f32m4(vacc1, min_v, vl);
++          __riscv_vse32_v_f32m4(c1, vacc1, vl);
++          vacc2 = __riscv_vfmax_vf_f32m4(vacc2, min_v, vl);
++          __riscv_vse32_v_f32m4(c2, vacc2, vl);
++          vacc3 = __riscv_vfmax_vf_f32m4(vacc3, min_v, vl);
++          __riscv_vse32_v_f32m4(c3, vacc3, vl);
++
++          nc -= vl;
++          if (__builtin_expect(nc > 0, 0)) {
++            c0 = (float*) ((uintptr_t) c0 + cn_stride);
++            c1 = (float*) ((uintptr_t) c1 + cn_stride);
++            c2 = (float*) ((uintptr_t) c2 + cn_stride);
++            c3 = (float*) ((uintptr_t) c3 + cn_stride);
++          }
++        } while (__builtin_expect(nc > 0, 0));
++      }
++      break;
++    }
++
++    case 3: {
++      const float *a0 = a;
++      const float *a1 = (const float*)((uintptr_t)a0 + a_stride);
++      const float *a2 = (const float*)((uintptr_t)a1 + a_stride);
++      float *c0 = c;
++      float *c1 = (float*)((uintptr_t)c0 + cm_stride);
++      float *c2 = (float*)((uintptr_t)c1 + cm_stride);
++
++      while (__builtin_expect(nc >= 16, 1)) {
++        size_t vl = __riscv_vsetvl_e32m2(8);
++        const float *w0 = w, *w1 = w + tile_stride;
++        vfloat32m2_t vacc00 = __riscv_vle32_v_f32m2(w0, vl); w0 += 8;
++        vfloat32m2_t vacc01 = __riscv_vle32_v_f32m2(w1, vl); w1 += 8;
++        vfloat32m2_t vacc10 = vacc00, vacc11 = vacc01;
++        vfloat32m2_t vacc20 = vacc00, vacc21 = vacc01;
++
++        const float *ak0 = a0, *ak1 = a1, *ak2 = a2;
++        size_t k = kc;
++        while (__builtin_expect(k >= 4 * sizeof(float), 1)) {
++          vfloat32m2_t vb0_0 = __riscv_vle32_v_f32m2(w0, vl);
++          vfloat32m2_t vb1_0 = __riscv_vle32_v_f32m2(w1, vl);
++          float av0_0 = ak0[0], av1_0 = ak1[0], av2_0 = ak2[0];
++          
++          vfloat32m2_t vb0_1 = __riscv_vle32_v_f32m2(w0 + 8, vl);
++          vfloat32m2_t vb1_1 = __riscv_vle32_v_f32m2(w1 + 8, vl);
++          float av0_1 = ak0[1], av1_1 = ak1[1], av2_1 = ak2[1];
++          
++          vacc00 = __riscv_vfmacc_vf_f32m2(vacc00, av0_0, vb0_0, vl);
++          vacc01 = __riscv_vfmacc_vf_f32m2(vacc01, av0_0, vb1_0, vl);
++          vacc10 = __riscv_vfmacc_vf_f32m2(vacc10, av1_0, vb0_0, vl);
++          vacc11 = __riscv_vfmacc_vf_f32m2(vacc11, av1_0, vb1_0, vl);
++          vacc20 = __riscv_vfmacc_vf_f32m2(vacc20, av2_0, vb0_0, vl);
++          vacc21 = __riscv_vfmacc_vf_f32m2(vacc21, av2_0, vb1_0, vl);
++
++          vfloat32m2_t vb0_2 = __riscv_vle32_v_f32m2(w0 + 16, vl);
++          vfloat32m2_t vb1_2 = __riscv_vle32_v_f32m2(w1 + 16, vl);
++          float av0_2 = ak0[2], av1_2 = ak1[2], av2_2 = ak2[2];
++          
++          vacc00 = __riscv_vfmacc_vf_f32m2(vacc00, av0_1, vb0_1, vl);
++          vacc01 = __riscv_vfmacc_vf_f32m2(vacc01, av0_1, vb1_1, vl);
++          vacc10 = __riscv_vfmacc_vf_f32m2(vacc10, av1_1, vb0_1, vl);
++          vacc11 = __riscv_vfmacc_vf_f32m2(vacc11, av1_1, vb1_1, vl);
++          vacc20 = __riscv_vfmacc_vf_f32m2(vacc20, av2_1, vb0_1, vl);
++          vacc21 = __riscv_vfmacc_vf_f32m2(vacc21, av2_1, vb1_1, vl);
++
++          vfloat32m2_t vb0_3 = __riscv_vle32_v_f32m2(w0 + 24, vl);
++          vfloat32m2_t vb1_3 = __riscv_vle32_v_f32m2(w1 + 24, vl);
++          float av0_3 = ak0[3], av1_3 = ak1[3], av2_3 = ak2[3];
++
++          vacc00 = __riscv_vfmacc_vf_f32m2(vacc00, av0_2, vb0_2, vl);
++          vacc01 = __riscv_vfmacc_vf_f32m2(vacc01, av0_2, vb1_2, vl);
++          vacc10 = __riscv_vfmacc_vf_f32m2(vacc10, av1_2, vb0_2, vl);
++          vacc11 = __riscv_vfmacc_vf_f32m2(vacc11, av1_2, vb1_2, vl);
++          vacc20 = __riscv_vfmacc_vf_f32m2(vacc20, av2_2, vb0_2, vl);
++          vacc21 = __riscv_vfmacc_vf_f32m2(vacc21, av2_2, vb1_2, vl);
++
++          vacc00 = __riscv_vfmacc_vf_f32m2(vacc00, av0_3, vb0_3, vl);
++          vacc01 = __riscv_vfmacc_vf_f32m2(vacc01, av0_3, vb1_3, vl);
++          vacc10 = __riscv_vfmacc_vf_f32m2(vacc10, av1_3, vb0_3, vl);
++          vacc11 = __riscv_vfmacc_vf_f32m2(vacc11, av1_3, vb1_3, vl);
++          vacc20 = __riscv_vfmacc_vf_f32m2(vacc20, av2_3, vb0_3, vl);
++          vacc21 = __riscv_vfmacc_vf_f32m2(vacc21, av2_3, vb1_3, vl);
++
++          w0 += 32; w1 += 32;
++          ak0 += 4; ak1 += 4; ak2 += 4;
++          k -= 4 * sizeof(float);
++        }
++
++        while (__builtin_expect(k > 0, 0)) {
++          vfloat32m2_t vb0 = __riscv_vle32_v_f32m2(w0, vl); w0 += 8;
++          vfloat32m2_t vb1 = __riscv_vle32_v_f32m2(w1, vl); w1 += 8;
++          float av0 = *ak0++, av1 = *ak1++, av2 = *ak2++;
++          vacc00 = __riscv_vfmacc_vf_f32m2(vacc00, av0, vb0, vl);
++          vacc01 = __riscv_vfmacc_vf_f32m2(vacc01, av0, vb1, vl);
++          vacc10 = __riscv_vfmacc_vf_f32m2(vacc10, av1, vb0, vl);
++          vacc11 = __riscv_vfmacc_vf_f32m2(vacc11, av1, vb1, vl);
++          vacc20 = __riscv_vfmacc_vf_f32m2(vacc20, av2, vb0, vl);
++          vacc21 = __riscv_vfmacc_vf_f32m2(vacc21, av2, vb1, vl);
++          k -= sizeof(float);
++        }
++
++        vacc00 = __riscv_vfmin_vf_f32m2(vacc00, max_v, vl);
++        vacc01 = __riscv_vfmin_vf_f32m2(vacc01, max_v, vl);
++        vacc10 = __riscv_vfmin_vf_f32m2(vacc10, max_v, vl);
++        vacc11 = __riscv_vfmin_vf_f32m2(vacc11, max_v, vl);
++        vacc20 = __riscv_vfmin_vf_f32m2(vacc20, max_v, vl);
++        vacc21 = __riscv_vfmin_vf_f32m2(vacc21, max_v, vl);
++
++        vacc00 = __riscv_vfmax_vf_f32m2(vacc00, min_v, vl);
++        __riscv_vse32_v_f32m2(c0, vacc00, vl); 
++        vacc01 = __riscv_vfmax_vf_f32m2(vacc01, min_v, vl);
++        __riscv_vse32_v_f32m2((float*)((uintptr_t)c0 + cn_stride), vacc01, vl);
++        
++        vacc10 = __riscv_vfmax_vf_f32m2(vacc10, min_v, vl);
++        __riscv_vse32_v_f32m2(c1, vacc10, vl); 
++        vacc11 = __riscv_vfmax_vf_f32m2(vacc11, min_v, vl);
++        __riscv_vse32_v_f32m2((float*)((uintptr_t)c1 + cn_stride), vacc11, vl);
++        
++        vacc20 = __riscv_vfmax_vf_f32m2(vacc20, min_v, vl);
++        __riscv_vse32_v_f32m2(c2, vacc20, vl); 
++        vacc21 = __riscv_vfmax_vf_f32m2(vacc21, min_v, vl);
++        __riscv_vse32_v_f32m2((float*)((uintptr_t)c2 + cn_stride), vacc21, vl);
++
++        nc -= 16; w = w1;
++        c0 = (float*)((uintptr_t)c0 + 2 * cn_stride);
++        c1 = (float*)((uintptr_t)c1 + 2 * cn_stride);
++        c2 = (float*)((uintptr_t)c2 + 2 * cn_stride);
++      }
++
++      if (__builtin_expect(nc > 0, 0)) {
++        do {
++          size_t vl = __riscv_vsetvl_e32m4(nc > 8 ? 8 : nc);
++          vfloat32m4_t vacc0 = __riscv_vle32_v_f32m4(w, vl); w += 8;
++          vfloat32m4_t vacc1 = vacc0, vacc2 = vacc0;
++
++          const float *ak0 = a0, *ak1 = a1, *ak2 = a2;
++          size_t k = kc;
++          while (__builtin_expect(k >= 4 * sizeof(float), 1)) {
++            vfloat32m4_t vb0 = __riscv_vle32_v_f32m4(w, vl);
++            float av0_0 = ak0[0], av1_0 = ak1[0], av2_0 = ak2[0];
++            vfloat32m4_t vb1 = __riscv_vle32_v_f32m4(w + 8, vl);
++            float av0_1 = ak0[1], av1_1 = ak1[1], av2_1 = ak2[1];
++            
++            vacc0 = __riscv_vfmacc_vf_f32m4(vacc0, av0_0, vb0, vl);
++            vacc1 = __riscv_vfmacc_vf_f32m4(vacc1, av1_0, vb0, vl);
++            vacc2 = __riscv_vfmacc_vf_f32m4(vacc2, av2_0, vb0, vl);
++
++            vfloat32m4_t vb2 = __riscv_vle32_v_f32m4(w + 16, vl);
++            float av0_2 = ak0[2], av1_2 = ak1[2], av2_2 = ak2[2];
++            
++            vacc0 = __riscv_vfmacc_vf_f32m4(vacc0, av0_1, vb1, vl);
++            vacc1 = __riscv_vfmacc_vf_f32m4(vacc1, av1_1, vb1, vl);
++            vacc2 = __riscv_vfmacc_vf_f32m4(vacc2, av2_1, vb1, vl);
++
++            vfloat32m4_t vb3 = __riscv_vle32_v_f32m4(w + 24, vl);
++            float av0_3 = ak0[3], av1_3 = ak1[3], av2_3 = ak2[3];
++            
++            vacc0 = __riscv_vfmacc_vf_f32m4(vacc0, av0_2, vb2, vl);
++            vacc1 = __riscv_vfmacc_vf_f32m4(vacc1, av1_2, vb2, vl);
++            vacc2 = __riscv_vfmacc_vf_f32m4(vacc2, av2_2, vb2, vl);
++
++            vacc0 = __riscv_vfmacc_vf_f32m4(vacc0, av0_3, vb3, vl);
++            vacc1 = __riscv_vfmacc_vf_f32m4(vacc1, av1_3, vb3, vl);
++            vacc2 = __riscv_vfmacc_vf_f32m4(vacc2, av2_3, vb3, vl);
++
++            w += 32; ak0 += 4; ak1 += 4; ak2 += 4; k -= 4 * sizeof(float);
++          }
++          
++          while (__builtin_expect(k > 0, 0)) {
++            vfloat32m4_t vb = __riscv_vle32_v_f32m4(w, vl); w += 8;
++            vacc0 = __riscv_vfmacc_vf_f32m4(vacc0, *ak0++, vb, vl);
++            vacc1 = __riscv_vfmacc_vf_f32m4(vacc1, *ak1++, vb, vl);
++            vacc2 = __riscv_vfmacc_vf_f32m4(vacc2, *ak2++, vb, vl);
++            k -= sizeof(float);
++          }
++
++          vacc0 = __riscv_vfmin_vf_f32m4(vacc0, max_v, vl);
++          vacc1 = __riscv_vfmin_vf_f32m4(vacc1, max_v, vl);
++          vacc2 = __riscv_vfmin_vf_f32m4(vacc2, max_v, vl);
++
++          vacc0 = __riscv_vfmax_vf_f32m4(vacc0, min_v, vl);
++          __riscv_vse32_v_f32m4(c0, vacc0, vl);
++          vacc1 = __riscv_vfmax_vf_f32m4(vacc1, min_v, vl);
++          __riscv_vse32_v_f32m4(c1, vacc1, vl);
++          vacc2 = __riscv_vfmax_vf_f32m4(vacc2, min_v, vl);
++          __riscv_vse32_v_f32m4(c2, vacc2, vl);
++
++          nc -= vl;
++          if (__builtin_expect(nc > 0, 0)) {
++            c0 = (float*) ((uintptr_t) c0 + cn_stride);
++            c1 = (float*) ((uintptr_t) c1 + cn_stride);
++            c2 = (float*) ((uintptr_t) c2 + cn_stride);
++          }
++        } while (__builtin_expect(nc > 0, 0));
++      }
++      break;
++    }
++
++    case 2: {
++      const float *a0 = a;
++      const float *a1 = (const float*)((uintptr_t)a0 + a_stride);
++      float *c0 = c;
++      float *c1 = (float*)((uintptr_t)c0 + cm_stride);
++
++      while (__builtin_expect(nc >= 16, 1)) {
++        size_t vl = __riscv_vsetvl_e32m2(8);
++        const float *w0 = w, *w1 = w + tile_stride;
++        vfloat32m2_t vacc00 = __riscv_vle32_v_f32m2(w0, vl); w0 += 8;
++        vfloat32m2_t vacc01 = __riscv_vle32_v_f32m2(w1, vl); w1 += 8;
++        vfloat32m2_t vacc10 = vacc00, vacc11 = vacc01;
++
++        const float *ak0 = a0, *ak1 = a1;
++        size_t k = kc;
++        while (__builtin_expect(k >= 4 * sizeof(float), 1)) {
++          vfloat32m2_t vb0_0 = __riscv_vle32_v_f32m2(w0, vl);
++          vfloat32m2_t vb1_0 = __riscv_vle32_v_f32m2(w1, vl);
++          float av0_0 = ak0[0], av1_0 = ak1[0];
++          
++          vfloat32m2_t vb0_1 = __riscv_vle32_v_f32m2(w0 + 8, vl);
++          vfloat32m2_t vb1_1 = __riscv_vle32_v_f32m2(w1 + 8, vl);
++          float av0_1 = ak0[1], av1_1 = ak1[1];
++          
++          vacc00 = __riscv_vfmacc_vf_f32m2(vacc00, av0_0, vb0_0, vl);
++          vacc01 = __riscv_vfmacc_vf_f32m2(vacc01, av0_0, vb1_0, vl);
++          vacc10 = __riscv_vfmacc_vf_f32m2(vacc10, av1_0, vb0_0, vl);
++          vacc11 = __riscv_vfmacc_vf_f32m2(vacc11, av1_0, vb1_0, vl);
++
++          vfloat32m2_t vb0_2 = __riscv_vle32_v_f32m2(w0 + 16, vl);
++          vfloat32m2_t vb1_2 = __riscv_vle32_v_f32m2(w1 + 16, vl);
++          float av0_2 = ak0[2], av1_2 = ak1[2];
++          
++          vacc00 = __riscv_vfmacc_vf_f32m2(vacc00, av0_1, vb0_1, vl);
++          vacc01 = __riscv_vfmacc_vf_f32m2(vacc01, av0_1, vb1_1, vl);
++          vacc10 = __riscv_vfmacc_vf_f32m2(vacc10, av1_1, vb0_1, vl);
++          vacc11 = __riscv_vfmacc_vf_f32m2(vacc11, av1_1, vb1_1, vl);
++
++          vfloat32m2_t vb0_3 = __riscv_vle32_v_f32m2(w0 + 24, vl);
++          vfloat32m2_t vb1_3 = __riscv_vle32_v_f32m2(w1 + 24, vl);
++          float av0_3 = ak0[3], av1_3 = ak1[3];
++
++          vacc00 = __riscv_vfmacc_vf_f32m2(vacc00, av0_2, vb0_2, vl);
++          vacc01 = __riscv_vfmacc_vf_f32m2(vacc01, av0_2, vb1_2, vl);
++          vacc10 = __riscv_vfmacc_vf_f32m2(vacc10, av1_2, vb0_2, vl);
++          vacc11 = __riscv_vfmacc_vf_f32m2(vacc11, av1_2, vb1_2, vl);
++
++          vacc00 = __riscv_vfmacc_vf_f32m2(vacc00, av0_3, vb0_3, vl);
++          vacc01 = __riscv_vfmacc_vf_f32m2(vacc01, av0_3, vb1_3, vl);
++          vacc10 = __riscv_vfmacc_vf_f32m2(vacc10, av1_3, vb0_3, vl);
++          vacc11 = __riscv_vfmacc_vf_f32m2(vacc11, av1_3, vb1_3, vl);
++
++          w0 += 32; w1 += 32;
++          ak0 += 4; ak1 += 4;
++          k -= 4 * sizeof(float);
++        }
++
++        while (__builtin_expect(k > 0, 0)) {
++          vfloat32m2_t vb0 = __riscv_vle32_v_f32m2(w0, vl); w0 += 8;
++          vfloat32m2_t vb1 = __riscv_vle32_v_f32m2(w1, vl); w1 += 8;
++          float av0 = *ak0++, av1 = *ak1++;
++          vacc00 = __riscv_vfmacc_vf_f32m2(vacc00, av0, vb0, vl);
++          vacc01 = __riscv_vfmacc_vf_f32m2(vacc01, av0, vb1, vl);
++          vacc10 = __riscv_vfmacc_vf_f32m2(vacc10, av1, vb0, vl);
++          vacc11 = __riscv_vfmacc_vf_f32m2(vacc11, av1, vb1, vl);
++          k -= sizeof(float);
++        }
++
++        vacc00 = __riscv_vfmin_vf_f32m2(vacc00, max_v, vl);
++        vacc01 = __riscv_vfmin_vf_f32m2(vacc01, max_v, vl);
++        vacc10 = __riscv_vfmin_vf_f32m2(vacc10, max_v, vl);
++        vacc11 = __riscv_vfmin_vf_f32m2(vacc11, max_v, vl);
++
++        vacc00 = __riscv_vfmax_vf_f32m2(vacc00, min_v, vl);
++        __riscv_vse32_v_f32m2(c0, vacc00, vl); 
++        vacc01 = __riscv_vfmax_vf_f32m2(vacc01, min_v, vl);
++        __riscv_vse32_v_f32m2((float*)((uintptr_t)c0 + cn_stride), vacc01, vl);
++        
++        vacc10 = __riscv_vfmax_vf_f32m2(vacc10, min_v, vl);
++        __riscv_vse32_v_f32m2(c1, vacc10, vl); 
++        vacc11 = __riscv_vfmax_vf_f32m2(vacc11, min_v, vl);
++        __riscv_vse32_v_f32m2((float*)((uintptr_t)c1 + cn_stride), vacc11, vl);
++
++        nc -= 16; w = w1;
++        c0 = (float*)((uintptr_t)c0 + 2 * cn_stride);
++        c1 = (float*)((uintptr_t)c1 + 2 * cn_stride);
++      }
++
++      if (__builtin_expect(nc > 0, 0)) {
++        do {
++          size_t vl = __riscv_vsetvl_e32m4(nc > 8 ? 8 : nc);
++          vfloat32m4_t vacc0 = __riscv_vle32_v_f32m4(w, vl); w += 8;
++          vfloat32m4_t vacc1 = vacc0;
++
++          const float *ak0 = a0, *ak1 = a1;
++          size_t k = kc;
++          while (__builtin_expect(k >= 4 * sizeof(float), 1)) {
++            vfloat32m4_t vb0 = __riscv_vle32_v_f32m4(w, vl);
++            float av0_0 = ak0[0], av1_0 = ak1[0];
++            vfloat32m4_t vb1 = __riscv_vle32_v_f32m4(w + 8, vl);
++            float av0_1 = ak0[1], av1_1 = ak1[1];
++            
++            vacc0 = __riscv_vfmacc_vf_f32m4(vacc0, av0_0, vb0, vl);
++            vacc1 = __riscv_vfmacc_vf_f32m4(vacc1, av1_0, vb0, vl);
++
++            vfloat32m4_t vb2 = __riscv_vle32_v_f32m4(w + 16, vl);
++            float av0_2 = ak0[2], av1_2 = ak1[2];
++            
++            vacc0 = __riscv_vfmacc_vf_f32m4(vacc0, av0_1, vb1, vl);
++            vacc1 = __riscv_vfmacc_vf_f32m4(vacc1, av1_1, vb1, vl);
++
++            vfloat32m4_t vb3 = __riscv_vle32_v_f32m4(w + 24, vl);
++            float av0_3 = ak0[3], av1_3 = ak1[3];
++            
++            vacc0 = __riscv_vfmacc_vf_f32m4(vacc0, av0_2, vb2, vl);
++            vacc1 = __riscv_vfmacc_vf_f32m4(vacc1, av1_2, vb2, vl);
++
++            vacc0 = __riscv_vfmacc_vf_f32m4(vacc0, av0_3, vb3, vl);
++            vacc1 = __riscv_vfmacc_vf_f32m4(vacc1, av1_3, vb3, vl);
++
++            w += 32; ak0 += 4; ak1 += 4; k -= 4 * sizeof(float);
++          }
++          
++          while (__builtin_expect(k > 0, 0)) {
++            vfloat32m4_t vb = __riscv_vle32_v_f32m4(w, vl); w += 8;
++            vacc0 = __riscv_vfmacc_vf_f32m4(vacc0, *ak0++, vb, vl);
++            vacc1 = __riscv_vfmacc_vf_f32m4(vacc1, *ak1++, vb, vl);
++            k -= sizeof(float);
++          }
++
++          vacc0 = __riscv_vfmin_vf_f32m4(vacc0, max_v, vl);
++          vacc1 = __riscv_vfmin_vf_f32m4(vacc1, max_v, vl);
++
++          vacc0 = __riscv_vfmax_vf_f32m4(vacc0, min_v, vl);
++          __riscv_vse32_v_f32m4(c0, vacc0, vl);
++          vacc1 = __riscv_vfmax_vf_f32m4(vacc1, min_v, vl);
++          __riscv_vse32_v_f32m4(c1, vacc1, vl);
++
++          nc -= vl;
++          if (__builtin_expect(nc > 0, 0)) {
++            c0 = (float*) ((uintptr_t) c0 + cn_stride);
++            c1 = (float*) ((uintptr_t) c1 + cn_stride);
++          }
++        } while (__builtin_expect(nc > 0, 0));
++      }
++      break;
++    }
++
++    case 1: {
++      const float *a0 = a;
++      float *c0 = c;
++
++      while (__builtin_expect(nc >= 16, 1)) {
++        size_t vl = __riscv_vsetvl_e32m2(8);
++        const float *w0 = w, *w1 = w + tile_stride;
++        vfloat32m2_t vacc00 = __riscv_vle32_v_f32m2(w0, vl); w0 += 8;
++        vfloat32m2_t vacc01 = __riscv_vle32_v_f32m2(w1, vl); w1 += 8;
++
++        const float *ak0 = a0;
++        size_t k = kc;
++        while (__builtin_expect(k >= 4 * sizeof(float), 1)) {
++          vfloat32m2_t vb0_0 = __riscv_vle32_v_f32m2(w0, vl);
++          vfloat32m2_t vb1_0 = __riscv_vle32_v_f32m2(w1, vl);
++          float av0_0 = ak0[0];
++          
++          vfloat32m2_t vb0_1 = __riscv_vle32_v_f32m2(w0 + 8, vl);
++          vfloat32m2_t vb1_1 = __riscv_vle32_v_f32m2(w1 + 8, vl);
++          float av0_1 = ak0[1];
++          
++          vacc00 = __riscv_vfmacc_vf_f32m2(vacc00, av0_0, vb0_0, vl);
++          vacc01 = __riscv_vfmacc_vf_f32m2(vacc01, av0_0, vb1_0, vl);
++
++          vfloat32m2_t vb0_2 = __riscv_vle32_v_f32m2(w0 + 16, vl);
++          vfloat32m2_t vb1_2 = __riscv_vle32_v_f32m2(w1 + 16, vl);
++          float av0_2 = ak0[2];
++          
++          vacc00 = __riscv_vfmacc_vf_f32m2(vacc00, av0_1, vb0_1, vl);
++          vacc01 = __riscv_vfmacc_vf_f32m2(vacc01, av0_1, vb1_1, vl);
++
++          vfloat32m2_t vb0_3 = __riscv_vle32_v_f32m2(w0 + 24, vl);
++          vfloat32m2_t vb1_3 = __riscv_vle32_v_f32m2(w1 + 24, vl);
++          float av0_3 = ak0[3];
++
++          vacc00 = __riscv_vfmacc_vf_f32m2(vacc00, av0_2, vb0_2, vl);
++          vacc01 = __riscv_vfmacc_vf_f32m2(vacc01, av0_2, vb1_2, vl);
++
++          vacc00 = __riscv_vfmacc_vf_f32m2(vacc00, av0_3, vb0_3, vl);
++          vacc01 = __riscv_vfmacc_vf_f32m2(vacc01, av0_3, vb1_3, vl);
++
++          w0 += 32; w1 += 32;
++          ak0 += 4;
++          k -= 4 * sizeof(float);
++        }
++
++        while (__builtin_expect(k > 0, 0)) {
++          vfloat32m2_t vb0 = __riscv_vle32_v_f32m2(w0, vl); w0 += 8;
++          vfloat32m2_t vb1 = __riscv_vle32_v_f32m2(w1, vl); w1 += 8;
++          float av0 = *ak0++;
++          vacc00 = __riscv_vfmacc_vf_f32m2(vacc00, av0, vb0, vl);
++          vacc01 = __riscv_vfmacc_vf_f32m2(vacc01, av0, vb1, vl);
++          k -= sizeof(float);
++        }
++
++        vacc00 = __riscv_vfmin_vf_f32m2(vacc00, max_v, vl);
++        vacc01 = __riscv_vfmin_vf_f32m2(vacc01, max_v, vl);
++
++        vacc00 = __riscv_vfmax_vf_f32m2(vacc00, min_v, vl);
++        __riscv_vse32_v_f32m2(c0, vacc00, vl); 
++        vacc01 = __riscv_vfmax_vf_f32m2(vacc01, min_v, vl);
++        __riscv_vse32_v_f32m2((float*)((uintptr_t)c0 + cn_stride), vacc01, vl);
++
++        nc -= 16; w = w1;
++        c0 = (float*)((uintptr_t)c0 + 2 * cn_stride);
++      }
++
++      if (__builtin_expect(nc > 0, 0)) {
++        do {
++          size_t vl = __riscv_vsetvl_e32m4(nc > 8 ? 8 : nc);
++          vfloat32m4_t vacc0 = __riscv_vle32_v_f32m4(w, vl); w += 8;
++
++          const float *ak0 = a0;
++          size_t k = kc;
++          while (__builtin_expect(k >= 4 * sizeof(float), 1)) {
++            vfloat32m4_t vb0 = __riscv_vle32_v_f32m4(w, vl);
++            float av0_0 = ak0[0];
++            vfloat32m4_t vb1 = __riscv_vle32_v_f32m4(w + 8, vl);
++            float av0_1 = ak0[1];
++            
++            vacc0 = __riscv_vfmacc_vf_f32m4(vacc0, av0_0, vb0, vl);
++
++            vfloat32m4_t vb2 = __riscv_vle32_v_f32m4(w + 16, vl);
++            float av0_2 = ak0[2];
++            
++            vacc0 = __riscv_vfmacc_vf_f32m4(vacc0, av0_1, vb1, vl);
++
++            vfloat32m4_t vb3 = __riscv_vle32_v_f32m4(w + 24, vl);
++            float av0_3 = ak0[3];
++            
++            vacc0 = __riscv_vfmacc_vf_f32m4(vacc0, av0_2, vb2, vl);
++            vacc0 = __riscv_vfmacc_vf_f32m4(vacc0, av0_3, vb3, vl);
++
++            w += 32; ak0 += 4; k -= 4 * sizeof(float);
++          }
++          
++          while (__builtin_expect(k > 0, 0)) {
++            vfloat32m4_t vb = __riscv_vle32_v_f32m4(w, vl); w += 8;
++            vacc0 = __riscv_vfmacc_vf_f32m4(vacc0, *ak0++, vb, vl);
++            k -= sizeof(float);
++          }
++
++          vacc0 = __riscv_vfmin_vf_f32m4(vacc0, max_v, vl);
++          vacc0 = __riscv_vfmax_vf_f32m4(vacc0, min_v, vl);
++          __riscv_vse32_v_f32m4(c0, vacc0, vl);
++
++          nc -= vl;
++          if (__builtin_expect(nc > 0, 0)) {
++            c0 = (float*) ((uintptr_t) c0 + cn_stride);
++          }
++        } while (__builtin_expect(nc > 0, 0));
++      }
++      break;
++    }
+   }
+-  const float* a2 = (const float*) ((uintptr_t) a1 + a_stride);
+-  float* c2 = (float*) ((uintptr_t) c1 + cm_stride);
+-  if (mr <= 2) {
+-    a2 = a1;
+-    c2 = c1;
+-  }
+-  const float* a3 = (const float*) ((uintptr_t) a2 + a_stride);
+-  float* c3 = (float*) ((uintptr_t) c2 + cm_stride);
+-  if (mr != 4) {
+-    a3 = a2;
+-    c3 = c2;
+-  }
+-
+-  do {
+-    size_t vl = __riscv_vsetvl_e32m4(nc > 8 ? 8 : nc);
+-
+-    vfloat32m4_t vacc0 = __riscv_vle32_v_f32m4(w, vl); w += 8;
+-    vfloat32m4_t vacc1 = vacc0;
+-    vfloat32m4_t vacc2 = vacc0;
+-    vfloat32m4_t vacc3 = vacc0;
+-
+-    size_t k = kc;
+-    while (k > 0) {
+-      float a0_val = *a0++;
+-      float a1_val = *a1++;
+-      float a2_val = *a2++;
+-      float a3_val = *a3++;
+-      
+-      vfloat32m4_t vb = __riscv_vle32_v_f32m4(w, vl); w += 8;
+-      
+-      vacc0 = rvv_gemm_neon_fma(vacc0, a0_val, vb, vl);
+-      vacc1 = rvv_gemm_neon_fma(vacc1, a1_val, vb, vl);
+-      vacc2 = rvv_gemm_neon_fma(vacc2, a2_val, vb, vl);
+-      vacc3 = rvv_gemm_neon_fma(vacc3, a3_val, vb, vl);
+-      
+-      k -= sizeof(float);
+-    }
+-
+-    vacc0 = rvv_gemm_neon_clamp(vacc0, params->scalar.min, params->scalar.max, vl);
+-    vacc1 = rvv_gemm_neon_clamp(vacc1, params->scalar.min, params->scalar.max, vl);
+-    vacc2 = rvv_gemm_neon_clamp(vacc2, params->scalar.min, params->scalar.max, vl);
+-    vacc3 = rvv_gemm_neon_clamp(vacc3, params->scalar.min, params->scalar.max, vl);
+-
+-    __riscv_vse32_v_f32m4(c0, vacc0, vl);
+-    __riscv_vse32_v_f32m4(c1, vacc1, vl);
+-    __riscv_vse32_v_f32m4(c2, vacc2, vl);
+-    __riscv_vse32_v_f32m4(c3, vacc3, vl);
+-
+-    nc -= vl;
+-    if (nc > 0) {
+-      c0 = (float*) ((uintptr_t) c0 + cn_stride);
+-      c1 = (float*) ((uintptr_t) c1 + cn_stride);
+-      c2 = (float*) ((uintptr_t) c2 + cn_stride);
+-      c3 = (float*) ((uintptr_t) c3 + cn_stride);
+-
+-      a0 = (const float*) ((uintptr_t) a0 - kc);
+-      a1 = (const float*) ((uintptr_t) a1 - kc);
+-      a2 = (const float*) ((uintptr_t) a2 - kc);
+-      a3 = (const float*) ((uintptr_t) a3 - kc);
+-    }
+-  } while (nc != 0);
+ }

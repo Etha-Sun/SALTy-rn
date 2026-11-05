@@ -1,0 +1,21 @@
+--- kernels/target/qs8-vcvt.c
++++ verification/qcp/verified/qs8-vcvt/impl/testRVV.c
+@@ -11,5 +11,5 @@
+ 
+   const int16_t input_zero_point = params->scalar.input_zero_point;
+-  const int16_t multiplier = (int16_t) -params->scalar.multiplier;
++  const int16_t multiplier = (int16_t) (0u - (uint32_t) params->scalar.multiplier);
+   const int16_t output_zero_point = params->scalar.output_zero_point;
+ 
+@@ -28,6 +28,5 @@
+     // vqrdmulhq_s16(vacc, vmultiplier)
+     vint32m8_t prod = __riscv_vwmul_vx_i32m8(vacc, multiplier, vl);
+-    prod = __riscv_vsll_vx_i32m8(prod, 1, vl);
+-    vacc = __riscv_vnclip_wx_i16m4(prod, 16, __RISCV_VXRM_RNU, vl);
++    vacc = __riscv_vnclip_wx_i16m4(prod, 15, __RISCV_VXRM_RNU, vl);
+ 
+     // vqaddq_s16(vacc, voutput_zero_point)
+@@ -43,3 +42,3 @@
+     batch -= vl;
+   }
+-}+}

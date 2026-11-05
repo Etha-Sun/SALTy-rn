@@ -1,0 +1,9 @@
+--- kernels/source/qs8-f32-vcvt.c
++++ verification/qcp/verified/qs8-f32-vcvt/impl/testNEON.c
+@@ -19,5 +19,5 @@
+   assert(output != NULL);
+ 
+-  const int16x8_t vminus_zero_point = vdupq_n_s16(-params->scalar.zero_point);
++  const int16x8_t vminus_zero_point = vdupq_n_s16((int16_t)(0U - (uint32_t)params->scalar.zero_point));
+   const float32x4_t vscale = vdupq_n_f32(params->scalar.scale);
+   for (; batch >= 8 * sizeof(int8_t); batch -= 8 * sizeof(int8_t)) {

@@ -1,0 +1,24 @@
+
+research/project-plan-20261102/vmax-performance/runs/xnn-u4/test.elf:     file format elf64-littleriscv
+
+
+Disassembly of section .text.init:
+
+Disassembly of section .text:
+
+000000008000330e <test_rvv>:
+    8000330e:	8109                	srli	a0,a0,0x2
+    80003310:	0d2577d7          	vsetvli	a5,a0,e32,m4,ta,ma
+    80003314:	0205e207          	vle32.v	v4,(a1)
+    80003318:	02066407          	vle32.v	v8,(a2)
+    8000331c:	00279713          	slli	a4,a5,0x2
+    80003320:	8d1d                	sub	a0,a0,a5
+    80003322:	95ba                	add	a1,a1,a4
+    80003324:	963a                	add	a2,a2,a4
+    80003326:	1a441257          	vfmax.vv	v4,v4,v8
+    8000332a:	0206e227          	vse32.v	v4,(a3)
+    8000332e:	96ba                	add	a3,a3,a4
+    80003330:	f165                	bnez	a0,80003310 <test_rvv+0x2>
+    80003332:	8082                	ret
+
+Disassembly of section .text.startup:

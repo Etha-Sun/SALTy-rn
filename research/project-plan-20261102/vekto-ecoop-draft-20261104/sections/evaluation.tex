@@ -1,0 +1,45 @@
+\section{Evaluation design}
+\label{sec:evaluation}
+\todo{This section specifies planned experiments. It contains no completed cohort-level verification or performance results.}
+
+The primary cohort is fixed to the 35 published final optimized RVV kernels at commit \texttt{80feb4564cb4}~\cite{final-kernels}. The study evaluates existing optimization outputs; it does not rerun the optimization search. For each subject, the matching NEON source, original optimized target, any repair, caller contract, and machine profile must be identified separately. Earlier proofs of intermediate targets are reusable development assets, not completed results for this cohort.
+
+\begin{table}[t]
+\centering\small
+\caption{Planned studies. Subject counts specify the intended evaluation, not proof successes. Softmax is a candidate composed program, not a full inference application.}
+\label{tab:studies}
+\begin{tabularx}{\linewidth}{@{}lXll@{}}
+\toprule
+Study & Subjects & Planned scope & Completed proofs\\
+\midrule
+Optimization & Final SALTyRN targets & 35 pairs & \todo{pending}\\
+Translation & AVX operations to RVV/HVX & 5 operations & \todo{pending}\\
+Cross-checking & Corresponding XNNPACK kernels & \todo{select} & \todo{pending}\\
+Composition & A small SIMD program & \todo{select} & \todo{pending}\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Measurements should distinguish proof construction from proof checking. Per-kernel records include elapsed time, QCP condition generation, proof checking, agent token usage, failed attempts, manual interventions, and implementation changes. Shared semantic-library construction is reported separately from incremental kernel work. Historical optimization time and tokens are reported only when traceable upstream records exist. The study compares original optimized and repaired candidates against the same handwritten RVV baseline, using identical input sizes, compiler settings, and target hardware configuration. An invalid candidate's timing may quantify repair cost, but is not counted as a valid speedup.
+
+\begin{table}[t]
+\centering\small
+\caption{Per-kernel reporting schema. Each row must identify exact source versions and the checked profile in the artifact. Times include failed attempts where applicable. No placeholder is a measurement.}
+\begin{tabularx}{\linewidth}{@{}lX@{}}
+\toprule
+Field & Required value\\
+\midrule
+Proof outcome & Proved, concrete discrepancy, or unresolved; \todo{counts}\\
+Contract/profile & Admitted lengths, values, memory layout, VLEN and FP modes\\
+Executable changes & Added/deleted lines by ISA, rationale, review decision\\
+Verification cost & Wall time, generation/checking time, tokens, retries; \todo{measure}\\
+Reuse & Reused intrinsic lemmas and assumptions; \todo{measure incremental cost}\\
+Performance & Baseline/original/repaired cycles and speed ratios; \todo{measure}\\
+External optimization cost & Upstream records, or explicitly not reported\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+The extension study must establish that selected operations are absent from the chosen target-library versions rather than infer absence from filenames. Cross-checking must align logical operations, layouts, parameters, and numerical contracts before classifying a discrepancy. Existing XNNPACK reports supply potential historical regression subjects, including RVV rounding and square-root exceptional-value handling~\cite{xnn-round,xnn-sqrt}. They are known reports, not new findings by \tool. For softmax, the comparison must address reduction order, exponential approximations, intermediate-buffer contracts, and the final division. \todo{Select a real source program and target baseline, and establish whether the desired exact observation is compatible with their algorithms.}
+
+Three case studies are planned: a minimally repaired optimized kernel; a new port that requires additional intrinsic semantics; and a cross-checking discrepancy whose feasibility and contract implications can be traced to concrete code. \todo{Choose completed cases with adequate provenance. The maximum example currently supports semantic diagnosis, but not the desired retained-speedup claim.}

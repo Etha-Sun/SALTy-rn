@@ -1,0 +1,23 @@
+--- v2-before-v3.md
++++ v3-assembly-scope.md
+@@ -37,13 +37,13 @@
+ 
+ **Paragraph 5: Why we choose C**
+ 
+-- We focus on functional equivalence under the preconditions in the spec.
+-- The relevant behavior includes kernel outputs (memory access...)
+-- Assembly-level proving involves relating architectural states and execution environments.
+-- C already exposes the kernel’s loops, pointers, and intrinsic calls.
+-- C interpretations keep intrinsic semantics close to the source and accessible to review.
+-- Human experts review these interpretations against ISA documentation.
+-- Existing C verification infrastructure then supports proofs of the complete kernels.
++- We aim to prove equivalent outputs for all inputs satisfying the preconditions in the spec.
++- At the assembly level, this requires relating the registers, memory, and execution state of two different ISAs.
++- Detailed ISA models also cover exception handling and privileged execution, which are outside the scope of our kernel verification.
++- We choose the C level to reason directly about the kernel’s source code, including its loops, pointers, and intrinsic calls.
++- We give each supported intrinsic an explicit C definition of its numerical and memory behavior.
++- Human experts review these definitions against ISA documentation.
++- Using these definitions, existing C verification tools can prove that both kernels satisfy the common spec.
+ 
+ **Paragraph 6: The Vekto framework**
+ 

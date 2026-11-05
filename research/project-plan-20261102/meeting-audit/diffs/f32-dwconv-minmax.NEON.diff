@@ -1,0 +1,16 @@
+--- kernels/source/f32-dwconv-minmax.c
++++ verification/qcp/verified/f32-dwconv-minmax/impl/testNEON.c
+@@ -26,5 +26,5 @@
+   const float32x4_t vmax = vdupq_n_f32(params->scalar.max);
+   const float32x4_t vmin = vdupq_n_f32(params->scalar.min);
+-  do {
++  while (output_width != 0) {
+     const float* i0 = input[0];
+     assert(i0 != NULL);
+@@ -105,4 +105,5 @@
+     input_offset += input_pixel_stride;
+     output = (float*) ((uintptr_t) output + output_increment);
+-  } while (--output_width != 0);
++    --output_width;
++  }
+ }

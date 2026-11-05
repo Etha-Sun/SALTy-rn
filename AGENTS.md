@@ -1,6 +1,8 @@
 # Project handoff
 
-This repository contains several verification approaches and historical experiments. For the current work, read [SERVER_HANDOFF.zh-CN.md](SERVER_HANDOFF.zh-CN.md) first, then:
+**Current work (2026-11-04): the Vekto paper experiments E1–E4 (C-level QCP equivalence of SIMD kernels).** Start with [PAPER-EXPERIMENTS-HANDOFF.zh-CN.md](PAPER-EXPERIMENTS-HANDOFF.zh-CN.md). It lists the reading order: Introduction V2, experiment design, kernel execution policy, and the E1 pairing audit. Those files take precedence over older plans, drafts, and the intermediate 40-kernel results, which are reference material only. A ready-to-send prompt for a new supervising agent is in [NEW-SERVER-AGENT-PROMPT.zh-CN.md](research/project-plan-20261102/NEW-SERVER-AGENT-PROMPT.zh-CN.md).
+
+The sections below describe the earlier Sail/Islaris assembly-level line, which is now background. For it, read [SERVER_HANDOFF.zh-CN.md](SERVER_HANDOFF.zh-CN.md) first, then:
 
 - [Sail checkpoint](research/sail-tooling-gap/CHECKPOINT.md)
 - [Proof status](research/sail-tooling-gap/presentation/STATUS.md)

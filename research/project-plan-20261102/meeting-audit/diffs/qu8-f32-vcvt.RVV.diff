@@ -1,0 +1,18 @@
+--- kernels/target/qu8-f32-vcvt.c
++++ verification/qcp/verified/qu8-f32-vcvt/impl/testRVV.c
+@@ -14,5 +14,5 @@
+ 
+   size_t vl;
+-  for (; batch > 0; batch -= vl, input += vl, output += vl) {
++  for (; batch > 0; ) {
+     vl = __riscv_vsetvl_e8m2(batch);
+ 
+@@ -29,4 +29,8 @@
+ 
+     __riscv_vse32_v_f32m8(output, vy, vl);
++
++    batch -= vl;
++    input += vl;
++    output += vl;
+   }
+ }

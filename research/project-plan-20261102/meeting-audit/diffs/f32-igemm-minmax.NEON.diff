@@ -1,0 +1,35 @@
+--- kernels/source/f32-igemm-minmax.c
++++ verification/qcp/verified/f32-igemm-minmax/impl/testNEON.c
+@@ -36,10 +36,10 @@
+   float* c0 = c;
+ 
+-  do {
++  while (nc != 0) {
+     float32x4_t vacc0x0 = vld1q_f32(w); w += 4;
+     float32x4_t vacc0x1 = vld1q_f32(w); w += 4;
+ 
+     size_t p = ks;
+-    do {
++    while (p != 0) {
+       const float* restrict a0 = a[0];
+       assert(a0 != NULL);
+@@ -77,5 +77,5 @@
+       }
+       p -= 1 * sizeof(void*);
+-    } while (p != 0);
++    }
+ 
+     const float32x4_t vmax = vdupq_n_f32(params->scalar.max);
+@@ -92,5 +92,5 @@
+       c0 = (float*) ((uintptr_t) c0 + cn_stride);
+ 
+-      a = (const float**restrict) ((uintptr_t) a - ks);
++      a = (const float**) ((uintptr_t) a - ks);
+       nc -= 8;
+     } else {
+@@ -112,4 +112,4 @@
+       nc = 0;
+     }
+-  } while (nc != 0);
++  }
+ }

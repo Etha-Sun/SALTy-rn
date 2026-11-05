@@ -1,0 +1,22 @@
+--- v2-before-paragraph7-20261104-173029.md
++++ v2-preconditions.md
+@@ -58,13 +58,12 @@
+ 
+ **Paragraph 7: Human review and repair**
+ 
+-- Experts only need to review the specification and verification feedback.
+-- Counterexamples are checked against the original caller’s requirements.
+-- Missing caller constraints can be added to the specification when justified.
+-- Strengthening the specification must preserve all legitimate calls.
+-- Feasible behavioral discrepancies guide repairs to the target kernel.
+-- Repairs should preserve the optimized structure wherever possible.
+-- The revised kernel is verified again, and its performance cost is measured.
++- Human experts only need to review the equivalence spec and the verification feedback.
++- The spec is typically a few dozen lines.
++- When verification identifies a counterexample, experts check whether it can occur under the intended usage conditions.
++- If the spec omits a required input constraint, experts add the corresponding precondition without excluding valid inputs.
++- Otherwise, the counterexample guides a repair that preserves performance as much as possible.
++- The repaired kernel is then verified again.
+ 
+ **Paragraph 8: Three applications**
+ 

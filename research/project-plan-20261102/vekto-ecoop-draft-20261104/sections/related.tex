@@ -1,0 +1,12 @@
+\section{Related work}
+\label{sec:related}
+\todo{Focused initial comparison. Complete the literature coverage before making a novelty claim.}
+
+\paragraph*{Generation and validation of optimized kernels.}
+KernelBench, Autocomp, and IntrinTrans use executable feedback to evaluate or improve generated kernels~\cite{kernelbench,autocomp,intrintrans}. SALTyRN also includes bounded symbolic comparison before and after optimization~\cite{saltyrn}. LLM-Vectorizer combines generation with Alive2 validation and describes loop-alignment techniques and restrictions for its experiments~\cite{llm-vectorizer}. These systems motivate comparing the input domain, semantic model, and complete program obligations of each guarantee, rather than grouping all prior validation as testing. \tool's proposed evaluation asks whether modular C proofs can cover the actual optimized kernels under explicit contracts.
+
+\paragraph*{Semantic models and verified transformations.}
+Sail and Islaris provide a path from authoritative ISA specifications to machine-code reasoning~\cite{sail,islaris}. Alive2 checks LLVM refinement with bounded reasoning about loops~\cite{alive2}. Rake checks equivalence of synthesized vector instruction sequences for Hexagon HVX~\cite{rake}. These operate at different boundaries from \tool's C intrinsic interface. The proposed method uses QCP's existing C verification infrastructure~\cite{qcp}; reusable cross-ISA semantic definitions, the alignment of kernel contracts, and evidence about optimized implementations must supply the contribution beyond that infrastructure.
+
+\paragraph*{Cross-checking implementations.}
+Differential testing uses disagreements among implementations to identify candidate defects~\cite{mckeeman}. SymDiff checks equivalence and exposes behavioral differences between imperative programs~\cite{symdiff}. Our proposed XNNPACK study applies an explicit observation relation to corresponding ISA implementations, while retaining the distinction between disagreement and violation of a required contract. The distinction has practical consequences: a historical XNNPACK min/max policy permits unspecified NaN behavior~\cite{xnn-nan-policy}, while a later change to the repository's separate YNNPACK subsystem adds NaN propagation for a reported JAX reduction problem~\cite{ynn-nan-fix}. That change is evidence of an integration concern, not proof that our tested XNNPACK microkernels violate their API.

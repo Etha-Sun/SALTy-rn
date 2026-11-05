@@ -1,0 +1,28 @@
+{
+  "passed": true,
+  "scope": "same finite fixture and GCC kernel object, all 7 sizes; QEMU cycle values discarded",
+  "compile_command": [
+    "/zp_vegeta/scratch_sb/ycsun/verus/research/sol-pipeline-comparison-20261030/tools/ziglang/zig",
+    "cc",
+    "-target",
+    "riscv64-linux-musl",
+    "-mcpu=generic_rv64+m+a+f+d+c+v",
+    "-O2",
+    "-fno-vectorize",
+    "-fno-slp-vectorize",
+    "-static",
+    "-I/zp_vegeta/scratch_sb/ycsun/verus/benchmark/XNNPACK",
+    "-I/zp_vegeta/scratch_sb/ycsun/verus/benchmark/XNNPACK/src",
+    "-I/zp_vegeta/scratch_sb/ycsun/verus/third_party/zephyr/third-party/executorch/backends/xnnpack/third-party/pthreadpool/include",
+    "/zp_vegeta/scratch_sb/ycsun/verus/research/project-plan-20261102/vmax-performance/harness.c",
+    "/zp_vegeta/scratch_sb/ycsun/verus/research/project-plan-20261102/vmax-performance/runs/optimized/kernel.o",
+    "-o",
+    "/zp_vegeta/scratch_sb/ycsun/verus/research/project-plan-20261102/vmax-performance/runs/optimized/fixture-qemu.elf"
+  ],
+  "run_command": [
+    "/zp_vegeta/scratch_sb/ycsun/verus/research/sol-pipeline-comparison-20261030/tools/qemu-riscv64-static",
+    "-cpu",
+    "rv64,v=true,vlen=512,elen=64,vext_spec=v1.0",
+    "/zp_vegeta/scratch_sb/ycsun/verus/research/project-plan-20261102/vmax-performance/runs/optimized/fixture-qemu.elf"
+  ]
+}

@@ -1,0 +1,998 @@
+Vekto: Verifying Semantic Equivalence of SIMD
+1
+Kernels Across Architectures
+2
+Anonymous author
+3
+Anonymous affiliation
+4
+1
+Introduction
+5
+Efficient numerical software depends on kernels that exploit the execution and memory
+6
+organization of the target processor. Developing these kernels requires choices about data
+7
+layout, vectorization, blocking, and instruction scheduling that are difficult to make uniformly
+8
+across hardware platforms. Recent work investigates language-model agents as a means
+9
+of exploring this implementation space. KernelBench evaluates generated GPU kernels
+10
+against reference tensor computations, while Autocomp combines hardware knowledge with
+11
+correctness and performance feedback to search for faster accelerator programs [12, 7]. These
+12
+systems demonstrate opportunities for automating kernel development, while making the
+13
+reliability of generated implementations an increasingly practical concern.
+14
+We focus on SIMD and vector kernels written using C intrinsics. Vector extensions
+15
+in modern CPUs expose different execution models: Arm NEON operates on fixed-width
+16
+vectors, whereas RISC-V Vector (RVV) provides runtime selection of the number of active
+17
+elements [2, 15]. These differences affect loop structure, tail processing, and memory accesses.
+18
+Architectures also differ in their numerical operations, even when the operations have similar
+19
+names. RVV has attracted dedicated work on porting existing intrinsic code, including
+20
+SALTyRN and IntrinTrans [5, 6]. Compiler intrinsic interfaces make such work possible within
+21
+C: programmers combine ordinary control flow and pointer manipulation with architecture-
+22
+specific operations that the compiler lowers to target instructions. Intrinsics expose hardware
+23
+capabilities without requiring an entire kernel to be written in assembly, but do not make its
+24
+behavior portable by construction.
+25
+This interface also gives agents a concrete programming environment in which to apply
+26
+instruction descriptions and optimization guidance. SALTyRN translates NEON kernels
+27
+to RVV and applies an Autocomp-based optimization stage [5]. Correctness remains a
+28
+separate obligation. KernelBench’s maintainers document generated programs that exploit
+29
+evaluation weaknesses, including output-memory reuse and misleading timing [8]. Existing
+30
+systems address correctness in several ways: Autocomp tests candidates against reference
+31
+implementations, IntrinTrans uses compile-and-test feedback, SALTyRN performs bounded
+32
+symbolic equivalence checking, and LLM-Vectorizer uses Alive2 to validate vectorization [7,
+33
+6, 5, 17]. Our question is how to establish a whole-kernel guarantee for the stated input
+34
+domain, including loop iterations and memory accesses, while retaining the implementation
+35
+produced by optimization. Such a guarantee can reject functional deviations that escape
+36
+tests; it does not by itself prevent timing manipulation or other attacks on a benchmark
+37
+harness.
+38
+The semantic interface for this verification can be placed at several levels.
+At the
+39
+machine-code level, Sail supplies detailed ISA definitions, and Islaris supports program
+40
+proofs against authoritative instruction semantics [3, 16]. At the intermediate-representation
+41
+level, Alive2 checks LLVM transformations, while Rake synthesizes semantically equivalent
+42
+vector instruction sequences for Hexagon HVX from Halide expressions [10, 1]. An IR-based
+43
+comparison must account for the lowering of intrinsics and the memory semantics of the
+44
+selected IR. C intrinsics offer another boundary: an executable C interpretation of each
+45
+supported intrinsic can expose its behavior to a C program verifier, allowing the surrounding
+46
+loops and pointer operations to remain in the language in which the kernel was written.
+47
+
+2
+Verifying Semantic Equivalence of SIMD Kernels Across Architectures
+We choose this C-level boundary to study functional equivalence under explicit calling
+48
+contracts.
+The observations are the specified outputs and memory effects of ordinary
+49
+kernel calls, under a stated floating-point and vector configuration. Interrupt handling,
+50
+privileged execution, and timing are outside this observation.
+NaNs, infinities, integer
+51
+overflow conditions, and invalid memory accesses still require treatment whenever they
+52
+affect an admitted call. A binary-level proof can support a stronger connection to machine
+53
+execution, but also requires relating machine states and establishing the relevant execution
+54
+environment. Our C-level design keeps the proof interface close to the intrinsic source and
+55
+permits reuse of C verification infrastructure. It introduces its own obligations: the intrinsic
+56
+interpretations and the preparation of verification inputs must faithfully represent the source.
+57
+We therefore retain these correspondences as explicit trust boundaries.
+58
+We present Vekto, a framework for checking semantic equivalence between intrinsic
+59
+kernels through reusable C semantic shims and modular proofs. The design covers Arm
+60
+NEON, RVV, x86 AVX, and Hexagon HVX through a common contract interface. [TODO:
+61
+Establish and report the supported intrinsic subset and admitted kernel coverage for each
+62
+ISA; four complete backends are not yet an experimental result.] For each kernel pair,
+63
+Vekto associates intrinsic calls with their semantic definitions and expresses the required
+64
+output relation in a public specification. It separates the implementation, specification, and
+65
+proof annotations so that proof development need not rewrite the executable algorithm.
+66
+QCP symbolically executes the annotated C programs and generates verification conditions,
+67
+which are discharged through its automation and Rocq/Coq proofs [18]. The implementation
+68
+proofs establish the contracts used in the final equivalence argument. An unresolved proof
+69
+obligation remains unresolved unless a checked proof or a reproducible counterexample is
+70
+obtained.
+71
+The workflow concentrates per-kernel review on the calling contract, verification evidence,
+72
+and any proposed implementation changes. A compact public specification provides an entry
+73
+point to this review; its imported mathematical definitions and memory predicates remain
+74
+part of what must be justified. When a counterexample violates a documented assumption
+75
+of the original caller, the specification may be strengthened to express that assumption,
+76
+provided the revised domain still includes all legitimate calls. When the counterexample
+77
+is feasible, the target implementation requires repair or the claimed equivalence must be
+78
+rejected. Repairs are reviewed as executable changes and measured for their performance
+79
+effect before the revised candidate is accepted. Shared semantic models and the verification
+80
+toolchain require separate review, so this workflow does not presume that reading a short
+81
+specification is sufficient to establish trust in the entire system.
+82
+The same equivalence interface serves three uses. First, it validates optimizations within
+83
+an ISA or translations across ISAs against a reference implementation, without making the
+84
+optimizer itself part of the trusted reasoning. Second, it supports porting kernels from existing
+85
+NEON or AVX implementations to target libraries whose coverage of the selected operations
+86
+is incomplete. Here RVV and Hexagon HVX are target backends; the motivation is missing
+87
+implementations in a particular library, rather than a claim that both architectures are new.
+88
+Third, it supports semantic cross-checking of independently developed implementations of
+89
+the same operation. Differential testing compares executions on selected inputs [11]; program
+90
+equivalence checking, exemplified by SymDiff [9], makes the relationship itself the verification
+91
+target. A concrete disagreement can then be classified as an implementation defect, an
+92
+allowed numerical difference, an unsupported calling assumption, or a modeling error. This
+93
+classification identifies whether maintenance requires a code repair, a clearer contract, or a
+94
+correction to the verification model.
+95
+
+Anonymous author(s)
+3
+Our evaluation is organized around these uses. The primary study targets the 35 final
+96
+optimized RVV kernels published by SALTyRN, checking each against its corresponding
+97
+NEON source rather than reusing results for earlier intermediate versions [4].
+Further
+98
+studies are planned for five AVX operations ported to RVV and HVX, cross-checking of
+99
+corresponding XNNPACK implementations, and a small composed SIMD program, with
+100
+softmax as a candidate. [TODO: Report verified pairs out of 35, unchanged-source coverage,
+101
+justified repairs, verification time and token cost, and speed relative to a fixed handwritten
+102
+RVV baseline.] [TODO: Report completed new ports, classified discrepancies with upstream
+103
+status, and the selected program’s composed proof and performance.] These measurements
+104
+are needed to assess whether the framework preserves optimized code, extends across ISA
+105
+interfaces, and provides useful diagnostic evidence at an acceptable verification cost.
+106
+2
+A motivating example: maximum across two vector ISAs
+107
+[TODO: Candidate example. The discrepancy and diagnostic measurements below have
+108
+archived evidence. A complete proof of the repaired final optimized kernel is pending. This
+109
+example does not establish a speedup over XNNPACK and therefore does not yet satisfy the
+110
+intended performance narrative.]
+111
+Consider an elementwise maximum kernel that reads two binary32 arrays and writes
+112
+one result per element. Figure 1 shows excerpts from a NEON reference and the final RVV
+113
+implementation in SALTyRN’s published optimized-kernel repository [4]. The NEON loop
+114
+processes four elements at a time. Its tail loads another four elements but stores only the
+115
+requested prefix. The RVV implementation uses the maximum active length for full blocks
+116
+and selects a shorter length for the final remainder. These control flows require different
+117
+arguments about the processed prefix and valid memory accesses. In particular, the NEON
+118
+tail requires readable padding even when only one output element is requested.
+119
+The numerical operations also differ. For the Arm floating-point profile used in this
+120
+example, vmaxq_f32 propagates a NaN operand. RVV’s vfmax returns the numerical operand
+121
+when exactly one operand is NaN [2, 15]. Treating both instructions as a single mathematical
+122
+maximum would erase the difference before any program proof began. The semantic shims
+123
+instead retain separate lane functions. Figure 2 extracts these functions from the existing
+124
+QCP shim: the Arm branch quiets signaling NaNs and preserves a NaN result, whereas
+125
+the RVV branch selects the numerical operand or a canonical NaN. Vector shims apply the
+126
+appropriate function to the active lanes. This code illustrates existing semantic definitions,
+127
+not a newly completed hardware-refinement proof.
+128
+The disagreement has a one-element witness:
+129
+n = 1,
+A[0] = 0x7fc12345 (quiet NaN),
+B[0] = 0x3f800000 (1.0).
+130
+With sufficient input padding and disjoint buffers, executing the compiled kernels under
+131
+AArch64 and RVV instruction emulation produces NaN and 1.0, respectively. The RVV
+132
+result is the same at the three tested hardware vector lengths, 128, 256, and 512 bits. This
+133
+is a concrete execution discrepancy. It is not a difference in NaN payload or the sign of zero,
+134
+both of which the output relation in Section 3 permits.
+135
+A diagnostic run of the local SALTyRN bounded checker accepted the same final RVV
+136
+candidate at input length one and VLEN 512. Inspection showed that its NEON maximum
+137
+model used the same floating-point maximum operation as the RVV model. In an isolated
+138
+copy, adding the NEON NaN-propagation case changed the result to a counterexample
+139
+without changing the kernel pair, input length, or comparison relation. Thus this particular
+140
+
+4
+Verifying Semantic Equivalence of SIMD Kernels Across Architectures
+NEON: fixed-width main loop
+1 for (; batch >= 4 * sizeof(float); batch -= 4 * sizeof(float)) {
+2
+const float32x4_t va = vld1q_f32(input_a); input_a += 4;
+3
+const float32x4_t vb = vld1q_f32(input_b); input_b += 4;
+4
+5
+float32x4_t vacc = vmaxq_f32(va, vb);
+6
+7
+vst1q_f32(output, vacc); output += 4;
+8
+}
+RVV: full blocks and a variable-length tail
+1
+size_t n = batch / sizeof(float);
+2
+const size_t vlmax = __riscv_vsetvlmax_e32m8();
+3
+while (n >= vlmax) {
+4
+vfloat32m8_t va = __riscv_vle32_v_f32m8(input_a, vlmax);
+5
+vfloat32m8_t vb = __riscv_vle32_v_f32m8(input_b, vlmax);
+6
+vfloat32m8_t vacc = __riscv_vfmax_vv_f32m8(va, vb, vlmax);
+7
+__riscv_vse32_v_f32m8(output, vacc, vlmax);
+8
+input_a += vlmax;
+9
+input_b += vlmax;
+10
+output += vlmax;
+11
+n -= vlmax;
+12
+}
+13
+if (n > 0) {
+14
+size_t vl = __riscv_vsetvl_e32m8(n);
+15
+vfloat32m8_t va = __riscv_vle32_v_f32m8(input_a, vl);
+16
+vfloat32m8_t vb = __riscv_vle32_v_f32m8(input_b, vl);
+17
+vfloat32m8_t vacc = __riscv_vfmax_vv_f32m8(va, vb, vl);
+18
+__riscv_vse32_v_f32m8(output, vacc, vl);
+19
+}
+Figure 1 Excerpts from the unchanged source implementations. Signatures, assertions, and the
+NEON tail are omitted here; the complete source files are retained in the draft package. The RVV
+comments are omitted without changing executable statements. batch counts bytes, and n counts
+float elements. The proof must cover the complete functions, including the omitted tail.
+missed discrepancy concerns the semantic model, not the input-length bound. The run used
+141
+a locally adapted checker and is not a reconstruction of the exact verification run reported
+142
+in SALTyRN’s paper. It also does not demonstrate that QCP automatically synthesizes
+143
+counterexamples.
+144
+To preserve the NEON output behavior, the candidate repair retains the RVV maximum
+145
+and selects a canonical NaN wherever either operand is NaN:
+146
+1 vbool4_t a_nan = __riscv_vmfne_vv_f32m8_b4(va, va, vl);
+147
+2 vbool4_t b_nan = __riscv_vmfne_vv_f32m8_b4(vb, vb, vl);
+148
+3 vbool4_t any_nan = __riscv_vmor_mm_b4(a_nan, b_nan, vl);
+149
+4 vacc = __riscv_vfmerge_vfm_f32m8(
+150
+5
+vacc, __builtin_nanf(""), any_nan, vl);
+151
+The repair is inserted after maximum in both the full-block and tail paths, using vlmax in the
+152
+former. It leaves the NEON implementation, RVV loop organization, and register grouping
+153
+unchanged. Regression executions agree under the intended output relation, including mixed
+154
+exceptional and finite values. [TODO: Complete the final optimized kernel’s shim bindings,
+155
+loop and memory obligations, and all dependent proof checks for the same profile as the
+156
+performance experiment. Historical proofs of an intermediate RVV implementation do not
+157
+discharge these obligations.]
+158
+The measured geometric-mean speeds relative to XNNPACK u8v are 0.982× for the
+159
+published optimized candidate and 0.826× for the repair (Figure 3). The repair increases the
+160
+
+Anonymous author(s)
+5
+1 unsigned int qcp_fmax_arm_bits(unsigned int a,unsigned int b)
+2 {
+3
+if (qcp_fmax_snan_bits(a) == 1) return a | 4194304U;
+4
+if (qcp_fmax_snan_bits(b) == 1) return b | 4194304U;
+5
+if (qcp_fmax_nan_bits(a) == 1) return a;
+6
+if (qcp_fmax_nan_bits(b) == 1) return b;
+7
+return qcp_fmax_ordered_bits(a,b);
+8 }
+9
+10 unsigned int qcp_fmax_rvv_bits(unsigned int a,unsigned int b)
+11 {
+12
+if (qcp_fmax_nan_bits(a) == 1) {
+13
+if (qcp_fmax_nan_bits(b) == 1) return 2143289344U;
+14
+return b;
+15
+}
+16
+if (qcp_fmax_nan_bits(b) == 1) return a;
+17
+return qcp_fmax_ordered_bits(a,b);
+18 }
+Figure 2 Existing C lane interpretations, with their QCP annotations omitted for space. The
+helpers inspect binary32 bit patterns and compare non-NaN values. Decimal constants 4194304U
+and 2143289344U encode the quiet-NaN bit and a canonical quiet NaN. The original definitions and
+contracts accompany the excerpts. The modeled Arm profile disables flush-to-zero and default-NaN
+behavior; floating-point exception flags are outside the output observation.
+geometric mean of the per-size cycle ratios by 18.8%. These measurements do not support a
+161
+claim that this candidate retains a performance advantage over XNNPACK. They instead
+162
+expose the cost of preserving the selected reference behavior. Whether that behavior is
+163
+required depends on the contract: XNNPACK’s historical min/max discussion explicitly
+164
+declines a NaN-handling guarantee [19]. Consequently this witness establishes failure of
+165
+NEON-preserving equivalence, without by itself establishing an XNNPACK API defect.
+166
+3
+Contracts, observations, and proof obligations
+167
+3.1
+The relation being checked
+168
+Let x be a logical input, including array contents, dimensions, and operation parameters. A
+169
+domain predicate D(x) describes legitimate calls. For implementation Ki, a precondition
+170
+Pi(x, si) relates x to the initial C state si, including its memory representation. A machine
+171
+profile pi records the ABI, relevant floating-point configuration, and supported vector
+172
+configuration. The two profiles need not use the same vector width or state representation.
+173
+For integer results we require exact equality. For the floating-point outputs considered
+174
+here, define
+175
+u ≈fp v
+⇐⇒
+u =num v ∨(isNaN(u) ∧isNaN(v)).
+(1)
+176
+Numeric equality identifies positive and negative zero. This relation also identifies NaN
+177
+payloads, but permits no tolerance between distinct finite numbers. We lift it pointwise
+178
+to output arrays, requiring their shapes to agree. A different observation must be stated
+179
+explicitly for a kernel whose caller inspects bits, indices, or additional state.
+180
+Write ⟨Ki, si⟩⇓pi ti for a terminating modeled execution.
+The partial-correctness
+181
+comparison is
+182
+D(x) ∧PA(x, sA) ∧PB(x, sB) ∧
+⟨KA, sA⟩⇓pA tA ∧⟨KB, sB⟩⇓pB tB
+=⇒
+obs(tA) ≈obs(tB).
+(2)
+183
+
+6
+Verifying Semantic Equivalence of SIMD Kernels Across Architectures
+16
+64
+256
+1,024
+4,096
+16,384
+65,536
+GM
+Input elements
+0
+0.25
+0.50
+0.75
+1.00
+1.25
+Speedup over XNNPACK u8v
+0.94
+1.00
+0.98
+0.83
+XNNPACK u4v
+XNNPACK u8v
+Keagan optimized
+NaN repair
+Figure 3 Preliminary local Saturn RTL measurements on finite inputs, reproduced from the
+archived experiment. Speed is XNNPACK RVV u8v cycles divided by the measured implementation’s
+cycles. Each size uses one warm-up and the median of three timed calls within one simulation run;
+no confidence interval is claimed. Hardware VLEN is 512 bits and datapath width is 256 bits. The
+published optimized and XNNPACK implementations do not preserve the NEON NaN behavior;
+the repair adds that behavior. These are measurements, not proof results or a precise reproduction
+of the SALTyRN paper’s configuration.
+Here obs extracts the specified output and return values. Memory safety and preservation of
+184
+memory outside the permitted write footprint are separate obligations of the implementation
+185
+contracts. They do not follow from Equation 2 alone. The current QCP proof packages
+186
+inspected for this draft explicitly exclude a termination theorem. Accordingly, Equation 2
+187
+does not assert that either implementation returns, or that they agree on divergence. [TODO:
+188
+If the final contribution includes total correctness, add and check termination arguments for
+189
+the admitted implementations; do not infer them from return VCs.]
+190
+3.2
+Relating implementations through a common specification
+191
+Each implementation is checked against a postcondition that relates its output to a common
+192
+relation S(x, o). To compose the results into equivalence, the common relation must determine
+193
+observations up to the selected equivalence:
+194
+S(x, o1) ∧S(x, o2) =⇒o1 ≈o2.
+(3)
+195
+This condition prevents a weak common specification, such as a broad error interval, from
+196
+being mistaken for an equivalence proof. For a reference-preserving floating-point optimization,
+197
+S may encode the reference’s rounding and accumulation order rather than ideal real
+198
+arithmetic. The proof must establish the result for each complete implementation, including
+199
+helpers and tails. A wrapper that assumes both kernel contracts only establishes the final
+200
+composition conditional on those contracts.
+201
+The relation in Equation 1 is a final-output observation. It cannot be substituted for
+202
+bit-level equality at every intermediate boundary: a subsequent reciprocal or sign-sensitive
+203
+operation can distinguish positive from negative zero. A composed program therefore needs
+204
+intermediate contracts strong enough for each consumer, or a proof that the consumer
+205
+respects the chosen relation.
+206
+
+Anonymous author(s)
+7
+3.3
+What QCP checks
+207
+QCP processes contracts, assertions, and loop invariants by symbolic execution in separation
+208
+logic [18, 13]. In the inspected VADD package, the public contract supplies readable input
+209
+arrays, additional padding for NEON tail loads, and a separate writable output array. It
+210
+returns the original input resources and a fully initialized output array with specified values.
+211
+At an indexed read, generated entailments expose the cell at the requested index from the
+212
+array predicate and retain the remainder of the array. Other conditions establish expression
+213
+ranges, satisfy callee preconditions, preserve loop invariants, and derive the postcondition on
+214
+return. Memory-access validity is checked through these resources and entailments as well as
+215
+symbolic-execution failures; it is not confined to obligations named safety [14].
+216
+The proof package checks generated VC_Correct interfaces for the kernel bodies, shims,
+217
+helpers, and final comparator. Statements declared inside such an interface are obliga-
+218
+tions to implement, not evidence that the obligations have been proved. The implementa-
+219
+tion/specification binding and dependency checks are therefore part of accepting a result.
+220
+The inspected package establishes modeled C-shim partial correctness and explicitly excludes
+221
+hardware-to-shim correspondence and termination. [TODO: Freeze the release and complete
+222
+the per-kernel coverage audit for the final experimental cohort.]
+223
+3.4
+Review and trust boundaries
+224
+Reusing a semantic shim requires a matching operation, type, and machine profile. In
+225
+particular, a proof at one fixed RVV capacity is not a proof for all hardware VLENs. A
+226
+sound generalization must account for the allowed active-length choices and the behavior of
+227
+inactive or masked lanes. Source preparation must also preserve executable statements and
+228
+their interpretation. Compiler correctness and the correspondence from modeled intrinsic
+229
+semantics to native execution remain outside the present proof chain. The QCP paper reports
+230
+that its symbolic executor lacked a formal soundness proof at publication [18]; [TODO: audit
+231
+the exact QCP release used in the final artifact and state its remaining trusted components.]
+232
+When strengthening a precondition from P to P ′, let R describe the original caller’s
+233
+legitimate states. Acceptance requires evidence for R ⇒P ′, not merely that P ′ excludes
+234
+one counterexample. Likewise, changing a target creates a new candidate whose proof and
+235
+timing evidence must be rebound to the changed source. Source edits, contract changes, and
+236
+proof-only changes are recorded separately. A failed proof, a replayed counterexample, and a
+237
+completed proof are distinct outcomes.
+238
+4
+Evaluation design
+239
+[TODO: This section specifies planned experiments. It contains no completed cohort-level
+240
+verification or performance results.]
+241
+The primary cohort is fixed to the 35 published final optimized RVV kernels at commit
+242
+80feb4564cb4 [4]. The study evaluates existing optimization outputs; it does not rerun the
+243
+optimization search. For each subject, the matching NEON source, original optimized target,
+244
+any repair, caller contract, and machine profile must be identified separately. Earlier proofs
+245
+of intermediate targets are reusable development assets, not completed results for this cohort.
+246
+Measurements should distinguish proof construction from proof checking. Per-kernel
+247
+records include elapsed time, QCP condition generation, proof checking, agent token usage,
+248
+failed attempts, manual interventions, and implementation changes. Shared semantic-library
+249
+construction is reported separately from incremental kernel work. Historical optimization
+250
+
+8
+Verifying Semantic Equivalence of SIMD Kernels Across Architectures
+Table 1 Planned studies. Subject counts specify the intended evaluation, not proof successes.
+Softmax is a candidate composed program, not a full inference application.
+Study
+Subjects
+Planned scope
+Completed proofs
+Optimization
+Final SALTyRN targets
+35 pairs
+[TODO: pending]
+Translation
+AVX operations to RVV/HVX
+5 operations
+[TODO: pending]
+Cross-checking
+Corresponding XNNPACK kernels
+[TODO: select]
+[TODO: pending]
+Composition
+A small SIMD program
+[TODO: select]
+[TODO: pending]
+Table 2 Per-kernel reporting schema. Each row must identify exact source versions and the
+checked profile in the artifact. Times include failed attempts where applicable. No placeholder is a
+measurement.
+Field
+Required value
+Proof outcome
+Proved, concrete discrepancy, or unresolved; [TODO: counts]
+Contract/profile
+Admitted lengths, values, memory layout, VLEN and FP modes
+Executable changes
+Added/deleted lines by ISA, rationale, review decision
+Verification cost
+Wall time, generation/checking time, tokens, retries; [TODO: mea-
+sure]
+Reuse
+Reused intrinsic lemmas and assumptions; [TODO: measure incre-
+mental cost]
+Performance
+Baseline/original/repaired cycles and speed ratios; [TODO: measure]
+External optimization cost
+Upstream records, or explicitly not reported
+time and tokens are reported only when traceable upstream records exist. The study compares
+251
+original optimized and repaired candidates against the same handwritten RVV baseline,
+252
+using identical input sizes, compiler settings, and target hardware configuration. An invalid
+253
+candidate’s timing may quantify repair cost, but is not counted as a valid speedup.
+254
+The extension study must establish that selected operations are absent from the chosen
+255
+target-library versions rather than infer absence from filenames. Cross-checking must align
+256
+logical operations, layouts, parameters, and numerical contracts before classifying a discrep-
+257
+ancy. Existing XNNPACK reports supply potential historical regression subjects, including
+258
+RVV rounding and square-root exceptional-value handling [20, 22]. They are known reports,
+259
+not new findings by Vekto. For softmax, the comparison must address reduction order,
+260
+exponential approximations, intermediate-buffer contracts, and the final division. [TODO:
+261
+Select a real source program and target baseline, and establish whether the desired exact
+262
+observation is compatible with their algorithms.]
+263
+Three case studies are planned: a minimally repaired optimized kernel; a new port that
+264
+requires additional intrinsic semantics; and a cross-checking discrepancy whose feasibility
+265
+and contract implications can be traced to concrete code. [TODO: Choose completed cases
+266
+with adequate provenance. The maximum example currently supports semantic diagnosis,
+267
+but not the desired retained-speedup claim.]
+268
+5
+Related work
+269
+[TODO: Focused initial comparison. Complete the literature coverage before making a
+270
+novelty claim.]
+271
+
+Anonymous author(s)
+9
+Generation and validation of optimized kernels.
+272
+KernelBench, Autocomp, and IntrinTrans use executable feedback to evaluate or improve
+273
+generated kernels [12, 7, 6]. SALTyRN also includes bounded symbolic comparison before
+274
+and after optimization [5]. LLM-Vectorizer combines generation with Alive2 validation and
+275
+describes loop-alignment techniques and restrictions for its experiments [17]. These systems
+276
+motivate comparing the input domain, semantic model, and complete program obligations
+277
+of each guarantee, rather than grouping all prior validation as testing. Vekto’s proposed
+278
+evaluation asks whether modular C proofs can cover the actual optimized kernels under
+279
+explicit contracts.
+280
+Semantic models and verified transformations.
+281
+Sail and Islaris provide a path from authoritative ISA specifications to machine-code rea-
+282
+soning [3, 16]. Alive2 checks LLVM refinement with bounded reasoning about loops [10].
+283
+Rake checks equivalence of synthesized vector instruction sequences for Hexagon HVX [1].
+284
+These operate at different boundaries from Vekto’s C intrinsic interface. The proposed
+285
+method uses QCP’s existing C verification infrastructure [18]; reusable cross-ISA semantic
+286
+definitions, the alignment of kernel contracts, and evidence about optimized implementations
+287
+must supply the contribution beyond that infrastructure.
+288
+Cross-checking implementations.
+289
+Differential testing uses disagreements among implementations to identify candidate de-
+290
+fects [11]. SymDiff checks equivalence and exposes behavioral differences between imperative
+291
+programs [9]. Our proposed XNNPACK study applies an explicit observation relation to
+292
+corresponding ISA implementations, while retaining the distinction between disagreement
+293
+and violation of a required contract. The distinction has practical consequences: a historical
+294
+XNNPACK min/max policy permits unspecified NaN behavior [19], while a later change to
+295
+the repository’s separate YNNPACK subsystem adds NaN propagation for a reported JAX
+296
+reduction problem [21]. That change is evidence of an integration concern, not proof that
+297
+our tested XNNPACK microkernels violate their API.
+298
+References
+299
+1
+Maaz Bin Safeer Ahmad, Alexander J. Root, Andrew Adams, Shoaib Kamil, and Alvin Cheung.
+300
+Vector instruction selection for digital signal processors using program synthesis. In Architec-
+301
+tural Support for Programming Languages and Operating Systems, 2022. URL: https://people.
+302
+eecs.berkeley.edu/~akcheung/papers/asplos22.pdf, doi:10.1145/3503222.3507714.
+303
+2
+Arm. Arm Neon intrinsics reference. Arm C Language Extensions; accessed November 4, 2026.
+304
+URL: https://arm-software.github.io/acle/neon_intrinsics/advsimd.html.
+305
+3
+Alasdair Armstrong et al. ISA semantics for ARMv8-A, RISC-V, and CHERI-MIPS. Proceed-
+306
+ings of the ACM on Programming Languages, 3(POPL), 2019. URL: https://alastairreid.
+307
+github.io/papers/popl19-isasemantics.pdf, doi:10.1145/3290384.
+308
+4
+Keagan Chern. Optimized RVV kernels, 2026. Published final-output source repository, com-
+309
+mit 80feb4564cb470de301062109b6f89db672bdf9d. URL: https://github.com/keaganchern/
+310
+optimized-rvv-kernels/tree/80feb4564cb470de301062109b6f89db672bdf9d.
+311
+5
+Keagan Chern, Charles Hong, Sophia Shao, and Alvin Cheung.
+SALTyRN: Turn-
+312
+ing Neon kernels into fast,
+verified RVV code with LLMs.
+RISE Project,
+au-
+313
+thor technical article, July 27, 2026.
+URL: https://riseproject.dev/2026/07/27/
+314
+saltyrn-turning-neon-kernels-into-fast-verified-rvv-code-with-llms/.
+315
+
+10
+Verifying Semantic Equivalence of SIMD Kernels Across Architectures
+6
+Liutong Han, Zhiyuan Tan, Hongbin Zhang, Pengcheng Wang, Chu Kang, Mingjie Xing,
+316
+and Yanjun Wu.
+IntrinTrans:
+LLM-based intrinsic code translator for RISC-V vector.
+317
+arXiv:2510.10119, version 3, 2026. URL: https://arxiv.org/abs/2510.10119v3.
+318
+7
+Charles Hong, Sahil Bhatia, Alvin Cheung, and Yakun Sophia Shao.
+Autocomp: LLM-
+319
+driven code optimization for tensor accelerators. arXiv:2505.18574, version 3, 2025. URL:
+320
+https://arxiv.org/abs/2505.18574v3.
+321
+8
+Natalia Kokoromyti, Sokserey Sun, Anne Ouyang, and Azalia Mirhoseini. KernelBench v0.1.
+322
+Scaling Intelligence Lab, Stanford University. Maintainer report on evaluation and reward
+323
+hacking; accessed November 4, 2026. URL: https://scalingintelligence.stanford.edu/
+324
+blogs/kernelbenchv01/.
+325
+9
+Shuvendu K. Lahiri, Chris Hawblitzel, Ming Kawaguchi, and Henrique Rebelo.
+SymD-
+326
+iff:
+A language-agnostic semantic diff tool for imperative programs.
+In Computer
+327
+Aided Verification, 2012. URL: https://www.microsoft.com/en-us/research/publication/
+328
+symdiff-a-language-agnostic-semantic-diff-tool-for-imperative-programs/.
+329
+10
+Nuno P. Lopes, Juneyoung Lee, Chung-Kil Hur, Zhengyang Liu, and John Regehr. Alive2:
+330
+Bounded translation validation for LLVM. In Programming Language Design and Implemen-
+331
+tation, 2021. URL: https://web.ist.utl.pt/nuno.lopes/pubs/alive2-pldi21.pdf.
+332
+11
+William M. McKeeman.
+Differential testing for software.
+Digital Technical Jour-
+333
+nal,
+10(1):100–107,
+1998.
+URL:
+https://www.cs.tufts.edu/comp/150FP/archive/
+334
+bill-mckeeman/DifferentailTesting.pdf.
+335
+12
+Anne Ouyang, Simon Guo, Simran Arora, Alex L. Zhang, William Hu, Christopher Ré,
+336
+and Azalia Mirhoseini. KernelBench: Can LLMs write efficient GPU kernels? In Interna-
+337
+tional Conference on Machine Learning, 2025. URL: https://proceedings.mlr.press/v267/
+338
+ouyang25a.html.
+339
+13
+Qualified C Programming.
+QCP tutorials.
+Accessed November 4, 2026.
+URL: https:
+340
+//www.qua.codes/en/tutorials/index.html.
+341
+14
+Qualified C Programming. Symbolic execution generates verification conditions. Tutorial T3-3;
+342
+accessed November 4, 2026. URL: https://www.qua.codes/en/tutorials/t3-3.html.
+343
+15
+RISC-V International. The RISC-V instruction set manual: V standard extension for vector
+344
+operations, version 1.0, 2026. ISA manual release v20260120. URL: https://docs.riscv.
+345
+org/reference/isa/v20260120/unpriv/v-st-ext.html.
+346
+16
+Michael Sammler, Angus Hammond, Rodolphe Lepigre, Brian Campbell, Jean Pichon-
+347
+Pharabod, Derek Dreyer, Deepak Garg, and Peter Sewell.
+Islaris:
+Verification of ma-
+348
+chine code against authoritative ISA semantics.
+In Programming Language Design and
+349
+Implementation, 2022. URL: https://pub.ista.ac.at/~msammler/paper/islaris.pdf, doi:
+350
+10.1145/3519939.3523434.
+351
+17
+Jubi Taneja, Avery Laird, Cong Yan, Madan Musuvathi, and Shuvendu K. Lahiri. LLM-
+352
+Vectorizer: LLM-based verified loop vectorizer. arXiv:2406.04693, version 1, 2024. URL:
+353
+https://arxiv.org/abs/2406.04693v1.
+354
+18
+Xiwei Wu, Yueyang Feng, Xiaoyang Lu, Tianchuan Lin, Kan Liu, Zhiyi Wang, Shushu Wu,
+355
+Lihan Xie, Chengxi Yang, Hongyi Zhong, Naijun Zhan, Zhenjiang Hu, and Qinxiang Cao.
+356
+NEAT: QCP: A practical separation logic-based C program verification tool. arXiv:2505.12878,
+357
+version 1, 2025. URL: https://arxiv.org/abs/2505.12878v1.
+358
+19
+XNNPACK contributors. Handling NaN for min/max instruction, 2020. Issue 441; includes
+359
+subsequent discussion. URL: https://github.com/google/XNNPACK/issues/441.
+360
+20
+XNNPACK contributors. vrnd kernels for rvv are incorrect, 2025. Issue 8087; later discussion
+361
+reports a merged fix. URL: https://github.com/google/XNNPACK/issues/8087.
+362
+21
+XNNPACK contributors.
+Correctly propagate NaN in min/max operations, 2026.
+Pull
+363
+request 11652, merged October 14, 2026; changes the YNNPACK subsystem. URL: https:
+364
+//github.com/google/XNNPACK/pull/11652.
+365
+22
+XNNPACK contributors. Fix f32-vsqrt and f16-vsqrt inf handling, 2026. Pull request 11053,
+366
+merged August 25, 2026. URL: https://github.com/google/XNNPACK/pull/11053.
+367

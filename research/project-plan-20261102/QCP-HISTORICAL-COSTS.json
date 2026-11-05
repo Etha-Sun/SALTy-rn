@@ -1,0 +1,340 @@
+{
+  "scope": "Historical recorded command elapsed times, not fresh measurements",
+  "warning": "Sums overlap under concurrency: neither wall time nor CPU time; no measured cache speedup",
+  "cases": {
+    "f32-vadd": {
+      "source": "build/four-isa-vabs/verification/qcp/verified/f32-vadd/proof/status.json",
+      "source_sha256": "3aa1848378366ed986d2410b60d706ee14078278493944af50f7e58c890d2cb9",
+      "passed_record": true,
+      "historical_run": "/zp_vegeta/scratch_sb/ycsun/verus/build/qcp-kernel-framework/verification/qcp/verified/f32-vadd/.build/full-pwarla4l",
+      "groups": {
+        "cpp": {
+          "commands": 13,
+          "sum_command_elapsed_s": 0.23093577497638762,
+          "max_command_elapsed_s": 0.018004724057391286
+        },
+        "qcp": {
+          "commands": 11,
+          "sum_command_elapsed_s": 186.0420815179823,
+          "max_command_elapsed_s": 142.56659718393348
+        },
+        "strategy": {
+          "commands": 8,
+          "sum_command_elapsed_s": 0.06510391121264547,
+          "max_command_elapsed_s": 0.008300445042550564
+        },
+        "coqc": {
+          "commands": 88,
+          "sum_command_elapsed_s": 1238.3682925663888,
+          "max_command_elapsed_s": 100.40506466501392
+        }
+      },
+      "slowest": [
+        {
+          "label": "ByValue-neon_unit-qcp",
+          "elapsed_s": 142.56659718393348
+        },
+        {
+          "label": "QcpRvv32-rvv_load_checked",
+          "elapsed_s": 100.40506466501392
+        },
+        {
+          "label": "ByValue-neon_store_calls",
+          "elapsed_s": 84.77500776201487
+        },
+        {
+          "label": "ByvalueRvv-MacroKernelCalls",
+          "elapsed_s": 81.5162339360686
+        },
+        {
+          "label": "QcpNeonLoop-neon_call_tail_checked",
+          "elapsed_s": 76.33936073095538
+        },
+        {
+          "label": "QcpNeonLoop-neon_call_mid_checked",
+          "elapsed_s": 54.691007198998705
+        },
+        {
+          "label": "QcpNeonLoop-neon_init_checked",
+          "elapsed_s": 51.51687939208932
+        },
+        {
+          "label": "ByValue-neon_load_calls",
+          "elapsed_s": 49.459041091031395
+        },
+        {
+          "label": "QcpNeonLoop-neon_full_checked",
+          "elapsed_s": 48.21566401992459
+        },
+        {
+          "label": "QcpNeonLoop-neon_simple_checked",
+          "elapsed_s": 39.290056247031316
+        }
+      ],
+      "unit_vcs": {},
+      "fresh_local_modules": 87
+    },
+    "x32-packw-gemm-goi": {
+      "source": "build/four-isa-vabs/verification/qcp/verified/x32-packw-gemm-goi/proof/full-status.json",
+      "source_sha256": "9f243b95d88d688c9ef791c128e42a1f2e98e97aec32c989b268408bc3ebeaa5",
+      "passed_record": true,
+      "historical_run": "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/x32-packw-gemm-goi/.build/full-q9hrn0sm",
+      "groups": {
+        "cpp": {
+          "commands": 13,
+          "sum_command_elapsed_s": 2.2686473866924644,
+          "max_command_elapsed_s": 1.0469089848920703
+        },
+        "qcp": {
+          "commands": 13,
+          "sum_command_elapsed_s": 16.53837127261795,
+          "max_command_elapsed_s": 1.9678305708803236
+        },
+        "other": {
+          "commands": 4,
+          "sum_command_elapsed_s": 51.75931462086737,
+          "max_command_elapsed_s": 22.997996160993353
+        },
+        "coqc": {
+          "commands": 295,
+          "sum_command_elapsed_s": 2566.8249438712373,
+          "max_command_elapsed_s": 62.45745050883852
+        }
+      },
+      "slowest": [
+        {
+          "label": "X32Packw-RvvPairField11",
+          "elapsed_s": 62.45745050883852
+        },
+        {
+          "label": "X32Packw-RvvPairField13",
+          "elapsed_s": 61.46410216204822
+        },
+        {
+          "label": "X32Packw-RvvStorePairChecked",
+          "elapsed_s": 58.91251812595874
+        },
+        {
+          "label": "X32Packw-RvvOddField09",
+          "elapsed_s": 48.99478983995505
+        },
+        {
+          "label": "X32Packw-RvvPairField08",
+          "elapsed_s": 48.0306131769903
+        },
+        {
+          "label": "X32Packw-CallerChecked",
+          "elapsed_s": 35.66640708921477
+        },
+        {
+          "label": "X32Packw-RvvChecked",
+          "elapsed_s": 29.05501945898868
+        },
+        {
+          "label": "X32Packw-NeonChecked",
+          "elapsed_s": 28.649321855977178
+        },
+        {
+          "label": "AssumptionsPart06",
+          "elapsed_s": 23.63017194904387
+        },
+        {
+          "label": "AssumptionsPart14",
+          "elapsed_s": 23.356383363017812
+        }
+      ],
+      "unit_vcs": {
+        "scalar_memory": 5,
+        "neon_pair": 48,
+        "neon_odd": 11,
+        "neon_header": 19,
+        "rvv_store_pair": 8,
+        "rvv_pair": 14,
+        "rvv_odd": 12,
+        "rvv_header": 24,
+        "neon_unit": 79,
+        "rvv_unit": 79,
+        "observe": 2,
+        "assert": 1,
+        "caller": 10
+      },
+      "fresh_local_modules": 295
+    },
+    "f32-raddstoreexpminusmax": {
+      "source": "build/four-isa-vabs/verification/qcp/verified/f32-raddstoreexpminusmax/proof/full-status.json",
+      "source_sha256": "27ba5ce4829fc4250267ebbd057fd14dc1cbbf82814bbbaa5b3c8edf6a2f515d",
+      "passed_record": true,
+      "historical_run": "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-raddstoreexpminusmax/.build/full-imfxiw1g",
+      "groups": {
+        "other": {
+          "commands": 5,
+          "sum_command_elapsed_s": 71.47448475030251,
+          "max_command_elapsed_s": 31.788307836977765
+        },
+        "cpp": {
+          "commands": 6,
+          "sum_command_elapsed_s": 0.4991815807297826,
+          "max_command_elapsed_s": 0.20143459597602487
+        },
+        "qcp": {
+          "commands": 4,
+          "sum_command_elapsed_s": 42.37622153502889,
+          "max_command_elapsed_s": 27.263789932942018
+        },
+        "coqc": {
+          "commands": 604,
+          "sum_command_elapsed_s": 50074.6405677204,
+          "max_command_elapsed_s": 1217.2177599139977
+        }
+      },
+      "slowest": [
+        {
+          "label": "ExpMinusMax-RvvLeaf210",
+          "elapsed_s": 1217.2177599139977
+        },
+        {
+          "label": "ExpMinusMax-RvvLeaf214",
+          "elapsed_s": 1204.184191557113
+        },
+        {
+          "label": "ExpMinusMax-RvvLeaf207",
+          "elapsed_s": 1175.0934473059606
+        },
+        {
+          "label": "ExpMinusMax-RvvLeaf216",
+          "elapsed_s": 1170.676815734012
+        },
+        {
+          "label": "ExpMinusMax-RvvLeaf204",
+          "elapsed_s": 1097.4373547669966
+        },
+        {
+          "label": "ExpMinusMax-RvvLeaf201",
+          "elapsed_s": 1085.9313304640818
+        },
+        {
+          "label": "ExpMinusMax-RvvLeaf209",
+          "elapsed_s": 1035.251755603822
+        },
+        {
+          "label": "ExpMinusMax-RvvLeaf211",
+          "elapsed_s": 1018.6123593540397
+        },
+        {
+          "label": "ExpMinusMax-RvvLeaf213",
+          "elapsed_s": 1015.3524496899918
+        },
+        {
+          "label": "ExpMinusMax-RvvLeaf198",
+          "elapsed_s": 945.994166258024
+        }
+      ],
+      "unit_vcs": {
+        "neon_unit": 268,
+        "rvv_unit": 223,
+        "scalar": 5,
+        "public_caller": 6
+      },
+      "fresh_local_modules": 604
+    },
+    "f32-conv-hwc2chw": {
+      "source": "build/four-isa-vabs/verification/qcp/verified/f32-conv-hwc2chw/proof/full-status.json",
+      "source_sha256": "8f6e5a26dbd1b75ac14eace6183e50c6b66901327e3a2e9439b7d5830fbadd8a",
+      "passed_record": true,
+      "historical_run": "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-conv-hwc2chw/.build/hwc-whole-integration/f32-conv-hwc2chw/.build/full-kfv6l5c2",
+      "groups": {
+        "cpp": {
+          "commands": 16,
+          "sum_command_elapsed_s": 1.3209270974621177,
+          "max_command_elapsed_s": 0.19565171282738447
+        },
+        "qcp": {
+          "commands": 13,
+          "sum_command_elapsed_s": 686.0023910815362,
+          "max_command_elapsed_s": 312.95423969090916
+        },
+        "strategy": {
+          "commands": 1,
+          "sum_command_elapsed_s": 0.010371014941483736,
+          "max_command_elapsed_s": 0.010371014941483736
+        },
+        "other": {
+          "commands": 4,
+          "sum_command_elapsed_s": 182.84540307498537,
+          "max_command_elapsed_s": 92.39324014307931
+        },
+        "coqc": {
+          "commands": 1429,
+          "sum_command_elapsed_s": 38124.05450549326,
+          "max_command_elapsed_s": 398.5712227418553
+        }
+      },
+      "slowest": [
+        {
+          "label": "HwcConv-Main443CallLeaf065",
+          "elapsed_s": 398.5712227418553
+        },
+        {
+          "label": "HwcConv-Main443CallLeaf020",
+          "elapsed_s": 350.35157109214924
+        },
+        {
+          "label": "HwcConv-CallGeneral063",
+          "elapsed_s": 342.0049202130176
+        },
+        {
+          "label": "HwcConv-Main443CallLeaf057",
+          "elapsed_s": 331.2879057948012
+        },
+        {
+          "label": "HwcConv-Main443CallLeaf016",
+          "elapsed_s": 323.06474337494
+        },
+        {
+          "label": "neon_unit-qcp",
+          "elapsed_s": 312.95423969090916
+        },
+        {
+          "label": "HwcConv-RvvMain401Channel03",
+          "elapsed_s": 285.537908711005
+        },
+        {
+          "label": "HwcConv-Main443CallLeaf018",
+          "elapsed_s": 282.5793053188827
+        },
+        {
+          "label": "HwcConv-Main443CallLeaf055",
+          "elapsed_s": 258.61564479698427
+        },
+        {
+          "label": "HwcConv-CallGeneral014",
+          "elapsed_s": 231.99877135199495
+        }
+      ],
+      "unit_vcs": {
+        "support_unit": 5,
+        "assert_unit": 1,
+        "copy_float_unit": 1,
+        "nan_helpers_unit": 38,
+        "neon3_unit": 60,
+        "read_scalar_unit": 2,
+        "store_half_unit": 12,
+        "neon_pixel_unit": 396,
+        "rvv_fma3_unit": 336,
+        "pixel9_unit": 44,
+        "neon_unit": 443,
+        "rvv_unit": 401,
+        "public_mode": 9
+      },
+      "fresh_local_modules": 1429
+    }
+  },
+  "exp_goal_dependency_observation": {
+    "goal_bytes": 1596652,
+    "goal_lines": 18892,
+    "goal_sha256": "54a3ab0282f1558251f4b5205b0b23c70484d6cb87e92be771c3bcd67063396a",
+    "rvv_leaf_files": 206,
+    "rvv_leaves_mentioning_whole_goal_module": 206,
+    "interpretation": "Coarse compilation dependency; not evidence that all leaf propositions change after an edit"
+  }
+}

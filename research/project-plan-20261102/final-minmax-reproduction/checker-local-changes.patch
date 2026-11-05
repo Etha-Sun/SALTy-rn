@@ -1,0 +1,176 @@
+diff --git a/src/verification_cvc5/CMakeLists.txt b/src/verification_cvc5/CMakeLists.txt
+index 5882c68..c386d2c 100644
+--- a/src/verification_cvc5/CMakeLists.txt
++++ b/src/verification_cvc5/CMakeLists.txt
+@@ -11,7 +11,7 @@ set(CVC5_INSTALL_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../third_party/cvc5/install
+ # Try the package config first.  If that fails (or the targets don't pull
+ # in all transitive deps for the static libs), fall back to manual linking.
+ set(CVC5_CONFIG_DIR "${CVC5_INSTALL_DIR}/lib/cmake/cvc5")
+-find_package(cvc5 QUIET CONFIG PATHS "${CVC5_CONFIG_DIR}" NO_DEFAULT_PATH)
++# Official shared cvc5 archive is linked directly below.
+ 
+ add_library(salt_cvc5_headers INTERFACE)
+ target_include_directories(salt_cvc5_headers INTERFACE
+@@ -22,21 +22,7 @@ target_include_directories(salt_cvc5_headers INTERFACE
+ # deps — point the linker at them and use --start-group either way.
+ message(STATUS "Linking cvc5 static libs from ${CVC5_INSTALL_DIR}/lib")
+ target_link_directories(salt_cvc5_headers INTERFACE ${CVC5_INSTALL_DIR}/lib)
+-target_link_libraries(salt_cvc5_headers INTERFACE
+-    -Wl,--start-group
+-    cvc5
+-    cadical
+-    cln
+-    picpolyxx
+-    picpoly
+-    glpk
+-    cocoa
+-    gmpxx
+-    gmp
+-    -Wl,--end-group
+-    pthread
+-    dl
+-    m)
++target_link_libraries(salt_cvc5_headers INTERFACE cvc5 pthread dl m)
+ 
+ target_compile_options(salt_cvc5_headers INTERFACE
+     -Wno-unused-parameter
+@@ -49,10 +35,7 @@ target_compile_options(salt_cvc5_headers INTERFACE
+     -fpermissive   # XNNPACK kernels are C: allow implicit void*->T* (e.g. qd8 `const void* w` + vld1q_s32(w))
+ )
+ 
+-add_executable(verify_f16_conv_hwc2chw_cvc5
+-    harness/verify_f16_conv_hwc2chw_cvc5.cpp)
+-target_link_libraries(verify_f16_conv_hwc2chw_cvc5 PRIVATE salt_cvc5_headers)
+-
++# The unused standalone f16 harness is absent from the upstream checkout.
+ # Build a verification harness from a source file (mirror of bitwuzla
+ # CMakeLists' HARNESS_SRC mode — used by the orchestrator).
+ # Usage: cmake --build . --target verify_<name> -- HARNESS_SRC=path/to/harness.cpp
+diff --git a/src/verification_cvc5/rvv/intrinsics.hpp b/src/verification_cvc5/rvv/intrinsics.hpp
+index 397a96d..e3fec9b 100644
+--- a/src/verification_cvc5/rvv/intrinsics.hpp
++++ b/src/verification_cvc5/rvv/intrinsics.hpp
+@@ -23,6 +23,17 @@
+ 
+ namespace salt_cvc5 {
+ 
++// Explicit rounding changes the operation's RM, then restores the dynamic RM.
++// Reuse the checked FRM decoder: reserved/DYN encodings remain unsupported.
++class ScopedRVVRounding {
++    Term previous;
++public:
++    explicit ScopedRVVRounding(unsigned frm) : previous(g_ctx->fp.rounding_mode) {
++        g_ctx->fp.rounding_mode = rm_term_from_frm(g_ctx->tm, frm);
++    }
++    ~ScopedRVVRounding() { g_ctx->fp.rounding_mode = previous; }
++};
++
+ // ===========================================================================
+ // Type aliases NOT defined in symbolic_vector.hpp (cvc5 tree currently only
+ // aliases the f16-conv-hwc2chw subset).  All these are RVVVector under the
+diff --git a/src/verification_cvc5/rvv/ops/fp_arith.hpp b/src/verification_cvc5/rvv/ops/fp_arith.hpp
+index f2121c8..5f2bd74 100644
+--- a/src/verification_cvc5/rvv/ops/fp_arith.hpp
++++ b/src/verification_cvc5/rvv/ops/fp_arith.hpp
+@@ -357,4 +357,17 @@ inline RVVVector __riscv_vfsub_vv_f64m2(const RVVVector& a, const RVVVector& b,
+ inline RVVVector __riscv_vfsub_vv_f64m4(const RVVVector& a, const RVVVector& b, size_t vl){ return _gfa_vv(a,b,64,G_SUB,vl); }
+ inline RVVVector __riscv_vfsub_vv_f64m8(const RVVVector& a, const RVVVector& b, size_t vl){ return _gfa_vv(a,b,64,G_SUB,vl); }
+ 
++
++inline RVVVector __riscv_vfadd_vv_f32m8_rm(const RVVVector& a, const RVVVector& b, unsigned frm, size_t vl) {
++    ScopedRVVRounding rounding(frm);
++    return _gfa_vv(a, b, 32, G_ADD, vl);
++}
++inline RVVVector __riscv_vfsub_vv_f32m8_rm(const RVVVector& a, const RVVVector& b, unsigned frm, size_t vl) {
++    ScopedRVVRounding rounding(frm);
++    return _gfa_vv(a, b, 32, G_SUB, vl);
++}
++inline RVVVector __riscv_vfmul_vv_f32m8_rm(const RVVVector& a, const RVVVector& b, unsigned frm, size_t vl) {
++    ScopedRVVRounding rounding(frm);
++    return _gfa_vv(a, b, 32, G_MUL, vl);
++}
+ } // namespace salt_cvc5
+diff --git a/src/verification_cvc5/rvv/ops/fp_fma.hpp b/src/verification_cvc5/rvv/ops/fp_fma.hpp
+index 5be581c..00475d9 100644
+--- a/src/verification_cvc5/rvv/ops/fp_fma.hpp
++++ b/src/verification_cvc5/rvv/ops/fp_fma.hpp
+@@ -291,4 +291,9 @@ inline RVVVector __riscv_vfnmsub_vv_f64m2(const RVVVector& vd, const RVVVector&
+ inline RVVVector __riscv_vfnmsub_vv_f64m4(const RVVVector& vd, const RVVVector& vs1, const RVVVector& vs2, size_t vl){ return _gffma_vv(vd,vs1,vs2,64,true,true,false,vl); }
+ inline RVVVector __riscv_vfnmsub_vv_f64m8(const RVVVector& vd, const RVVVector& vs1, const RVVVector& vs2, size_t vl){ return _gffma_vv(vd,vs1,vs2,64,true,true,false,vl); }
+ 
++
++inline RVVVector __riscv_vfmacc_vv_f32m8_rm(const RVVVector& vd, const RVVVector& a, const RVVVector& b, unsigned frm, size_t vl) {
++    ScopedRVVRounding rounding(frm);
++    return _gffma_vv(vd, a, b, 32, false, false, false, vl);
++}
+ } // namespace salt_cvc5
+diff --git a/src/verification_cvc5/rvv/ops/init.hpp b/src/verification_cvc5/rvv/ops/init.hpp
+index 76d0cf2..d49584f 100644
+--- a/src/verification_cvc5/rvv/ops/init.hpp
++++ b/src/verification_cvc5/rvv/ops/init.hpp
+@@ -424,7 +424,17 @@ inline RVVVector __riscv_vundefined_u32m2x2(){ return _gini_undef(32); }
+ inline RVVVector __riscv_vundefined_u32m2x3(){ return _gini_undef(32); }
+ inline RVVVector __riscv_vundefined_u32m2x4(){ return _gini_undef(32); }
+ inline RVVVector __riscv_vundefined_u32m4(){ return _gini_undef(32); }
+-inline RVVVector __riscv_vundefined_u32m4x2(){ return _gini_undef(32); }
++inline VectorTuple<RVVVector,2> __riscv_vundefined_u32m4x2(){
++  auto& tm = g_ctx->tm;
++  VectorTuple<RVVVector,2> result;
++  for (auto& segment : result.val) {
++    std::vector<Term> lanes;
++    for (size_t i = 0; i < g_ctx->vlen / 32 * 4; ++i)
++      lanes.push_back(tm.mkConst(tm.mkBitVectorSort(32)));
++    segment = RVVVector(tm, 32, lanes);
++  }
++  return result;
++}
+ inline RVVVector __riscv_vundefined_u32m8(){ return _gini_undef(32); }
+ inline RVVVector __riscv_vundefined_u32mf2(){ return _gini_undef(32); }
+ inline RVVVector __riscv_vundefined_u32mf2x2(){ return _gini_undef(32); }
+diff --git a/src/workflow/verification/engine/emit.py b/src/workflow/verification/engine/emit.py
+index 08234e7..484c863 100644
+--- a/src/workflow/verification/engine/emit.py
++++ b/src/workflow/verification/engine/emit.py
+@@ -201,6 +201,8 @@ def _rewrite_index_reads(src: str, names) -> str:
+     if not body:
+         return src
+     for n in names:
++        body = re.sub(rf'\*\s*{re.escape(n)}\s*\+\+', rf'salt_scalar({n}++)', body)
++        body = re.sub(rf'\*\s*{re.escape(n)}\b', rf'salt_scalar({n})', body)
+         body = re.sub(rf'\(\s*(\w+)\s*\)\s*{re.escape(n)}\s*\[\s*([^\]]+?)\s*\]',
+                       rf'salt_scalar({n} + (\2)).cast<\1>()', body)   # (T) p[i] → .cast<T>()
+         body = re.sub(rf'\b{re.escape(n)}\s*\[\s*([^\]]+?)\s*\]',
+@@ -209,6 +211,15 @@ def _rewrite_index_reads(src: str, names) -> str:
+     return head + body
+ 
+ 
++def _rewrite_index_stores(src: str, names) -> str:
++    """Track indexed stores in the integer packw fixture's symbolic output."""
++    head, body = _split_body(src)
++    for name in names:
++        body = re.sub(rf'\b{re.escape(name)}\s*\[\s*([^\]]+?)\s*\]\s*=(?!=)',
++                      rf'salt_deref({name} + (\1)) =', body)
++    return head + body
++
++
+ def _rewrite_scalar_movs(src: str) -> str:
+     """Rewrite scalar buffer-to-buffer moves `*dst = *src++;` (packw remainder
+     paths) to symbolic accessors: `salt_deref(dst) = salt_scalar(src); src += 1;`."""
+@@ -435,7 +446,7 @@ def _packw_fixture() -> "FixtureSpec":
+                  "packed_weights": f"g * ((nc + 1) / 2) * {blk_u32} * sizeof(uint32_t) + 64"},
+         out_buffers=["packed_weights"],
+         out_extent=f"g * ((nc + 1) / 2) * {blk_u32}",
+-        shared_out=["packed_weights"], scalar_movs=True,
++        shared_out=["packed_weights"], scalar_movs=True, index_reads=["bias", "weights"],
+         elem="uint32_t", kind="UINT")
+ 
+ 
+@@ -1047,6 +1058,8 @@ def generate_multidim(neon_path, rvv_path, name, neon, rvv, spec, input_range=No
+     if spec.scalar_movs:
+         neon_body = _rewrite_scalar_movs(neon_body)
+         rvv_body = _rewrite_scalar_movs(rvv_body)
++        neon_body = _rewrite_index_stores(neon_body, spec.out_buffers)
++        rvv_body = _rewrite_index_stores(rvv_body, spec.out_buffers)
+     if spec.index_reads:
+         neon_body = _rewrite_index_reads(neon_body, spec.index_reads)
+         rvv_body = _rewrite_index_reads(rvv_body, spec.index_reads)

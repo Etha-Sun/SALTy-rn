@@ -1,0 +1,52 @@
+{
+  "user_override": "2026-11-03: 不需要管限额; previous account quota stop revoked for this extension",
+  "kernels": [
+    "f32-vadd",
+    "f32-vsub",
+    "f32-vmul",
+    "f32-vdiv",
+    "f32-vmin",
+    "f32-vmax",
+    "f32-vsqrt",
+    "f32-vlrelu"
+  ],
+  "sizes": {
+    "default": [
+      1024,
+      1031
+    ],
+    "f32-vdiv": [
+      128,
+      135
+    ],
+    "f32-vsqrt": [
+      128,
+      135
+    ]
+  },
+  "roles": [
+    "A-target",
+    "C-public",
+    "D-xnnpack-u8v"
+  ],
+  "extra_frozen": [
+    "f32-vmin",
+    "f32-vmax"
+  ],
+  "compiler": "xPack GCC15.2 O3 RV64GCV lp64d ffp-contract=off; independent TU/no LTO",
+  "hardware": "/zp_vegeta/scratch_sb/ycsun/verus/build/salty-version-audit-20261103/environment/manifest.json",
+  "simulator_sha256": "ebcb231c066aa4b5365a401ecc97fbc40319a46abd2f4ea48991ffee3b8a0565",
+  "warm_calls": {
+    "default": 5,
+    "f32-vdiv": 1,
+    "f32-vsqrt": 1
+  },
+  "timed_calls": 3,
+  "summary": "minimum; retain every sample and median separately",
+  "validation": "bit-exact per timed call plus two canaries; input/output disjoint,64-byte aligned",
+  "timing": "real kernel call fenced rdcycle/rdinstret; legal AVL0 reset; preparation/output check/printing outside window",
+  "scope": "local supplementary protocol, not exact paper reproduction; only finite common-domain fixtures, not full IEEE/NaN correctness or a new formal proof",
+  "resources": "serial, one simulator;120 host seconds for six simple families,300s for VDIV/VSQRT;20M target-cycle cap per job",
+  "heavy_protocol_note": "Legacy warm5 VDIV first case did not complete within120s; all heavy candidates use distinct warm1 profile,3 timed calls,300s host cap. Original records retained. New profiles include BENCH_START/WARM_DONE markers outside timing.",
+  "heavy_size_note": "Use shorter common input for all three VDIV/VSQRT candidates after120s legacy1024 cases timed out; no128-vs1024 ratios."
+}

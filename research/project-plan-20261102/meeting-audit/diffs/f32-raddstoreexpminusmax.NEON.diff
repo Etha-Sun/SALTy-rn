@@ -1,0 +1,63 @@
+--- kernels/source/f32-raddstoreexpminusmax.c
++++ verification/qcp/verified/f32-raddstoreexpminusmax/impl/testNEON.c
+@@ -19,13 +19,13 @@
+   assert(sum != NULL);
+ 
+-  const float32x4_t vlog2e = vmovq_n_f32(0x1.715476p+0f);
+-  const float32x4_t vmagic_bias = vmovq_n_f32(0x1.8000FEp23f);
+-  const float32x4_t vc5 = vmovq_n_f32(0x1.0F9F9Cp-7f);
+-  const float32x4_t vc4 = vmovq_n_f32(0x1.573A1Ap-5f);
+-  const float32x4_t vc3 = vmovq_n_f32(0x1.555A80p-3f);
+-  const float32x4_t vc2 = vmovq_n_f32(0x1.FFFDC6p-2f);
+-  const float32x4_t vc1 = vmovq_n_f32(0x1.FFFFF6p-1f);
+-  const float32x4_t vdenorm_cutoff = vmovq_n_f32(-0x1.5D589Ep6f);
+-  const float32x4_t vminus_ln2 = vmovq_n_f32(-0x1.62E430p-1f);
++  const float32x4_t vlog2e = vmovq_n_f32(1.44269502162933349609375f);
++  const float32x4_t vmagic_bias = vmovq_n_f32(12583039.0f);
++  const float32x4_t vc5 = vmovq_n_f32(0.00828929059207439422607421875f);
++  const float32x4_t vc4 = vmovq_n_f32(0.0418978221714496612548828125f);
++  const float32x4_t vc3 = vmovq_n_f32(0.16667652130126953125f);
++  const float32x4_t vc2 = vmovq_n_f32(0.4999915063381195068359375f);
++  const float32x4_t vc1 = vmovq_n_f32(0.999999701976776123046875f);
++  const float32x4_t vdenorm_cutoff = vmovq_n_f32(-87.33654022216796875f);
++  const float32x4_t vminus_ln2 = vmovq_n_f32(-0.693147182464599609375f);
+ 
+   const float32x4_t vi_max = vld1q_dup_f32(max);
+@@ -39,5 +39,7 @@
+     float32x4_t vn = vfmaq_f32(vmagic_bias, vx, vlog2e);
+ 
+-    const float32x4_t vs = vreinterpretq_f32_s32(vshlq_n_s32(vreinterpretq_s32_f32(vn), 23));
++    const int32x4_t vn_bits = vreinterpretq_s32_f32(vn);
++    const int32x4_t vs_bits = vshlq_n_s32(vn_bits, 23);
++    const float32x4_t vs = vreinterpretq_f32_s32(vs_bits);
+ 
+     vn = vsubq_f32(vn, vmagic_bias);
+@@ -53,5 +55,8 @@
+     float32x4_t vf = vfmaq_f32(vs, vp, vt);
+ 
+-    vf = vreinterpretq_f32_u32(vbicq_u32(vreinterpretq_u32_f32(vf), vcltq_f32(vx, vdenorm_cutoff)));
++    const uint32x4_t vf_bits = vreinterpretq_u32_f32(vf);
++    const uint32x4_t cutoff_mask = vcltq_f32(vx, vdenorm_cutoff);
++    const uint32x4_t vf_clear = vbicq_u32(vf_bits, cutoff_mask);
++    vf = vreinterpretq_f32_u32(vf_clear);
+ 
+     vst1q_f32(output, vf); output += 4;
+@@ -73,5 +78,7 @@
+     float32x4_t vn = vfmaq_f32(vmagic_bias, vx, vlog2e);
+ 
+-    const float32x4_t vs = vreinterpretq_f32_s32(vshlq_n_s32(vreinterpretq_s32_f32(vn), 23));
++    const int32x4_t vn_bits = vreinterpretq_s32_f32(vn);
++    const int32x4_t vs_bits = vshlq_n_s32(vn_bits, 23);
++    const float32x4_t vs = vreinterpretq_f32_s32(vs_bits);
+ 
+     vn = vsubq_f32(vn, vmagic_bias);
+@@ -87,5 +94,8 @@
+     float32x4_t vf = vfmaq_f32(vs, vp, vt);
+ 
+-    vf = vreinterpretq_f32_u32(vbicq_u32(vreinterpretq_u32_f32(vf), vcltq_f32(vx, vdenorm_cutoff)));
++    const uint32x4_t vf_bits = vreinterpretq_u32_f32(vf);
++    const uint32x4_t cutoff_mask = vcltq_f32(vx, vdenorm_cutoff);
++    const uint32x4_t vf_clear = vbicq_u32(vf_bits, cutoff_mask);
++    vf = vreinterpretq_f32_u32(vf_clear);
+ 
+     float32x2_t vf_lo = vget_low_f32(vf);

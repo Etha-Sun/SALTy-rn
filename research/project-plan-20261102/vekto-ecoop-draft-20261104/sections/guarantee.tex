@@ -1,0 +1,46 @@
+\section{Contracts, observations, and proof obligations}
+\label{sec:guarantee}
+
+\subsection{The relation being checked}
+Let $x$ be a logical input, including array contents, dimensions, and operation parameters. A domain predicate $D(x)$ describes legitimate calls. For implementation $K_i$, a precondition $P_i(x,s_i)$ relates $x$ to the initial C state $s_i$, including its memory representation. A machine profile $p_i$ records the ABI, relevant floating-point configuration, and supported vector configuration. The two profiles need not use the same vector width or state representation.
+
+For integer results we require exact equality. For the floating-point outputs considered here, define
+\begin{equation}
+ u\approx_{\fp}v
+ \quad\Longleftrightarrow\quad
+ u=_{\mathrm{num}}v\;\lor\;(\isnan(u)\land\isnan(v)).
+ \label{eq:float}
+\end{equation}
+Numeric equality identifies positive and negative zero. This relation also identifies NaN payloads, but permits no tolerance between distinct finite numbers. We lift it pointwise to output arrays, requiring their shapes to agree. A different observation must be stated explicitly for a kernel whose caller inspects bits, indices, or additional state.
+
+Write $\langle K_i,s_i\rangle\Downarrow_{p_i}t_i$ for a terminating modeled execution. The partial-correctness comparison is
+\begin{equation}
+\begin{split}
+ D(x)\land P_A(x,s_A)\land P_B(x,s_B)\;\land{}\\
+ \langle K_A,s_A\rangle\Downarrow_{p_A}t_A\;\land{}
+ \langle K_B,s_B\rangle\Downarrow_{p_B}t_B
+ \quad\Longrightarrow\quad \obs(t_A)\approx\obs(t_B).
+\end{split}
+\label{eq:equivalence}
+\end{equation}
+Here $\obs$ extracts the specified output and return values. Memory safety and preservation of memory outside the permitted write footprint are separate obligations of the implementation contracts. They do not follow from Equation~\ref{eq:equivalence} alone. The current QCP proof packages inspected for this draft explicitly exclude a termination theorem. Accordingly, Equation~\ref{eq:equivalence} does not assert that either implementation returns, or that they agree on divergence. \todo{If the final contribution includes total correctness, add and check termination arguments for the admitted implementations; do not infer them from return VCs.}
+
+\subsection{Relating implementations through a common specification}
+Each implementation is checked against a postcondition that relates its output to a common relation $S(x,o)$. To compose the results into equivalence, the common relation must determine observations up to the selected equivalence:
+\begin{equation}
+ S(x,o_1)\land S(x,o_2)\Longrightarrow o_1\approx o_2.
+ \label{eq:unique}
+\end{equation}
+This condition prevents a weak common specification, such as a broad error interval, from being mistaken for an equivalence proof. For a reference-preserving floating-point optimization, $S$ may encode the reference's rounding and accumulation order rather than ideal real arithmetic. The proof must establish the result for each complete implementation, including helpers and tails. A wrapper that assumes both kernel contracts only establishes the final composition conditional on those contracts.
+
+The relation in Equation~\ref{eq:float} is a final-output observation. It cannot be substituted for bit-level equality at every intermediate boundary: a subsequent reciprocal or sign-sensitive operation can distinguish positive from negative zero. A composed program therefore needs intermediate contracts strong enough for each consumer, or a proof that the consumer respects the chosen relation.
+
+\subsection{What QCP checks}
+QCP processes contracts, assertions, and loop invariants by symbolic execution in separation logic~\cite{qcp,qcp-tutorials}. In the inspected VADD package, the public contract supplies readable input arrays, additional padding for NEON tail loads, and a separate writable output array. It returns the original input resources and a fully initialized output array with specified values. At an indexed read, generated entailments expose the cell at the requested index from the array predicate and retain the remainder of the array. Other conditions establish expression ranges, satisfy callee preconditions, preserve loop invariants, and derive the postcondition on return. Memory-access validity is checked through these resources and entailments as well as symbolic-execution failures; it is not confined to obligations named \texttt{safety}~\cite{qcp-safety}.
+
+The proof package checks generated \texttt{VC\_Correct} interfaces for the kernel bodies, shims, helpers, and final comparator. Statements declared inside such an interface are obligations to implement, not evidence that the obligations have been proved. The implementation/specification binding and dependency checks are therefore part of accepting a result. The inspected package establishes modeled C-shim partial correctness and explicitly excludes hardware-to-shim correspondence and termination. \todo{Freeze the release and complete the per-kernel coverage audit for the final experimental cohort.}
+
+\subsection{Review and trust boundaries}
+Reusing a semantic shim requires a matching operation, type, and machine profile. In particular, a proof at one fixed RVV capacity is not a proof for all hardware VLENs. A sound generalization must account for the allowed active-length choices and the behavior of inactive or masked lanes. Source preparation must also preserve executable statements and their interpretation. Compiler correctness and the correspondence from modeled intrinsic semantics to native execution remain outside the present proof chain. The QCP paper reports that its symbolic executor lacked a formal soundness proof at publication~\cite{qcp}; \todo{audit the exact QCP release used in the final artifact and state its remaining trusted components.}
+
+When strengthening a precondition from $P$ to $P'$, let $R$ describe the original caller's legitimate states. Acceptance requires evidence for $R\Rightarrow P'$, not merely that $P'$ excludes one counterexample. Likewise, changing a target creates a new candidate whose proof and timing evidence must be rebound to the changed source. Source edits, contract changes, and proof-only changes are recorded separately. A failed proof, a replayed counterexample, and a completed proof are distinct outcomes.

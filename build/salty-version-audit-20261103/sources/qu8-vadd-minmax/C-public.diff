@@ -1,0 +1,212 @@
+--- A-target
++++ C-public
+@@ -1,3 +1,8 @@
++#include <riscv_vector.h>
++#include <stddef.h>
++#include <stdint.h>
++#include <assert.h>
++
+ void test_rvv(
+     size_t batch,
+     const uint8_t* input_a,
+@@ -6,67 +11,158 @@
+     const struct xnn_qu8_add_minmax_params* restrict params) XNN_OOB_READS
+ {
+   assert(batch != 0);
+-  assert(batch % sizeof(uint8_t) == 0);
+   assert(input_a != NULL);
+   assert(input_b != NULL);
+   assert(output != NULL);
+ 
+-  const uint8_t a_zero_point = params->scalar.a_zero_point;
+-  const uint8_t b_zero_point = params->scalar.b_zero_point;
+-  const int32_t a_multiplier = params->scalar.a_multiplier;
+-  const int32_t b_multiplier = params->scalar.b_multiplier;
++  const uint8_t a_zp = params->scalar.a_zero_point;
++  const uint8_t b_zp = params->scalar.b_zero_point;
++  const int32_t a_mult = params->scalar.a_multiplier;
++  const int32_t b_mult = params->scalar.b_multiplier;
+   const int32_t shift = params->scalar.shift;
+-  const int16_t output_zero_point = params->scalar.output_zero_point;
+-  const uint8_t output_min = params->scalar.output_min;
+-  const uint8_t output_max = params->scalar.output_max;
++  const int32_t out_zp = (int32_t)params->scalar.output_zero_point;
++  const uint8_t out_min = params->scalar.output_min;
++  const uint8_t out_max = params->scalar.output_max;
+ 
+-  while (batch > 0) {
+-    size_t vl = __riscv_vsetvl_e8m2(batch);
++  // Base bias calculation: - (a_zero_point * a_multiplier + b_zero_point * b_multiplier)
++  // Using modulo 2^32 arithmetic handles any potential overflow natively.
++  const int32_t bias = (int32_t)(-(uint32_t)a_zp * (uint32_t)a_mult - (uint32_t)b_zp * (uint32_t)b_mult);
+ 
+-    vuint8m2_t va = __riscv_vle8_v_u8m2(input_a, vl);
+-    vuint8m2_t vb = __riscv_vle8_v_u8m2(input_b, vl);
++  // OPTIMIZATION: Loop unswitching and kernel specialization.
++  // When a_mult == b_mult, we can pre-add the 8-bit inputs using a widening add.
++  // This reduces the number of 3-cycle MulPipe instructions per loop by 50%.
++  if (shift >= 0) {
++    const int32_t rounding_const = (shift > 0) ? (1 << (shift - 1)) : 0;
++    const int32_t fused_bias = bias + rounding_const + (out_zp << shift);
++    
++    const size_t vlmax = __riscv_vsetvlmax_e32m8();
++    vint32m8_t vfbias = __riscv_vmv_v_x_i32m8(fused_bias, vlmax);
+ 
+-    // Widen to 16-bit and subtract zero points
+-    vuint16m4_t vxa_u = __riscv_vwsubu_vx_u16m4(va, a_zero_point, vl);
+-    vint16m4_t vxa = __riscv_vreinterpret_v_u16m4_i16m4(vxa_u);
++    if (a_mult == b_mult) {
++      // Specialized path for symmetric multipliers
++      while (batch > 0) {
++        const size_t vl = __riscv_vsetvl_e8m2(batch);
+ 
+-    vuint16m4_t vxb_u = __riscv_vwsubu_vx_u16m4(vb, b_zero_point, vl);
+-    vint16m4_t vxb = __riscv_vreinterpret_v_u16m4_i16m4(vxb_u);
++        vuint8m2_t va8 = __riscv_vle8_v_u8m2(input_a, vl);
++        vuint8m2_t vb8 = __riscv_vle8_v_u8m2(input_b, vl);
+ 
+-    // Widen to 32-bit and multiply-accumulate
+-    vint32m8_t vxa32 = __riscv_vsext_vf2_i32m8(vxa, vl);
+-    vint32m8_t vacc = __riscv_vmul_vx_i32m8(vxa32, a_multiplier, vl);
++        // Pre-add inputs: u8 + u8 -> u16 (vwaddu uses IntPipe, 1 cycle)
++        vuint16m4_t vsum16 = __riscv_vwaddu_vv_u16m4(va8, vb8, vl);
++        // Extend to 32-bit (vzext uses IntPipe, 1 cycle)
++        vuint32m8_t vsum32_u = __riscv_vzext_vf2_u32m8(vsum16, vl);
++        vint32m8_t vsum32 = __riscv_vreinterpret_v_u32m8_i32m8(vsum32_u);
+ 
+-    vint32m8_t vxb32 = __riscv_vsext_vf2_i32m8(vxb, vl);
+-    vacc = __riscv_vmacc_vx_i32m8(vacc, b_multiplier, vxb32, vl);
++        // Single multiplication: vacc = (vsum32 * a_mult) + fused_bias (MulPipe, 3 cycles)
++        vint32m8_t vacc = __riscv_vmadd_vx_i32m8(vsum32, a_mult, vfbias, vl);
+ 
+-    // Rounding shift right (or left shift if shift is negative)
+-    if (shift >= 0) {
+-      vacc = __riscv_vssra_vx_i32m8(vacc, (size_t)shift, __RISCV_VXRM_RNU, vl);
++        vint16m4_t vacc16 = __riscv_vnsra_wx_i16m4(vacc, (size_t)shift, vl);
++        vuint16m4_t vacc16_u = __riscv_vreinterpret_v_i16m4_u16m4(vacc16);
++        vuint8m2_t vout = __riscv_vnclipu_wx_u8m2(vacc16_u, 0, __RISCV_VXRM_RDN, vl);
++
++        vout = __riscv_vmaxu_vx_u8m2(vout, out_min, vl);
++        vout = __riscv_vminu_vx_u8m2(vout, out_max, vl);
++
++        __riscv_vse8_v_u8m2(output, vout, vl);
++
++        input_a += vl;
++        input_b += vl;
++        output += vl;
++        batch -= vl;
++      }
+     } else {
+-      vacc = __riscv_vsll_vx_i32m8(vacc, (size_t)(-shift), vl);
++      // Fallback path for differing multipliers
++      while (batch > 0) {
++        const size_t vl = __riscv_vsetvl_e8m2(batch);
++        vuint8m2_t va8 = __riscv_vle8_v_u8m2(input_a, vl);
++        vuint8m2_t vb8 = __riscv_vle8_v_u8m2(input_b, vl);
++
++        vuint32m8_t va32_u = __riscv_vzext_vf4_u32m8(va8, vl);
++        vint32m8_t va32 = __riscv_vreinterpret_v_u32m8_i32m8(va32_u);
++        vint32m8_t vacc = __riscv_vmadd_vx_i32m8(va32, a_mult, vfbias, vl);
++
++        vuint32m8_t vb32_u = __riscv_vzext_vf4_u32m8(vb8, vl);
++        vint32m8_t vb32 = __riscv_vreinterpret_v_u32m8_i32m8(vb32_u);
++        vacc = __riscv_vmacc_vx_i32m8(vacc, b_mult, vb32, vl);
++
++        vint16m4_t vacc16 = __riscv_vnsra_wx_i16m4(vacc, (size_t)shift, vl);
++        vuint16m4_t vacc16_u = __riscv_vreinterpret_v_i16m4_u16m4(vacc16);
++        vuint8m2_t vout = __riscv_vnclipu_wx_u8m2(vacc16_u, 0, __RISCV_VXRM_RDN, vl);
++
++        vout = __riscv_vmaxu_vx_u8m2(vout, out_min, vl);
++        vout = __riscv_vminu_vx_u8m2(vout, out_max, vl);
++
++        __riscv_vse8_v_u8m2(output, vout, vl);
++
++        input_a += vl;
++        input_b += vl;
++        output += vl;
++        batch -= vl;
++      }
+     }
++  } else {
++    // shift < 0
++    const int32_t s = (int32_t)-(uint32_t)shift;
++    const int32_t fused_a_mult = a_mult << s;
++    const int32_t fused_b_mult = b_mult << s;
++    const int32_t fused_bias = (bias << s) + out_zp;
+ 
+-    // Saturating narrow to 16-bit
+-    vint16m4_t vacc16 = __riscv_vnclip_wx_i16m4(vacc, (size_t)0, __RISCV_VXRM_RDN, vl);
++    const size_t vlmax = __riscv_vsetvlmax_e32m8();
++    vint32m8_t vfbias = __riscv_vmv_v_x_i32m8(fused_bias, vlmax);
+ 
+-    // Saturating add output zero point
+-    vacc16 = __riscv_vsadd_vx_i16m4(vacc16, output_zero_point, vl);
++    if (a_mult == b_mult) {
++      while (batch > 0) {
++        const size_t vl = __riscv_vsetvl_e8m2(batch);
++        vuint8m2_t va8 = __riscv_vle8_v_u8m2(input_a, vl);
++        vuint8m2_t vb8 = __riscv_vle8_v_u8m2(input_b, vl);
+ 
+-    // Signed-to-unsigned saturating narrow to 8-bit
+-    vacc16 = __riscv_vmax_vx_i16m4(vacc16, (int16_t)0, vl);
+-    vuint16m4_t vacc16_u = __riscv_vreinterpret_v_i16m4_u16m4(vacc16);
+-    vuint8m2_t vout = __riscv_vnclipu_wx_u8m2(vacc16_u, (size_t)0, __RISCV_VXRM_RDN, vl);
++        vuint16m4_t vsum16 = __riscv_vwaddu_vv_u16m4(va8, vb8, vl);
++        vuint32m8_t vsum32_u = __riscv_vzext_vf2_u32m8(vsum16, vl);
++        vint32m8_t vsum32 = __riscv_vreinterpret_v_u32m8_i32m8(vsum32_u);
+ 
+-    // Clamp to min/max
+-    vout = __riscv_vmaxu_vx_u8m2(vout, output_min, vl);
+-    vout = __riscv_vminu_vx_u8m2(vout, output_max, vl);
++        vint32m8_t vacc = __riscv_vmadd_vx_i32m8(vsum32, fused_a_mult, vfbias, vl);
+ 
+-    __riscv_vse8_v_u8m2(output, vout, vl);
++        vint16m4_t vacc16 = __riscv_vnsra_wx_i16m4(vacc, 0, vl);
++        vuint16m4_t vacc16_u = __riscv_vreinterpret_v_i16m4_u16m4(vacc16);
++        vuint8m2_t vout = __riscv_vnclipu_wx_u8m2(vacc16_u, 0, __RISCV_VXRM_RDN, vl);
+ 
+-    input_a += vl;
+-    input_b += vl;
+-    output += vl;
+-    batch -= vl;
++        vout = __riscv_vmaxu_vx_u8m2(vout, out_min, vl);
++        vout = __riscv_vminu_vx_u8m2(vout, out_max, vl);
++
++        __riscv_vse8_v_u8m2(output, vout, vl);
++
++        input_a += vl;
++        input_b += vl;
++        output += vl;
++        batch -= vl;
++      }
++    } else {
++      while (batch > 0) {
++        const size_t vl = __riscv_vsetvl_e8m2(batch);
++        vuint8m2_t va8 = __riscv_vle8_v_u8m2(input_a, vl);
++        vuint8m2_t vb8 = __riscv_vle8_v_u8m2(input_b, vl);
++
++        vuint32m8_t va32_u = __riscv_vzext_vf4_u32m8(va8, vl);
++        vint32m8_t va32 = __riscv_vreinterpret_v_u32m8_i32m8(va32_u);
++        vint32m8_t vacc = __riscv_vmadd_vx_i32m8(va32, fused_a_mult, vfbias, vl);
++
++        vuint32m8_t vb32_u = __riscv_vzext_vf4_u32m8(vb8, vl);
++        vint32m8_t vb32 = __riscv_vreinterpret_v_u32m8_i32m8(vb32_u);
++        vacc = __riscv_vmacc_vx_i32m8(vacc, fused_b_mult, vb32, vl);
++
++        vint16m4_t vacc16 = __riscv_vnsra_wx_i16m4(vacc, 0, vl);
++        vuint16m4_t vacc16_u = __riscv_vreinterpret_v_i16m4_u16m4(vacc16);
++        vuint8m2_t vout = __riscv_vnclipu_wx_u8m2(vacc16_u, 0, __RISCV_VXRM_RDN, vl);
++
++        vout = __riscv_vmaxu_vx_u8m2(vout, out_min, vl);
++        vout = __riscv_vminu_vx_u8m2(vout, out_max, vl);
++
++        __riscv_vse8_v_u8m2(output, vout, vl);
++
++        input_a += vl;
++        input_b += vl;
++        output += vl;
++        batch -= vl;
++      }
++    }
+   }
+-}+}
