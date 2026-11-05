@@ -1,6 +1,6 @@
 # Project handoff
 
-**Current work (2026-11-04): the Vekto paper experiments E1–E4 (C-level QCP equivalence of SIMD kernels).** Start with [PAPER-EXPERIMENTS-HANDOFF.zh-CN.md](PAPER-EXPERIMENTS-HANDOFF.zh-CN.md). It lists the reading order: Introduction V2, experiment design, kernel execution policy, and the E1 pairing audit. Those files take precedence over older plans, drafts, and the intermediate 40-kernel results, which are reference material only. A ready-to-send prompt for a new supervising agent is in [NEW-SERVER-AGENT-PROMPT.zh-CN.md](research/project-plan-20261102/NEW-SERVER-AGENT-PROMPT.zh-CN.md).
+**Current work (2026-11-04): the Vekto paper experiments E1–E4 (C-level QCP equivalence of SIMD kernels), on branch `vekto`.** Start with [PAPER-EXPERIMENTS-HANDOFF.zh-CN.md](PAPER-EXPERIMENTS-HANDOFF.zh-CN.md). It lists the reading order: Introduction V2, experiment design, kernel execution policy, and the E1 pairing audit. Those files take precedence over older plans, drafts, and the intermediate 40-kernel results, which are reference material only. A ready-to-send prompt for a new supervising agent is in [NEW-SERVER-AGENT-PROMPT.zh-CN.md](research/project-plan-20261102/NEW-SERVER-AGENT-PROMPT.zh-CN.md).
 
 The sections below describe the earlier Sail/Islaris assembly-level line, which is now background. For it, read [SERVER_HANDOFF.zh-CN.md](SERVER_HANDOFF.zh-CN.md) first, then:
 
@@ -9,7 +9,7 @@ The sections below describe the earlier Sail/Islaris assembly-level line, which 
 - [Kernel implementation and evidence](research/sail-tooling-gap/kernel-e2e/README.zh-CN.md)
 - [Research ideas](research/ideas/001-cross-isa-spec-interface.zh-CN.md) and [small-vl reference proposal](research/ideas/002-rvv-small-vl-reference.zh-CN.md)
 
-As of this handoff, active work is on `feat/assembly-reduction-lean` in the user's fork `Etha-Sun/SALTy-rn`; `main` is older. Check the actual branch and status before edits. Preserve unrelated local work.
+For the Sail line, work was on `feat/assembly-reduction-lean` in the user's fork `Etha-Sun/SALTy-rn` (the paper line `vekto` branches from it); `main` is older. Check the actual branch and status before edits. Preserve unrelated local work.
 
 The separate `proof/sum` branch packages completed Coq proofs under `coq/neon-rvv-reduction/`, with its own setup/build/check scripts. Its 2026-10-02 `verification.json` records fresh compilation and recursive checking of 131 modules. Read that branch's README as well; it excludes the research branch's conditional RVV program theorems. The existing `build/pr-sum` worktree has uncommitted discussion notes and diagrams listed in the handoff. Preserve them through the private workspace backup.
 

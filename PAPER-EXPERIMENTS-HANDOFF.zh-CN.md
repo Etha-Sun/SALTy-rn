@@ -1,6 +1,6 @@
 # Vekto 论文实验：新服务器迁移与交接指南
 
-整理日期：2026-11-04。分支：`docs/paper-experiments-handoff-20261104`（基于 `feat/assembly-reduction-lean@978bc31b8`）。
+整理日期：2026-11-04。分支：`vekto`，论文实验主线（基于 `feat/assembly-reduction-lean@978bc31b8`）。
 
 本文件取代 [SERVER_HANDOFF.zh-CN.md](SERVER_HANDOFF.zh-CN.md) 作为**当前工作的入口**。旧文件写于 2026-10-02，描述的是 Sail/Islaris 汇编层 reduction 研究；那条线保留为历史与背景，不是论文主线。现在的主线是 **Vekto：在 C 层用 QCP 验证 SIMD kernel 的跨 ISA 等价性**，并完成论文全部实验 E1–E4。
 
@@ -51,7 +51,7 @@
 
 | 内容 | 位置 | 新服务器如何获得 |
 |---|---|---|
-| 本交接、实验规划、执行规范、Intro V2、E1 配对、vmax/minmax 证据、ideas 003–006、版本审计报告与身份账本 | 本分支 `docs/paper-experiments-handoff-20261104` | `git clone` 后 checkout 本分支 |
+| 本交接、实验规划、执行规范、Intro V2、E1 配对、vmax/minmax 证据、ideas 003–006、版本审计报告与身份账本 | 本分支 `vekto` | `git clone` 后 checkout 本分支 |
 | QCP C-shim 框架、40 个旧 kernel 证明包（`verification/qcp/verified/`，基线 `821969733`） | 远端 `origin/c-shim-v2`，已推送 | 为它建 worktree，作为**参考资产** |
 | f32-vabs 四端候选（NEON/RVV/AVX 完成，HVX 与四端等价未完成） | 旧服务器 `build/four-isa-vabs/verification/qcp/candidates/f32-vabs-four-isa/`，**未提交**（约 36 MB 源码 + 构建产物） | rsync（见第 6 节） |
 | NEON 最小修复候选与审计（多项 NEON VC 解法） | 旧服务器 `build/neon-minimal-repairs/verification/qcp/candidates/`，**未提交**（约 610 MB，不含 `.build`） | rsync |
@@ -69,7 +69,7 @@ REPO=$HOME/verus            # 可改；若要直接复用旧 opam root，见第 
 git clone https://github.com/Etha-Sun/SALTy-rn.git "$REPO"
 cd "$REPO"
 git fetch origin --prune
-git switch docs/paper-experiments-handoff-20261104
+git switch vekto
 git worktree add build/qcp-kernel-framework origin/c-shim-v2
 git submodule update --init --recursive --jobs 4   # XNNPACK 867d5a34、chipyard 973f8732、autocomp d477d05、zephyr
 ```
