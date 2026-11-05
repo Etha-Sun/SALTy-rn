@@ -36,13 +36,17 @@ E1 的原始目标是：在旧公开合同的完整输入域上，原始 NEON A 
 
 | 编号 | kernel | 类型 | 内容 | 依据 | 原始结论 | 状态 |
 |---|---|---|---|---|---|---|
-| V-001 | s8-vclamp | 程序变体 | A_fixed：NEON 尾部两处 min/max 顺序对调，与参考语义一致 | XNN-001；XNNPACK 参考语义 `min(max(x,lo),hi)` | 原始 A ≠ Bopt（XNN-001） | A_fixed ≡ Bopt 已证（W4），复检中 |
-| C-001 | f32-vmax | 输入条件 | 输入不含 NaN | google/XNNPACK#441 | A ≠ Bopt（DIV-001） | 证明中（W19） |
-| C-002 | f32-vmin | 输入条件 | 输入不含 NaN | google/XNNPACK#441 | A ≠ Bopt（DIV-002） | 证明中（W19） |
+| V-001 | s8-vclamp | 程序变体 | A_fixed：NEON 尾部两处 min/max 顺序对调，与参考语义一致 | XNN-001；XNNPACK 参考语义 `min(max(x,lo),hi)` | 原始 A ≠ Bopt（XNN-001） | A_fixed ≡ Bopt 已证（W4），**监督者复检通过** |
+| C-001 | f32-vmax | 输入条件 | 输入不含 NaN | google/XNNPACK#441 | A ≠ Bopt（DIV-001） | **条件配对通过**（W19），**监督者复检通过** |
+| C-002 | f32-vmin | 输入条件 | 输入不含 NaN | google/XNNPACK#441 | A ≠ Bopt（DIV-002） | **条件配对通过**（W19，11:5x UTC），**监督者复检通过** |
 | V-002 | f32-f16-vcvt | 程序变体 | Bopt_fixed：恢复 NaN 路径 | BOPT-002 | A ≠ Bopt | 修复与证明中（W17）；RTL 性能待测 |
 | V-003 | qu8-vadd-minmax | 程序变体 | Bopt_fixed：改为饱和截窄 | BOPT-003 | A ≠ Bopt | 修复与证明中（W18）；RTL 性能待测 |
 | R-001 | qs8-vmul-minmax-fp32 | 观察关系 | 输出允许 ±1 误差 | XNNPACK tester 容差 | A ≠ Bopt（DIV-003） | 证明中（W24） |
 | C-003 | qu8-vadd-minmax | 输入条件 | params 限定为 XNNPACK `xnn_init_qu8_add_minmax_scalar_params` 在合法量化参数下实际能产生的取值（如 shift 13..30、乘数与 bias 的对应范围；W18 按 init 代码推出精确条件并引用代码行） | L1 第 1 步：XNNPACK 不会产生这个范围以外的参数；旧合同允许任意 int32 shift，在这些取值上 A 和 Bopt 都可能有 C 未定义行为 | 原始 A ≠ Bopt（BOPT-003） | 监督者按 L1 自主决定；与 V-003 一起由 W18 证明 |
-| C-004 | qs8-rsum | 输入条件 | 累加过程不发生 int32 有符号溢出（初始值加上全部输入的数学和落在 int32 范围内） | 溢出是 C 未定义行为，此类输入在 C 层面没有语义；XNNPACK 自己的标量参考实现在同样输入上也会溢出 | A 和 Bopt 在 Init=INT32_MAX 时都有 UB（W20 用 UBSan 实测） | 监督者按 L1/L3 自主决定；W20 证明中 |
-| C-005 | qs8-rdsum | 输入条件 | 同 C-004（逐通道累加不溢出）；rows 转 int 的问题另按 L1 判断（可能是 XNN-002） | 同 C-004 | A 的标量尾部在 Init=INT32_MAX 时有 UB | 同上 |
-| V-004 | u8-vclamp | 程序变体 | A_fixed（XNN-001 的 u8 版）与 Bopt_fixed（params 改用 XNNPACK 的 uint32 布局） | XNN-001、BOPT-001 | 原始 A ≠ Bopt：顺序正常的上下界下 Bopt 也输出 0（W14 实测） | W14 证明中；Bopt_fixed 的 RTL 性能待测 |
+| C-004 | qs8-rsum | 输入条件 | 与求和顺序无关的不溢出条件：`n ≤ 2^24`，`Init − 128·n ≥ INT32_MIN`，`Init + 127·n ≤ INT32_MAX`。11:15 第二次修订：kernel 先从 0 开始累加、最后才加 Init，所以从 0 开始的部分和也要在范围内；这正是 XNNPACK 标量参考本身无 UB 的输入域 | 溢出是 C 未定义行为，此类输入在 C 层面没有语义；XNNPACK 自己的标量参考实现在同样输入上也会溢出 | A 和 Bopt 在 Init=INT32_MAX 时都有 UB（W20 用 UBSan 实测） | **条件配对通过**（W20 R5，13:26 UTC，VLEN 512/128/256），复检中 |
+| C-005 | qs8-rdsum | 输入条件 | 同 C-004（逐通道累加不溢出）；rows 转 int 的问题另按 L1 判断（可能是 XNN-002） | 同 C-004 | A 的标量尾部在 Init=INT32_MAX 时有 UB | 暂停：生成 NEON 侧 VC 时 QCP 崩溃（QCP-004），见"搁置" |
+| V-004 | u8-vclamp | 程序变体 | A_fixed（XNN-001 的 u8 版）与 Bopt_fixed（params 改用 XNNPACK 的 uint32 布局） | XNN-001、BOPT-001 | 原始 A ≠ Bopt：顺序正常的上下界下 Bopt 也输出 0（W14 实测） | **A_fixed ⇔ Bopt_fixed 完整配对通过**（W14，11:03 UTC），**监督者复检通过**；Bopt_fixed 的 RTL 性能待测 |
+| C-006 | x32transpose | 输入条件 | block 的宽、高都 ≥ 1 | L1 第 1 步：XNNPACK 对零维张量直接跳过 | A ≠ Bopt：宽 0、高 1 时 A 会写第 0 列（W21） | 续上 W21 |
+| C-007 | qs8-f32-vcvt、qu8-f32-vcvt | 输入条件 | zero point 限定为 init 参数类型的范围（int8 / uint8） | L1 第 1 步：init 接收 int8_t/uint8_t 类型的 zero point | A ≠ Bopt：zero point = 128 时（W22） | 续上 W22 |
+| V-005 | qu8-rdsum | 程序变体 | A_fixed：rows 计数改为 size_t（XNN-002） | XNN-002 | 原始 A ≠ Bopt：rows = 2^31 时 A 跳过计算 | QEMU 回归通过；QCP 证明被 QCP-004 阻塞 |
+

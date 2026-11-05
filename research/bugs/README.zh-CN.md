@@ -40,3 +40,7 @@
 | [DIV-002](divergences/DIV-002-f32-vmin-nan.zh-CN.md) | E1 f32-vmin：同上 | 同上 | 同上 |
 | [DIV-003](divergences/DIV-003-qs8-vmul-rounding.zh-CN.md) | E1 qs8-vmul-minmax-fp32：W12 分诊 | 舍入策略不同，差 1，在 XNNPACK tester 的 ±1 容差内 | 不等价已确认；严格比较还是带容差比较，待用户决定 |
 | [QCP-003](qcp/QCP-003-do-while-ull-decrement.zh-CN.md) | E1 qu8-rsum（W9），生成 VC 时 | do-while 中 `unsigned long long` 的 `--n;` 导致前端异常；条件表达式中的 `--`、内联 asm 也无法解析 | 已用工具 v1.2（R14–R16）绕开 |
+| [BOPT-004](bopt/BOPT-004-qs8-vlrelu-multiplier-narrowing.zh-CN.md) | E1 qs8-vlrelu：W23 用真实 init 参数复现 | 乘数 +32768 被截窄成 -32768，正负分支的乘法方向都错 | 已确认；修复待排期（受 Codex 额度限制） |
+| [BOPT-005](bopt/BOPT-005-qs8-vcvt-multiplier-and-saturation.zh-CN.md) | E1 qs8-vcvt：W23 | 乘数预移位后截断成 -32768；另外先截到 8 位再加输出零点，丢掉了本可被零点抵消的值 | 已确认；修复待排期 |
+| [XNN-002](xnnpack/XNN-002-qu8-rdsum-rows/README.zh-CN.md) | E1 qu8-rdsum（W21）：QEMU 差分 + L1 调用路径追查 | XNNPACK 的 qu8-rdsum NEON kernel 把 rows 截断成 int；经 reduce 算子可传入 rows ≥ 2^31，此时跳过全部计算（A 与 XNNPACK 源码逐字节相同） | **新发现，已确认**；A_fixed（3 行改为 size_t）已在 QEMU 上通过；QCP 证明被 QCP-004 阻塞 |
+| [QCP-004](qcp/QCP-004-neon-target-crash.zh-CN.md) | E1 x32transpose、qu8-rdsum（W21） | 生成 NEON 侧 VC 时 QCP 崩溃（SIGSEGV）；另有不可达分支中 record 初始化报错的最小例 | 根因未定位；搁置 |

@@ -44,7 +44,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-TOOL_VERSION = "rvv_ptr_lower 1.3.0"
+TOOL_VERSION = "rvv_ptr_lower 1.4.0"
 HERE = Path(__file__).resolve().parent
 REPO = HERE.parents[1]
 PTR_PREFIX = "qcp_p_"
@@ -1104,7 +1104,25 @@ def normalize(text, ast, main_file):
             if c.get("kind") == "CompoundStmt":
                 visit(c, c)
                 walk_do_body(c, False)
-    return low.apply(), low.log
+    out, log = low.apply(), low.log
+    return r19(out, log)
+
+
+CODE_SPLIT = re.compile(r'(/\*.*?\*/|//[^\n]*|"(?:\\.|[^"\\])*"|\'(?:\\.|[^\'\\])*\')', re.S)
+
+
+def r19(text, log):
+    """R19: GNU `__restrict` / `__restrict__` -> C99 `restrict` (same meaning) outside
+    comments and literals. QCP 2.1.4 only accepts the C99 keyword."""
+    parts = CODE_SPLIT.split(text)
+    n = 0
+    for i in range(0, len(parts), 2):
+        parts[i], k = re.subn(r"\b__restrict(?:__)?\b", "restrict", parts[i])
+        n += k
+    if n:
+        log = log + [{"function": None, "rule": "R19", "line": None,
+                      "original": "__restrict / __restrict__", "rewritten": f"restrict ({n} occurrences)"}]
+    return "".join(parts), log
 
 
 def lower_file(cfg, src, work_dir, header_name="qcp_rvv_ptr_ops.h", isa="rvv"):

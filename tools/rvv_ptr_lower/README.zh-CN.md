@@ -46,6 +46,8 @@
 | R17 | 函数内带常量初始化的 `static const` 数组（可带 `XNN_ALIGN(n)`） | 去掉 `static` 和对齐属性，成为普通的局部 `const` 数组 | 数组只读，每次调用读到的值相同；对齐不影响 C 语义。数组可能被返回、存入非局部左值，或传给非 intrinsic 的函数（名称不以 `v`、`__builtin_`、`__riscv_` 开头）时拒绝（STATIC）。QCP 2.1.4 不支持函数内的静态存储变量（W9 发现，v1.3 加入） |
 | R18 | 初始化列表末尾多余的逗号 `{…, x,}` | `{…, x}` | 纯语法改动。QCP 2.1.4 无法解析末尾逗号（v1.3 加入） |
 
+| R19 | 注释和字面量之外的 GNU `__restrict`、`__restrict__` | C99 `restrict` | 两者语义相同；QCP 2.1.4 只接受 `restrict`（W19 发现，v1.4 加入） |
+
 R14、R15 是 QCP 前端规范化，在 v1.1（2026-11-05）加入，**对两侧都适用**。QCP 2.1.4 不能解析内联 asm，也不能解析出现在表达式里的前置自增/自减（作为独立语句可以）。用 `--isa neon` 时，只对 NEON A 做规范化，不做向量改写。NEON 侧的差分测试由 `validate_neon.py` 完成：原版和规范化后的 A 分别编进上游 harness，在 qemu-aarch64 上运行，要求输出完全相同。
 
 QCP 支持 do-while 本身，但循环不变量要写在循环体之后、`while` 之前（`do { ... } /*@ Inv Assert ... */ while (c);`，见 QCP tutorial T3-6），所以不需要像旧项目那样手工改成 while。
