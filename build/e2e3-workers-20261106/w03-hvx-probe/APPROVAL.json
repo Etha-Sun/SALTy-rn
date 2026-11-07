@@ -1,0 +1,19 @@
+{
+  "status": "approved (probe result, conditional): HVX s8-rmax fixed variant V-007 fully proven",
+  "approved_utc": "2026-11-07T08:14:00Z",
+  "what_is_proven": "lowered xnn_s8_rmax_ukernel__hvx_u256_acc2 with rule H7 (= XNN-004 fix, V-007) satisfies spec.c::equivalent (rmax of seed and all inputs, exact int8) on the full domain n>0; original A has UB for negative max, so the claim is for V-007 only",
+  "supervisor_recheck": {
+    "dir": "rechecks/w03-run01",
+    "command": "env-exec.sh python3 pkg/proof/check.py --jobs 32 --run-dir <fresh>",
+    "rc": 0,
+    "gates": "all 9 true, 9 modules, 212 obligations",
+    "axioms": "subset of assumptions-allowlist.STANDARD.txt (user-approved)",
+    "impl_identity": "impl sha256 5c5b57b8... equals benchmark/XNNPACK copy",
+    "spec_review": "domain 0<n, non-null, exact int8 observation; no conditions"
+  },
+  "conditions_before_final": [
+    "replace hvx_ptr_lower with unified tools/rvv_ptr_lower (--isa hvx, to be added by W05) plus manual-rewrites patches: P4 do-while workaround (user signs) and H7 as V-007 fix patch",
+    "split HvxModel.v intrinsic contracts into the shared HVX contract library with per-function differential tables",
+    "rerun check.py from a fresh dir after refactor"
+  ]
+}

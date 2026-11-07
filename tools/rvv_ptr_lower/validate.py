@@ -22,9 +22,10 @@ import sys
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
-REPO = HERE.parents[1]
 sys.path.insert(0, str(HERE))
 import rvv_ptr_lower as L  # noqa: E402
+
+REPO = L.REPO
 
 SOL = REPO / "research/sol-pipeline-comparison-20261030"
 SALT = SOL / "sources/SALTy-rn"
@@ -116,6 +117,7 @@ def build_and_run(kernel, ksrc, include_dirs, work, strip_structs=False):
           *["-I" + str(d) for d in include_dirs],
           "-I" + str(REPO / "benchmark/XNNPACK"), "-I" + str(REPO / "benchmark/XNNPACK/src"),
           "-I" + str(REPO / "third_party/zephyr/third-party/executorch/backends/xnnpack/third-party/pthreadpool/include"),
+          "-I" + str(HERE / "stub-include"),
           main, "-lm", "-o", work / "test.elf"]
     rc, so, se = run(cc)
     (work / "compile.log").write_text(so + se)
@@ -132,7 +134,7 @@ def build_and_run(kernel, ksrc, include_dirs, work, strip_structs=False):
     return res
 
 
-def validate(src, out):
+def validate(src, out, difftest=True):
     k = src.stem
     rec = {"kernel": k, "input_sha256": sha(src)}
     d1, d2 = out / k / "run1", out / k / "run2"
@@ -160,6 +162,10 @@ def validate(src, out):
     rc3, m3 = lower(din / lowered.name, d3)
     j3 = json.loads((d3 / f"{k}.lowered.lowering.json").read_text())
     rec["idempotence"] = rc3 == 0 and not j3.get("rewrites") and not j3.get("rejections")
+    if not difftest:
+        rec["difftest"] = "skipped (--no-difftest)"
+        rec["status"] = "OK-NODIFF" if rec["determinism"] and rec["idempotence"] else "CHECK"
+        return rec
     a = build_and_run(k, src, [], out / k / "diff-original")
     strip = a["compile_rc"] != 0 and any("redefinition of 'xnn_" in l for l in a.get("compile_error", []))
     if strip:
@@ -179,6 +185,8 @@ def main():
     ap.add_argument("kernel_dir")
     ap.add_argument("--out", required=True)
     ap.add_argument("--only", nargs="*")
+    ap.add_argument("--no-difftest", action="store_true",
+                    help="skip the QEMU differential (needs the SALTy harness); determinism, syntax and idempotence only")
     a = ap.parse_args()
     out = Path(a.out).resolve()
     out.mkdir(parents=True, exist_ok=True)
@@ -187,7 +195,7 @@ def main():
         if a.only and src.stem not in a.only:
             continue
         try:
-            r = validate(src, out)
+            r = validate(src, out, not a.no_difftest)
         except L.Reject as e:
             r = {"kernel": src.stem, "status": "ERROR", "error": e.rule + ": " + e.message}
         except Exception as e:  # recorded, never hidden
@@ -195,6 +203,7 @@ def main():
         recs.append(r)
         print(r["kernel"], r["status"], {k: r.get(k) for k in ("determinism", "idempotence", "difftest_identical")}, flush=True)
     (out / "validation.json").write_text(json.dumps({"tool": L.TOOL_VERSION, "results": recs}, indent=1) + "\n")
+    sys.exit(0 if all(r["status"] in ("OK", "OK-NODIFF") for r in recs) else 1)
 
 
 if __name__ == "__main__":

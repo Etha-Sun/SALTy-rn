@@ -1,5 +1,5 @@
 {
-  "comment": "Parse configuration for rvv_ptr_lower. Paths are relative to the repository root. The include prefix mirrors the SALTy/sol-pipeline RVV harness prelude (research/sol-pipeline-comparison-20261030/rvv_eval.py). Per-ISA settings are under 'isa'; top-level target/profile keys mirror isa.rvv for backward compatibility.",
+  "comment": "Parse configuration for rvv_ptr_lower. Paths are relative to the repository root. The include prefix mirrors the SALTy/sol-pipeline RVV harness prelude (research/sol-pipeline-comparison-20261030/rvv_eval.py). Per-ISA settings are under 'isa'; top-level target/profile keys mirror isa.rvv for backward compatibility. Paths starting with '@tool/' are relative to the tool directory; the pthreadpool stub is a last-resort include path (used only when the real header is absent). vector_type_regex / heap_write_regex (per ISA) drive R21 / R22; enable_r21 (per ISA; true only for x86) switches R21 on, see README.",
   "clang": [
     "research/sol-pipeline-comparison-20261030/tools/ziglang/zig",
     "clang"
@@ -13,7 +13,8 @@
   "user_includes": [
     "benchmark/XNNPACK",
     "benchmark/XNNPACK/src",
-    "third_party/zephyr/third-party/executorch/backends/xnnpack/third-party/pthreadpool/include"
+    "third_party/zephyr/third-party/executorch/backends/xnnpack/third-party/pthreadpool/include",
+    "@tool/stub-include"
   ],
   "target_flags": [
     "-target",
@@ -83,7 +84,16 @@
       "profile_order": [
         "xnn",
         "self"
-      ]
+      ],
+      "user_includes": [
+        "benchmark/XNNPACK",
+        "benchmark/XNNPACK/src",
+        "third_party/zephyr/third-party/executorch/backends/xnnpack/third-party/pthreadpool/include",
+        "@tool/stub-include"
+      ],
+      "enable_r21": false,
+      "vector_type_regex": "^__rvv_\\w+_t$",
+      "heap_write_regex": "^(?:__riscv_vs(?:e|se|oxei|uxei|seg|sseg)\\d|(?:memcpy|memmove|memset)$)"
     },
     "neon": {
       "target_flags": [
@@ -120,7 +130,124 @@
       "profile_order": [
         "xnn",
         "self"
-      ]
+      ],
+      "user_includes": [
+        "benchmark/XNNPACK",
+        "benchmark/XNNPACK/src",
+        "third_party/zephyr/third-party/executorch/backends/xnnpack/third-party/pthreadpool/include",
+        "@tool/stub-include"
+      ],
+      "enable_r21": false,
+      "vector_type_regex": "^(?:u?int(?:8|16|32|64)|float(?:16|32|64)|bfloat16|poly(?:8|16|64))x\\d+(?:x\\d+)?_t$",
+      "heap_write_regex": "^(?:vst|(?:memcpy|memmove|memset)$)"
+    },
+    "x86": {
+      "target_flags": [
+        "-target",
+        "x86_64-unknown-linux-musl",
+        "-mavx",
+        "-std=gnu99"
+      ],
+      "libc_includes": [
+        "research/sol-pipeline-comparison-20261030/tools/ziglang/lib/libc/include/x86_64-linux-musl",
+        "research/sol-pipeline-comparison-20261030/tools/ziglang/lib/libc/include/generic-musl",
+        "research/sol-pipeline-comparison-20261030/tools/ziglang/lib/libc/include/any-linux-any"
+      ],
+      "user_includes": [
+        "benchmark/XNNPACK",
+        "benchmark/XNNPACK/src",
+        "third_party/zephyr/third-party/executorch/backends/xnnpack/third-party/pthreadpool/include",
+        "@tool/stub-include"
+      ],
+      "profiles": {
+        "xnn": [
+          "stdint.h",
+          "stddef.h",
+          "assert.h",
+          "math.h",
+          "immintrin.h",
+          "src/xnnpack/common.h",
+          "src/xnnpack/math.h",
+          "src/xnnpack/microparams.h"
+        ],
+        "self": [
+          "stdint.h",
+          "stddef.h",
+          "assert.h",
+          "math.h",
+          "immintrin.h",
+          "src/xnnpack/common.h",
+          "src/xnnpack/math.h"
+        ]
+      },
+      "profile_order": [
+        "xnn",
+        "self"
+      ],
+      "enable_r21": true,
+      "vector_type_regex": "^__m(?:64|128|256|512)(?:bh|[dih])?$",
+      "heap_write_regex": "^(?:(?:qcp)?_mm\\d*_\\w*(?:store|stream|maskmove)|(?:memcpy|memmove|memset)$)"
+    },
+    "hvx": {
+      "target_flags": [
+        "-target",
+        "hexagon-linux-musl",
+        "-mcpu=hexagonv67",
+        "-mhvx=v68",
+        "-mhvx-length=128B",
+        "-std=gnu99"
+      ],
+      "libc_includes": [
+        "research/sol-pipeline-comparison-20261030/tools/ziglang/lib/libc/include/hexagon-linux-musl",
+        "research/sol-pipeline-comparison-20261030/tools/ziglang/lib/libc/include/generic-musl",
+        "research/sol-pipeline-comparison-20261030/tools/ziglang/lib/libc/include/hexagon-linux-any",
+        "research/sol-pipeline-comparison-20261030/tools/ziglang/lib/libc/include/any-linux-any"
+      ],
+      "user_includes": [
+        "benchmark/XNNPACK",
+        "benchmark/XNNPACK/src",
+        "third_party/zephyr/third-party/executorch/backends/xnnpack/third-party/pthreadpool/include",
+        "@tool/stub-include"
+      ],
+      "profiles": {
+        "xnn": [
+          "stdint.h",
+          "stddef.h",
+          "assert.h",
+          "math.h",
+          "src/xnnpack/common.h",
+          "src/xnnpack/math.h",
+          "src/xnnpack/microparams.h"
+        ],
+        "self": [
+          "stdint.h",
+          "stddef.h",
+          "assert.h",
+          "math.h",
+          "src/xnnpack/common.h",
+          "src/xnnpack/math.h"
+        ]
+      },
+      "profile_order": [
+        "xnn",
+        "self"
+      ],
+      "enable_r21": false,
+      "vector_type_regex": "^(?:HVX_Vector|HVX_UVector|HVX_VectorPair|HVX_VectorPred|HEXAGON_Vect(?:1024|2048)|HEXAGON_UVect1024|HEXAGON_VecPred128)$",
+      "heap_write_regex": "^(?:__builtin_HEXAGON_V6_vS32|__builtin_HEXAGON_V6_vscatter|__builtin_HEXAGON_V6_vgather|(?:memcpy|memmove|memset)$)",
+      "vector_canonical": {
+        "__attribute__((__vector_size__(32 * sizeof(long)))) long": "HVX_Vector",
+        "__attribute__((__vector_size__(64 * sizeof(long)))) long": "HVX_VectorPair",
+        "__attribute__((__vector_size__(32 * sizeof(int)))) int": "HVX_Vector",
+        "__attribute__((__vector_size__(64 * sizeof(int)))) int": "HVX_VectorPair"
+      },
+      "vector_spelling": {
+        "HEXAGON_Vect1024": "HVX_Vector",
+        "HEXAGON_UVect1024": "HVX_UVector",
+        "HEXAGON_Vect2048": "HVX_VectorPair",
+        "HEXAGON_VecPred128": "HVX_VectorPred"
+      },
+      "ops_header": "qcp_hvx_ptr_ops.h"
     }
   }
 }

@@ -1,0 +1,15 @@
+{
+  "status": "approved: E3-33 s8-rmax NEON A (original) == RVV B_fixed (V-006), VLEN 128/256/512",
+  "approved_utc": "2026-11-07T10:20:00Z",
+  "supervisor_recheck": {
+    "dir": "rechecks/w04-run03",
+    "command": "env-exec.sh python3 pkg/proof/check.py --jobs 32 --run-dir <fresh>",
+    "rc": 0,
+    "gates": "all 10 true (incl. intrinsic_difftest, call_closure), 96 modules",
+    "axioms": "subset of assumptions-allowlist.STANDARD.txt",
+    "spec_review": "0<n<=2^63-1, all int8 inputs and Init, exact equality; no input conditions"
+  },
+  "findings": "original B != A (XNN-003, counterexample kept); B_fixed is program variant V-006",
+  "accepted_exception": "RVV load/reduction contracts use exists over tail lanes (tail-agnostic): faithful to RVV 1.0 and more general than a fixed value",
+  "notes": ["proved intrinsic bodies (vmaxq_s8, vpmax_s8) may stay; not required by the gate any more", "sibling kernels (s8-rmin, u8-rmax/rmin, rminmax) not checked: deferred task"]
+}

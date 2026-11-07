@@ -17,7 +17,7 @@ HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 import validate as V  # noqa: E402
 
-QEMU_A64 = Path("/tmp/saltyrn-tools/qemu/usr/bin/qemu-aarch64-static")
+QEMU_A64 = V.SOL / "tools/qemu-aarch64-static"
 ASRC = V.SALT / "kernels/source"
 HNAME = {"f32-dwconv2d-chw": "f32-dwconv2d-chw", "x32-transposec": "x32-transposec"}
 
@@ -39,6 +39,7 @@ def build_run(k, ksrc, work):
           "-Dtest_neon=test_rvv", "-include", "arm_neon.h", "-I" + str(inc),
           "-I" + str(V.REPO / "benchmark/XNNPACK"), "-I" + str(V.REPO / "benchmark/XNNPACK/src"),
           "-I" + str(V.REPO / "third_party/zephyr/third-party/executorch/backends/xnnpack/third-party/pthreadpool/include"),
+          "-I" + str(V.HERE / "stub-include"),
           work / "main.c", "-lm", "-o", work / "test.elf"]
     rc, so, se = V.run(cc)
     (work / "compile.log").write_text(so + se)
@@ -60,6 +61,14 @@ def main():
     res = []
     for k in a.kernels:
         n = Path(a.normalized_dir).resolve() / k / f"{k}.normalized.c"
+        if not (V.SALT / "kernels/harness" / (HNAME.get(k, k) + ".c")).exists():
+            res.append({"kernel": k, "status": "NO-HARNESS", "identical": None})
+            print(k, "NO-HARNESS (upstream has no harness file for this kernel)")
+            continue
+        if not n.exists():
+            res.append({"kernel": k, "status": "NO-NORMALIZED", "identical": None})
+            print(k, "NO-NORMALIZED (the tool produced no output for this kernel: rejected)")
+            continue
         o = build_run(k, ASRC / f"{k}.c", out / k / "original")
         m = build_run(k, n, out / k / "normalized")
         same = o.get("compile_rc") == 0 and m.get("compile_rc") == 0 and o["rc"] == m["rc"] and \
@@ -67,6 +76,12 @@ def main():
         res.append({"kernel": k, "original": o, "normalized": m, "identical": same})
         print(k, "identical" if same else "DIFFERENT/ERROR", o.get("pass_line"), o.get("error") or m.get("error") or "")
     (out / "validation-neon.json").write_text(json.dumps(res, indent=1) + "\n")
+    tested = [r for r in res if r.get("status") not in ("NO-HARNESS", "NO-NORMALIZED")]
+    bad = [r["kernel"] for r in tested if not r["identical"]]
+    print(f"identical={len(tested) - len(bad)} different_or_error={len(bad)} "
+          f"no_harness={sum(r.get('status') == 'NO-HARNESS' for r in res)} "
+          f"no_normalized={sum(r.get('status') == 'NO-NORMALIZED' for r in res)}")
+    sys.exit(1 if bad else 0)
 
 
 if __name__ == "__main__":

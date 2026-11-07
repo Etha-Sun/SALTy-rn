@@ -1,0 +1,27 @@
+# Axioms that may appear in `Print Assumptions` of the proof obligations (FinalCheck) and of the non-emptiness witness.
+# Format: <qualified name as printed by Coq 8.20.1>  # why it is acceptable. Any other axiom fails the gate (proof/lib/gates.py).
+# The list was obtained from the first full run (560 obligations, 547 mention axioms, 13 are closed); it is a whitelist, not a count.
+#
+# --- Coq standard library (consistent with Coq's type theory; classical / extensional principles used by Flocq, Reals, QCP automation) ---
+Classical_Prop.classic  # Coq.Logic.Classical_Prop: excluded middle
+ClassicalDedekindReals.sig_not_dec  # Coq.Reals.ClassicalDedekindReals: classical decidability of ~~P, from Reals (Flocq real-number layer)
+ClassicalDedekindReals.sig_forall_dec  # Coq.Reals.ClassicalDedekindReals: classical decidability of forall n, P n, from Reals
+FunctionalExtensionality.functional_extensionality_dep  # Coq.Logic.FunctionalExtensionality: pointwise-equal functions are equal (memory-model lemmas)
+PropExtensionality.propositional_extensionality  # Coq.Logic.PropExtensionality: logically equivalent propositions are equal
+#
+# --- QCP 2.1.4 C-semantics parameters/axioms (Rocq/SeparationLogic/CNotation.v): the trusted base of QCP's C model, NOT proved here ---
+CNotation.sizeof_struct_type  # Parameter: size in bytes of a named struct type (environment parameter)
+CNotation.sizeof_union_type  # Parameter: size of a named union type
+CNotation.sizeof_enum_type  # Parameter: size of a named enum type
+CNotation.sizeof_alias_type  # Parameter: size of a typedef alias
+CNotation.eval_addr_expr  # Parameter: evaluation of an address expression to an address
+CNotation.eval_addr_expr_congr  # Axiom: eval_addr_expr respects rvalue_expr_equiv
+CNotation.LE_arrow_field_congr  # Axiom: field access through a pointer respects expression equivalence
+CNotation.RE_addr_of_congr  # Axiom: address-of respects expression equivalence
+SeparationLogic.Snaive_C_Rules64.eval_addr  # Axiom: RE_const (eval_addr_expr R) t is equivalent to R (instance in the 64-bit rule set)
+CNotation.addr_of_LE_var_not_zero  # Axiom: the address of a local variable is non-null (environment premise; 1 obligation, the NULL check of &params)
+CNotation.rvalue_expr_equiv  # Parameter: expression equivalence relation (supervisor-approved 11-07 under the "QCP Parameter auto-ok" rule)
+#
+# Approved by the user 2026-11-07 (all 5 Coq stdlib axioms + all QCP CNotation/Snaive axioms above).
+# Consistency note (supervisor): rvalue_expr_equiv := (fun _ _ => True), eval_addr_expr := (fun _ => 1) satisfies every QCP axiom listed.
+# New QCP Parameters may be added by the supervisor; any new Axiom must go to the user.

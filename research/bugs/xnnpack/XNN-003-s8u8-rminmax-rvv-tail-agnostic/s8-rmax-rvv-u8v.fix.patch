@@ -1,0 +1,11 @@
+--- impl/s8-rmax-rvv-u8v.c	2026-11-06 16:00:05.139400584 -0800
++++ variants/s8-rmax-rvv-u8v.fixed.c	2026-11-06 16:10:12.062836077 -0800
+@@ -36,7 +36,7 @@
+   while (batch > 0) {
+     size_t vl = __riscv_vsetvl_e8m8(batch); batch -= vl;
+     vint8m8_t vinput = __riscv_vle8_v_i8m8(input, vl); input += vl;
+-    vmax = __riscv_vmax(vmax, vinput, vl);
++    vmax = __riscv_vmax_vv_i8m8_tu(vmax, vmax, vinput, vl);
+   }
+ 
+   vint8m1_t max = __riscv_vle8_v_i8m1(output + 0, 1);

@@ -1,0 +1,108 @@
+{
+ "tool": "rvv_ptr_lower 1.5.0",
+ "results": [
+  {
+   "kernel": "f32-vabs-avx",
+   "input_sha256": "398204d86d0cd3b609bc58394e73c8ce4c846cbcff187044fafaad465ceb5cf4",
+   "lower": "OK f32-vabs-avx.c isa=x86 rewrites=11",
+   "determinism": true,
+   "rules": [
+    "R22"
+   ],
+   "rewrite_count": 11,
+   "idempotence": true,
+   "tokens_unchanged": true,
+   "difftest": {
+    "original": {
+     "compile_rc": 0,
+     "rc": 0,
+     "bytes": 2595600,
+     "sha256": "3f99befd91b60c177b9b7935d84f444af84424de79325b9fcc7f617b18f123b6"
+    },
+    "normalized": {
+     "compile_rc": 0,
+     "rc": 0,
+     "bytes": 2595600,
+     "sha256": "3f99befd91b60c177b9b7935d84f444af84424de79325b9fcc7f617b18f123b6"
+    }
+   },
+   "difftest_identical": true,
+   "status": "OK"
+  },
+  {
+   "kernel": "f32-vlrelu-avx-u16",
+   "input_sha256": "a521a2d61f8126d5c3cbe8e1eb91109227ba60954665cf75924ff7da037713c8",
+   "lower": "OK f32-vlrelu-avx-u16.c isa=x86 rewrites=11",
+   "determinism": true,
+   "rules": [
+    "R17",
+    "R21"
+   ],
+   "rewrite_count": 11,
+   "idempotence": true,
+   "difftest": {
+    "original": {
+     "compile_rc": 0,
+     "rc": 0,
+     "bytes": 7786800,
+     "sha256": "362431b5990bbd74bf29dce51b6cbb4cb1411e2d1a4b3749a6e0f30756777419"
+    },
+    "normalized": {
+     "compile_rc": 0,
+     "rc": 0,
+     "bytes": 7786800,
+     "sha256": "362431b5990bbd74bf29dce51b6cbb4cb1411e2d1a4b3749a6e0f30756777419"
+    }
+   },
+   "difftest_identical": true,
+   "status": "OK"
+  },
+  {
+   "unit": "f32-vabs-avx.exp.c",
+   "input_sha256": "f69a849f6509232f6f863b011a9cc756761fa2eb60e275b6fd303383686bed2b",
+   "lower": "OK f32-vabs-avx.exp.c isa=x86 rewrites=44",
+   "determinism": true,
+   "rule_counts": {
+    "R20": 31,
+    "R21": 2,
+    "R22": 11
+   },
+   "idempotence": true,
+   "remaining_static_inline": 5,
+   "deleted": [
+    "xnn_add_f32",
+    "xnn_and_f32",
+    "xnn_andnot_f32",
+    "xnn_cmpeq_f32",
+    "xnn_cmpneq_f32",
+    "xnn_div_f32",
+    "xnn_fmadd_f32",
+    "xnn_fmsub_f32",
+    "xnn_fnmadd_f32",
+    "xnn_load_f32",
+    "xnn_load_tail_safe_f32",
+    "xnn_max_f32",
+    "xnn_min_f32",
+    "xnn_mul_f32",
+    "xnn_neg_f32",
+    "xnn_or_f32",
+    "xnn_rcp_f32",
+    "xnn_reduce_add_f32",
+    "xnn_reduce_max_f32",
+    "xnn_reduce_min_f32",
+    "xnn_round_f32",
+    "xnn_rsqrt_f32",
+    "xnn_set1_f32",
+    "xnn_sll_f32",
+    "xnn_sqrt_f32",
+    "xnn_sra_f32",
+    "xnn_srl_f32",
+    "xnn_store_f32",
+    "xnn_xor_f32",
+    "xnn_sub_f32",
+    "xnn_zero_f32"
+   ],
+   "status": "OK"
+  }
+ ]
+}

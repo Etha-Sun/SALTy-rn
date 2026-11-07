@@ -23,6 +23,7 @@ The separate `proof/sum` branch packages completed Coq proofs under `coq/neon-rv
 
 ## Environment and validation
 
+- User policy (latest instruction, 2026-10-23): future batch verification must configure **32 parallel workers** (`--jobs 32` / `make -j32`). This supersedes the earlier minimum of 16. Do not default new runs to 4, 8, or 16 workers. Actual concurrency follows the available independent obligations and dependency order. For QCP/Coq, retain finite per-process limits and provision the aggregate budget accordingly (32 workers × 16 GiB = 512 GiB); coordinate the shared pool instead of silently lowering the configured parallelism. Preserve sealed historical scripts and records; apply this policy to new runners and runs.
 - Use the relevant directory's `lean-toolchain`; both Lean 4.29.0 and 4.29.1 occur in this repository.
 - In the original research directories, run Coq through `research/sail-tooling-gap/islaris-reduction/env-exec.sh`. The `proof/sum` package has its own environment and build instructions. Expected research-environment versions and external file hashes are in `research/migration/environment.json`.
 - External `vendor/` toolchains are not tracked. A fresh Git clone is not a configured proof environment. The opam export is a `--full` inventory, not a successfully frozen or freshly rebuilt environment.

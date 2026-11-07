@@ -1,0 +1,9 @@
+{
+  "status": "approved (template)",
+  "approved_utc": "2026-11-07T01:55Z",
+  "scope": "v2 package layout and gate template, f32-vadd intermediate pair (kernels/source vs kernels/target, VLEN128 per-field RVV). Not an E1/E2/E3 result.",
+  "recheck": {"command": ".local/qcp/env-exec.sh python3 f32-vadd-v2/proof/check.py --jobs 32 --run-dir rechecks/w01-run1",
+              "exit_code": 0, "seconds": 575, "modules": 88, "gates_all_true": true, "pa_obligations": 560},
+  "known_gaps": ["VLEN 256/512 not checked (inherited per-field VLEN128 representation)"],
+  "pending_user_review": ["proof/assumptions-allowlist.txt (15 axioms: Coq classical/extensionality + QCP CNotation C-semantics parameters)"]
+}

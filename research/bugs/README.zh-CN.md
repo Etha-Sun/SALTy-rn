@@ -31,6 +31,8 @@
 | 编号 | 发现途径 | 标题 | 状态 |
 |---|---|---|---|
 | [XNN-001](xnnpack/XNN-001-vclamp-tail-order/README.zh-CN.md) | E1 s8-vclamp（A ⇔ Bopt），证明时得到反例 | s8/u8 vclamp 的 SIMD 实现中，尾部 min/max 顺序与参考语义相反，`min > max` 时结果不一致 | 已确认；W4 已证明 s8 的 A_fixed ≡ Bopt（VLEN 512/128/256），监督者复检中；u8 待 BOPT-001 |
+| [XNN-003](xnnpack/XNN-003-s8u8-rminmax-rvv-tail-agnostic/README.zh-CN.md) | E3-33 s8-rmax（XNNPACK NEON ⇔ XNNPACK RVV），证明时得到反例 | s8/u8 rminmax 的 RVV kernel 用 tail-agnostic 的 vmax/vmin 合并累加器，最后按 vlmax 归约，尾部的全 1 混入结果 | 已确认（W04 与监督者各自复现）；B_fixed 的 RVV 侧已证明，NEON 侧等 R23；未对外报告 |
+| [XNN-004](xnnpack/XNN-004-s8-hvx-reduce-float-ub/README.zh-CN.md) | E2/E3 HVX s8-rmax（W03），读源码 + UBSan 实测 | `xnn_reduce_max_s8`/`min_s8` 返回 float（来自无符号 lane），赋给 int8_t 时负值越界转换为 UB；当前编译结果碰巧正确 | 修复变体 V-007（返回 int8_t）；未对外报告 |
 | [BOPT-001](bopt/BOPT-001-u8-vclamp-params-abi.zh-CN.md) | E1 准备阶段：改写工具的差分测试暴露了编译冲突，再审源码发现 | u8-vclamp 自定义的 params 布局（uint8）与 XNNPACK（uint32）不一致 | **已实测确认**（W14）：`x=1, min=0, max=1` 时 Bopt 输出 0，A 输出 1；Bopt_fixed 已在 QEMU 上通过，证明进行中 |
 | [QCP-001](qcp/QCP-001-float-array-field.zh-CN.md) | E1 f32-vadd，RVV shim 生成 VC 时 | 局部 struct 中的 float/double 数组字段无法通过类型推断 | 已复现；E1 用比特 lane 表示绕开；未向作者报告 |
 | [QCP-002](qcp/QCP-002-struct-array-assign.zh-CN.md) | E1 s8-vclamp，证明拷贝适配器时 | 数组字段 struct 之间的整体赋值无法符号执行 | 已复现；shim 拷贝改用逐 lane 循环 |
