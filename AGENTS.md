@@ -30,3 +30,4 @@ The separate `proof/sum` branch packages completed Coq proofs under `coq/neon-rv
 - Check imports and compile dependencies before consumers. Existing replay/check scripts can overwrite historical result JSON and logs; preserve those records before rerunning them.
 - Large RVV checks have consumed hundreds of GiB. Begin with a small check and finite budgets after checking available memory; CPU thread count alone is not a safe concurrency setting.
 - Prefer Chinese when collaborating with the user. Summarize what is established, what remains uncertain, and the next concrete step.
+- Git commits and pull requests: do not add Claude or any AI-assistant attribution (no `Co-Authored-By: Claude ...` trailer, no "Generated with Claude Code" line). Use the repository's existing author identity. (User instruction, 2026-11-07.)
